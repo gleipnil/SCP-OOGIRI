@@ -59,7 +59,7 @@ export default function Choice({ socket, gameState }: ChoiceProps) {
         <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white p-4">
             <div className="w-full max-w-4xl bg-gray-800 p-8 rounded-lg shadow-lg">
                 <div className="flex justify-between items-center mb-6">
-                    <h2 className="text-2xl font-bold text-purple-400">Choice Phase</h2>
+                    <h2 className="text-2xl font-bold text-purple-400">選択フェーズ</h2>
                     <div className={`text-xl font-mono ${timer.isBlinking ? 'animate-pulse text-red-500' : 'text-green-400'}`}>
                         Time: {Math.floor(timer.remaining / 60)}:{(timer.remaining % 60).toString().padStart(2, '0')}
                     </div>
@@ -68,9 +68,9 @@ export default function Choice({ socket, gameState }: ChoiceProps) {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
                     {/* Constraints Section */}
                     <div className="bg-gray-700 p-6 rounded-lg border border-gray-600">
-                        <h3 className="text-xl font-bold mb-4 text-yellow-400">Your Constraints</h3>
+                        <h3 className="text-xl font-bold mb-4 text-yellow-400">あなたの制約</h3>
                         <div className="mb-4">
-                            <span className="block text-sm text-gray-400 uppercase tracking-wider">Public Constraints</span>
+                            <span className="block text-sm text-gray-400 uppercase tracking-wider">公開制約</span>
                             <ul className="list-disc list-inside text-lg font-medium">
                                 {myReport.constraint.publicDescriptions.map((desc, i) => (
                                     <li key={i}>
@@ -82,17 +82,17 @@ export default function Choice({ socket, gameState }: ChoiceProps) {
                             </ul>
                         </div>
                         <div className="mb-4">
-                            <span className="block text-sm text-gray-400 uppercase tracking-wider">Hidden Constraint</span>
+                            <span className="block text-sm text-gray-400 uppercase tracking-wider">非公開制約</span>
                             <p className="text-lg font-medium text-pink-400">{myReport.constraint.hiddenDescription}</p>
-                            <p className="text-xs text-gray-500 mt-1">Only you (and the final author) can see this!</p>
+                            <p className="text-xs text-gray-500 mt-1">あなただけが見ることができます！</p>
                         </div>
                     </div>
 
                     {/* Keywords Selection Section */}
                     <div>
-                        <h3 className="text-xl font-bold mb-4 text-blue-400">Select 3 Keywords</h3>
+                        <h3 className="text-xl font-bold mb-4 text-blue-400">キーワードを3つ選択</h3>
                         <p className="text-gray-300 mb-4">
-                            Choose 3 keywords from the list below to be used in your SCP report.
+                            以下のリストから、レポートに使用するキーワードを3つ選んでください。
                         </p>
                         <div className="space-y-2">
                             {myReport.selectedKeywords.map((keyword, index) => (
@@ -111,7 +111,7 @@ export default function Choice({ socket, gameState }: ChoiceProps) {
                             ))}
                         </div>
                         <div className="mt-2 text-right text-sm text-gray-400">
-                            Selected: {selectedIndices.length}/3
+                            選択済み: {selectedIndices.length}/3
                         </div>
                     </div>
                 </div>
@@ -122,12 +122,12 @@ export default function Choice({ socket, gameState }: ChoiceProps) {
                         disabled={selectedIndices.length !== 3}
                         className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-4 rounded transition duration-200 disabled:opacity-50"
                     >
-                        Confirm Selection
+                        選択を確定
                     </button>
                 ) : (
                     <div className="text-center py-4">
-                        <div className="text-green-500 text-xl mb-2">✓ Selection Confirmed</div>
-                        <p className="text-gray-400">Waiting for other players...</p>
+                        <div className="text-green-500 text-xl mb-2">✓ 選択を確定しました</div>
+                        <p className="text-gray-400">他のプレイヤーを待っています...</p>
                         <div className="mt-4 flex justify-center space-x-2">
                             {gameState.users.map(u => (
                                 <div
@@ -145,7 +145,7 @@ export default function Choice({ socket, gameState }: ChoiceProps) {
                         onClick={handleNextPhase}
                         className="w-full mt-6 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded transition duration-200 animate-bounce"
                     >
-                        Start Scripting
+                        執筆開始
                     </button>
                 )}
             </div>

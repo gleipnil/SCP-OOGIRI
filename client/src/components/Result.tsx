@@ -32,11 +32,11 @@ export default function Result({ socket, gameState }: ResultProps) {
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white p-4">
             <div className="w-full max-w-4xl bg-gray-800 p-8 rounded-lg shadow-lg text-center">
-                <h1 className="text-4xl font-bold text-yellow-400 mb-2">Game Over</h1>
-                <p className="text-gray-400 mb-8">The results are in!</p>
+                <h1 className="text-4xl font-bold text-yellow-400 mb-2">ゲーム終了</h1>
+                <p className="text-gray-400 mb-8">結果発表！</p>
 
                 <div className="mb-12">
-                    <h2 className="text-2xl font-bold mb-6">Final Ranking</h2>
+                    <h2 className="text-2xl font-bold mb-6">最終順位</h2>
                     <div className="space-y-4">
                         {sortedUsers.map((user, index) => (
                             <div
@@ -49,10 +49,10 @@ export default function Result({ socket, gameState }: ResultProps) {
                                         #{index + 1}
                                     </span>
                                     <span className="text-lg font-bold">{user.name}</span>
-                                    {index === 0 && <span className="ml-2 text-yellow-400">👑 Winner!</span>}
+                                    {index === 0 && <span className="ml-2 text-yellow-400">👑 優勝！</span>}
                                 </div>
                                 <div className="text-2xl font-bold text-purple-400">
-                                    {user.score} pts
+                                    {user.score} pt
                                 </div>
                             </div>
                         ))}
@@ -64,14 +64,14 @@ export default function Result({ socket, gameState }: ResultProps) {
                         onClick={handleDownloadLog}
                         className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded transition duration-200 flex items-center justify-center gap-2"
                     >
-                        <span>📥</span> Download Game Log (.md)
+                        <span>📥</span> ゲームログをダウンロード (.md)
                     </button>
 
                     <button
                         onClick={handleBackToTitle}
                         className="bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-6 rounded transition duration-200"
                     >
-                        Back to Title
+                        タイトルに戻る
                     </button>
                 </div>
             </div>

@@ -8,7 +8,8 @@ interface SuggestionProps {
 }
 
 export default function Suggestion({ socket, gameState }: SuggestionProps) {
-    const [keywords, setKeywords] = useState<string[]>(['', '', '', '', '']);
+    const [input, setInput] = useState('');
+    const [suggestions, setSuggestions] = useState<string[]>([]);
     const [isSubmitted, setIsSubmitted] = useState(false);
     const { timer } = gameState;
 
@@ -19,15 +20,20 @@ export default function Suggestion({ socket, gameState }: SuggestionProps) {
         }
     }, [gameState.readyStates, socket.id]);
 
-    const handleChange = (index: number, value: string) => {
-        const newKeywords = [...keywords];
-        newKeywords[index] = value;
-        setKeywords(newKeywords);
+    const handleAdd = () => {
+        if (input.trim() && suggestions.length < 5) {
+            setSuggestions([...suggestions, input.trim()]);
+            setInput('');
+        }
+    };
+
+    const removeSuggestion = (index: number) => {
+        setSuggestions(suggestions.filter((_, i) => i !== index));
     };
 
     const handleSubmit = () => {
-        if (keywords.every(k => k.trim())) {
-            socket.emit('submit_suggestion', keywords);
+        if (suggestions.length >= 3) {
+            socket.emit('submit_suggestion', suggestions);
             setIsSubmitted(true);
         }
     };
@@ -44,42 +50,57 @@ export default function Suggestion({ socket, gameState }: SuggestionProps) {
         <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white p-4">
             <div className="w-full max-w-2xl bg-gray-800 p-8 rounded-lg shadow-lg">
                 <div className="flex justify-between items-center mb-6">
-                    <h2 className="text-2xl font-bold text-purple-400">Suggestion Phase</h2>
+                    <h2 className="text-2xl font-bold text-purple-400">お題フェーズ</h2>
                     <div className={`text-xl font-mono ${timer.isBlinking ? 'animate-pulse text-red-500' : 'text-green-400'}`}>
                         Time: {Math.floor(timer.remaining / 60)}:{(timer.remaining % 60).toString().padStart(2, '0')}
                     </div>
                 </div>
 
-                <p className="mb-6 text-gray-300">
-                    Enter 5 keywords or phrases that will be used as inspiration for the SCP reports.
-                </p>
-
                 {!isSubmitted ? (
-                    <div className="space-y-4 mb-8">
-                        {keywords.map((keyword, index) => (
-                            <div key={index} className="flex items-center">
-                                <span className="w-8 text-gray-500 font-bold">{index + 1}.</span>
-                                <input
-                                    type="text"
-                                    value={keyword}
-                                    onChange={(e) => handleChange(index, e.target.value)}
-                                    placeholder={`Keyword ${index + 1}`}
-                                    className="flex-1 p-3 bg-gray-700 rounded border border-gray-600 focus:outline-none focus:border-purple-500"
-                                />
+                    <div>
+                        <p className="text-gray-300 mb-4">お題となるキーワードを5個提案してください。</p>
+
+                        <div className="flex gap-2 mb-4">
+                            <input
+                                type="text"
+                                value={input}
+                                onChange={(e) => setInput(e.target.value)}
+                                onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
+                                placeholder="キーワードを入力"
+                                className="flex-1 p-3 bg-gray-700 rounded border border-gray-600 focus:outline-none focus:border-purple-500"
+                            />
+                            <button
+                                onClick={handleAdd}
+                                className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-200"
+                            >
+                                追加
+                            </button>
+                        </div>
+
+                        <div className="mb-6">
+                            <h3 className="text-sm font-bold text-gray-400 mb-2">あなたのお題 ({suggestions.length}/5)</h3>
+                            <div className="flex flex-wrap gap-2">
+                                {suggestions.map((s, i) => (
+                                    <div key={i} className="bg-gray-700 px-3 py-1 rounded flex items-center gap-2">
+                                        <span>{s}</span>
+                                        <button onClick={() => removeSuggestion(i)} className="text-red-400 hover:text-red-300">×</button>
+                                    </div>
+                                ))}
                             </div>
-                        ))}
+                        </div>
+
                         <button
                             onClick={handleSubmit}
-                            disabled={keywords.some(k => !k.trim())}
+                            disabled={suggestions.length < 3}
                             className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-4 rounded transition duration-200 disabled:opacity-50"
                         >
-                            Submit Keywords
+                            お題を送信
                         </button>
                     </div>
                 ) : (
-                    <div className="text-center py-12">
-                        <div className="text-green-500 text-xl mb-4">✓ Keywords Submitted</div>
-                        <p className="text-gray-400">Waiting for other players...</p>
+                    <div className="text-center py-8">
+                        <div className="text-green-500 text-xl mb-4">✓ お題を送信しました</div>
+                        <p className="text-gray-400">他のプレイヤーを待っています...</p>
                         <div className="mt-4 flex justify-center space-x-2">
                             {gameState.users.map(u => (
                                 <div
@@ -97,7 +118,7 @@ export default function Suggestion({ socket, gameState }: SuggestionProps) {
                         onClick={handleNextPhase}
                         className="w-full mt-4 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded transition duration-200 animate-bounce"
                     >
-                        Go to Next Phase
+                        次のフェーズへ
                     </button>
                 )}
             </div>
