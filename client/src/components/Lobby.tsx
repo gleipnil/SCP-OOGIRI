@@ -58,6 +58,16 @@ export default function Lobby({ socket, gameState }: LobbyProps) {
                         >
                             Initialize Connection
                         </button>
+                        <div className="text-center mt-2">
+                            <a
+                                href="/instructions"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-xs text-scp-green-dim hover:text-scp-green underline decoration-dotted uppercase tracking-widest transition-colors"
+                            >
+                                [ Access Operational Manual ]
+                            </a>
+                        </div>
                     </div>
                 ) : (
                     <div className="text-center">
