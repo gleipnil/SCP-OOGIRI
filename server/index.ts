@@ -43,6 +43,10 @@ io.on('connection', (socket) => {
         gameManager.submitScript(socket.id, content);
     });
 
+    socket.on('cancel_submission', () => {
+        gameManager.cancelSubmission(socket.id);
+    });
+
     socket.on('next_phase', () => {
         gameManager.nextPhase();
     });

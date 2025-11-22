@@ -108,7 +108,17 @@ export default function Suggestion({ socket, gameState }: SuggestionProps) {
                         <div className="text-scp-green text-xl mb-4 uppercase tracking-widest animate-pulse">
                             {">> Data Upload Complete <<"}
                         </div>
-                        <p className="text-scp-green-dim uppercase text-sm">Awaiting synchronization...</p>
+                        <p className="text-scp-green-dim uppercase text-sm mb-6">Awaiting synchronization...</p>
+
+                        <button
+                            onClick={() => {
+                                socket.emit('cancel_submission');
+                                setIsSubmitted(false);
+                            }}
+                            className="bg-scp-green text-black font-bold py-2 px-6 uppercase tracking-widest hover:bg-white transition-colors duration-200 mb-6"
+                        >
+                            Modify Entry
+                        </button>
                         <div className="mt-6 flex justify-center space-x-2">
                             {gameState.users.map(u => (
                                 <div

@@ -209,8 +209,11 @@ export default function Scripting({ socket, gameState }: ScriptingProps) {
                             <p className="text-scp-green-dim uppercase text-sm mb-6">Awaiting team synchronization...</p>
 
                             <button
-                                onClick={() => setIsSubmitted(false)}
-                                className="bg-transparent border border-scp-green text-scp-green font-bold py-2 px-6 uppercase tracking-widest hover:bg-scp-green hover:text-black transition-colors duration-200 mb-6"
+                                onClick={() => {
+                                    socket.emit('cancel_submission');
+                                    setIsSubmitted(false);
+                                }}
+                                className="bg-scp-green text-black font-bold py-2 px-6 uppercase tracking-widest hover:bg-white transition-colors duration-200 mb-6"
                             >
                                 Modify Entry
                             </button>

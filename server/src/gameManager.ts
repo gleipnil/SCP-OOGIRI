@@ -129,6 +129,13 @@ export class GameManager {
         }
     }
 
+    public cancelSubmission(socketId: string) {
+        if (this.state.readyStates[socketId]) {
+            this.state.readyStates[socketId] = false;
+            this.broadcastState();
+        }
+    }
+
     public nextPhase() {
         switch (this.state.phase) {
             case 'SUGGESTION':
