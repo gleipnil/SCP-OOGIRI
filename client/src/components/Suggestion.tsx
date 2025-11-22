@@ -61,7 +61,7 @@ export default function Suggestion({ socket, gameState }: SuggestionProps) {
                 {!isSubmitted ? (
                     <div>
                         <p className="text-scp-green-dim mb-4 uppercase tracking-wider text-sm">
-                            Input 5 keywords for database seeding.
+                            Input exactly 5 keywords for database seeding.
                         </p>
 
                         <div className="flex gap-0 mb-6">
@@ -97,10 +97,10 @@ export default function Suggestion({ socket, gameState }: SuggestionProps) {
 
                         <button
                             onClick={handleSubmit}
-                            disabled={suggestions.length < 3}
+                            disabled={suggestions.length !== 5}
                             className="w-full bg-scp-green text-black font-bold py-3 px-4 uppercase tracking-widest hover:bg-white transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                            Upload Data
+                            Upload Data (5 Required)
                         </button>
                     </div>
                 ) : (

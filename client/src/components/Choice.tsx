@@ -143,12 +143,20 @@ export default function Choice({ socket, gameState }: ChoiceProps) {
                         Confirm Selection
                     </button>
                 ) : (
-                    <div className="text-center py-4 border border-scp-green/30 bg-scp-green/5">
-                        <div className="text-scp-green text-xl mb-2 uppercase tracking-widest animate-pulse">
+                    <div className="text-center py-8 border border-scp-green/30 bg-scp-green/5">
+                        <div className="text-scp-green text-xl mb-4 uppercase tracking-widest animate-pulse">
                             {">> Selection Confirmed <<"}
                         </div>
-                        <p className="text-scp-green-dim uppercase text-sm">Awaiting team synchronization...</p>
-                        <div className="mt-4 flex justify-center space-x-2">
+                        <p className="text-scp-green-dim uppercase text-sm mb-6">Awaiting team synchronization...</p>
+
+                        <button
+                            onClick={() => setIsSubmitted(false)}
+                            className="bg-transparent border border-scp-green text-scp-green font-bold py-2 px-6 uppercase tracking-widest hover:bg-scp-green hover:text-black transition-colors duration-200 mb-6"
+                        >
+                            Modify Selection
+                        </button>
+
+                        <div className="flex justify-center space-x-2">
                             {gameState.users.map(u => (
                                 <div
                                     key={u.id}
@@ -157,16 +165,15 @@ export default function Choice({ socket, gameState }: ChoiceProps) {
                                 ></div>
                             ))}
                         </div>
+                        {isHost && allReady && (
+                            <button
+                                onClick={handleNextPhase}
+                                className="w-full mt-8 bg-scp-red text-black font-bold py-3 px-4 uppercase tracking-widest hover:bg-red-600 transition-colors duration-200"
+                            >
+                                Initiate Writing Phase
+                            </button>
+                        )}
                     </div>
-                )}
-
-                {isHost && allReady && (
-                    <button
-                        onClick={handleNextPhase}
-                        className="w-full mt-6 bg-scp-red text-black font-bold py-4 px-6 uppercase tracking-widest hover:bg-red-600 transition-colors duration-200"
-                    >
-                        Commence Writing Protocol
-                    </button>
                 )}
             </div>
         </div>
