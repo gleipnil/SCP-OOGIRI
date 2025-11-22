@@ -20,69 +20,100 @@ export default function Presentation({ socket, gameState }: PresentationProps) {
     const isHost = myUser?.isHost;
 
     if (!currentReport) {
-        return <div className="text-white">Loading presentation...</div>;
+        return <div className="text-scp-green font-mono p-8 animate-pulse">Loading File...</div>;
     }
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white p-4">
-            <div className="w-full max-w-4xl bg-gray-800 p-8 rounded-lg shadow-lg">
-                <div className="flex justify-between items-center mb-6">
-                    <h2 className="text-2xl font-bold text-purple-400">発表フェーズ</h2>
-                    <div className="text-gray-400">
-                        レポート {currentPresentationIndex + 1} / {reports.length}
+        <div className="flex flex-col items-center justify-center min-h-screen p-4 font-mono">
+            <div className="w-full max-w-5xl border-2 border-scp-green bg-black/95 p-8 relative shadow-[0_0_20px_rgba(0,255,65,0.1)]">
+                <div className="flex justify-between items-end mb-8 border-b border-scp-green pb-4">
+                    <h2 className="text-2xl font-bold text-scp-green uppercase tracking-widest">
+                        File Access: Read Only
+                    </h2>
+                    <div className="text-scp-green-dim uppercase tracking-widest text-sm">
+                        File {currentPresentationIndex + 1} of {reports.length}
                     </div>
                 </div>
 
-                <div className="bg-black p-8 rounded border border-gray-700 font-mono text-gray-300 space-y-6 max-h-[70vh] overflow-y-auto">
-                    <div className="border-b border-gray-700 pb-4">
-                        <h1 className="text-3xl font-bold text-white mb-2">SCP-XXXX: {currentReport.title || "Untitled"}</h1>
-                        <p className="text-sm text-gray-500">執筆者: {owner?.name || "Unknown"}</p>
+                <div className="bg-black p-8 border border-scp-green/30 font-mono text-scp-text space-y-8 max-h-[70vh] overflow-y-auto custom-scrollbar relative">
+                    {/* Watermark */}
+                    <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-scp-green/5 text-9xl font-bold rotate-[-45deg] pointer-events-none select-none whitespace-nowrap">
+                        CONFIDENTIAL
+                    </div>
+
+                    <div className="border-b border-scp-green/30 pb-6 relative z-10">
+                        <div className="flex justify-between items-start">
+                            <div>
+                                <h1 className="text-4xl font-bold text-scp-green mb-2 uppercase tracking-wider">
+                                    SCP-XXXX: {currentReport.title || "Untitled"}
+                                </h1>
+                                <p className="text-sm text-scp-green-dim uppercase tracking-widest">
+                                    Author: {owner?.name || "Unknown"}
+                                </p>
+                            </div>
+                            <div className="border border-scp-red text-scp-red px-3 py-1 text-xs font-bold uppercase tracking-widest animate-pulse">
+                                Clearance Level 3
+                            </div>
+                        </div>
                     </div>
 
                     {/* Constraints Info (Revealed now) */}
-                    <div className="bg-gray-900 p-4 rounded border border-gray-800">
-                        <h3 className="text-sm font-bold text-yellow-500 mb-2 uppercase tracking-wider">機密解除情報</h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="bg-scp-green/5 p-6 border border-scp-green/30 relative z-10">
+                        <h3 className="text-xs font-bold text-scp-green mb-4 uppercase tracking-widest border-b border-scp-green/30 pb-2">
+                            Declassified Directives
+                        </h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <span className="text-xs text-gray-500 uppercase">公開制約</span>
-                                <ul className="list-disc list-inside text-white text-sm">
+                                <span className="text-xs text-scp-green-dim uppercase tracking-widest block mb-2">Public Classification</span>
+                                <ul className="space-y-2 text-sm">
                                     {currentReport.constraint.publicDescriptions.map((desc, i) => (
-                                        <li key={i}>
-                                            <span className="font-bold text-yellow-200">
-                                                {["Object class", "SCPの性質", "観測時の特徴", "財団による対応"][i]}:
-                                            </span> {desc}
+                                        <li key={i} className="flex flex-col">
+                                            <span className="font-bold text-scp-green uppercase text-xs">
+                                                {["Object Class", "Properties", "Observation", "Containment"][i]}
+                                            </span>
+                                            <span className="text-scp-text pl-2 border-l border-scp-green/30">
+                                                {desc}
+                                            </span>
                                         </li>
                                     ))}
                                 </ul>
                             </div>
                             <div>
-                                <span className="text-xs text-gray-500 uppercase">非公開制約</span>
-                                <p className="text-pink-400">{currentReport.constraint.hiddenDescription}</p>
+                                <span className="text-xs text-scp-green-dim uppercase tracking-widest block mb-2">Clearance Level 4 (Revealed)</span>
+                                <div className="border border-scp-red/30 bg-scp-red/5 p-3">
+                                    <p className="text-scp-red font-bold">{currentReport.constraint.hiddenDescription}</p>
+                                </div>
                             </div>
                             <div className="col-span-full">
-                                <span className="text-xs text-gray-500 uppercase">キーワード</span>
-                                <div className="mt-1 text-sm text-blue-200 font-medium">
-                                    {currentReport.selectedKeywords.join(', ')}
+                                <span className="text-xs text-scp-green-dim uppercase tracking-widest block mb-2">Keywords</span>
+                                <div className="text-sm text-scp-green font-bold border border-scp-green/30 p-2 bg-black inline-block">
+                                    {currentReport.selectedKeywords.join(' // ')}
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div className="space-y-4">
+                    <div className="space-y-8 relative z-10">
                         <div>
-                            <h3 className="text-lg font-bold text-white uppercase">特別収容プロトコル</h3>
-                            <p className="whitespace-pre-wrap">{currentReport.containmentProcedures}</p>
+                            <h3 className="text-lg font-bold text-scp-green uppercase mb-2 border-b border-scp-green/30 inline-block pr-4">
+                                Special Containment Procedures
+                            </h3>
+                            <p className="whitespace-pre-wrap leading-relaxed">{currentReport.containmentProcedures}</p>
                         </div>
 
                         <div>
-                            <h3 className="text-lg font-bold text-white uppercase">説明</h3>
-                            <p className="whitespace-pre-wrap mb-4">{currentReport.descriptionEarly}</p>
-                            <p className="whitespace-pre-wrap">{currentReport.descriptionLate}</p>
+                            <h3 className="text-lg font-bold text-scp-green uppercase mb-2 border-b border-scp-green/30 inline-block pr-4">
+                                Description
+                            </h3>
+                            <p className="whitespace-pre-wrap mb-4 leading-relaxed">{currentReport.descriptionEarly}</p>
+                            <p className="whitespace-pre-wrap leading-relaxed">{currentReport.descriptionLate}</p>
                         </div>
 
                         <div>
-                            <h3 className="text-lg font-bold text-white uppercase">補遺 / 結論</h3>
-                            <p className="whitespace-pre-wrap">{currentReport.conclusion}</p>
+                            <h3 className="text-lg font-bold text-scp-green uppercase mb-2 border-b border-scp-green/30 inline-block pr-4">
+                                Addendum / Conclusion
+                            </h3>
+                            <p className="whitespace-pre-wrap leading-relaxed">{currentReport.conclusion}</p>
                         </div>
                     </div>
                 </div>
@@ -90,9 +121,9 @@ export default function Presentation({ socket, gameState }: PresentationProps) {
                 {isHost && (
                     <button
                         onClick={handleNext}
-                        className="w-full mt-6 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded transition duration-200"
+                        className="w-full mt-6 bg-scp-green text-black font-bold py-4 px-6 uppercase tracking-widest hover:bg-white transition-colors duration-200"
                     >
-                        {currentPresentationIndex < reports.length - 1 ? "次のレポート" : "投票へ進む"}
+                        {currentPresentationIndex < reports.length - 1 ? "Access Next File" : "Proceed to Voting Protocol"}
                     </button>
                 )}
             </div>

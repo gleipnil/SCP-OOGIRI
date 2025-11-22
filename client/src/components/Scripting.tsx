@@ -41,7 +41,7 @@ export default function Scripting({ socket, gameState }: ScriptingProps) {
     }, [gameState.readyStates, socket.id]);
 
     if (!assignedReport) {
-        return <div className="text-white">Loading assignment...</div>;
+        return <div className="text-scp-green font-mono p-8 animate-pulse">Retrieving File...</div>;
     }
 
     const handleSubmit = () => {
@@ -68,135 +68,150 @@ export default function Scripting({ socket, gameState }: ScriptingProps) {
 
     const getPhaseTitle = () => {
         switch (phase) {
-            case 'SCRIPTING_1': return 'フェーズ1: 特別収容プロトコル';
-            case 'SCRIPTING_2': return 'フェーズ2: 説明(前半)';
-            case 'SCRIPTING_3': return 'フェーズ3: 説明(後半)';
-            case 'SCRIPTING_4': return 'フェーズ4: 結論 & タイトル';
-            default: return '執筆フェーズ';
+            case 'SCRIPTING_1': return 'Phase 1: Containment Procedures';
+            case 'SCRIPTING_2': return 'Phase 2: Description (Initial)';
+            case 'SCRIPTING_3': return 'Phase 3: Description (Analysis)';
+            case 'SCRIPTING_4': return 'Phase 4: Conclusion & Designation';
+            default: return 'Writing Phase';
         }
     };
 
     const getInstruction = () => {
         switch (phase) {
-            case 'SCRIPTING_1': return 'このオブジェクトの特別収容プロトコルを執筆してください。';
-            case 'SCRIPTING_2': return '説明の最初の部分（外見、基本的性質など）を執筆してください。';
-            case 'SCRIPTING_3': return '説明の後半部分（異常性、実験記録など）を執筆してください。';
-            case 'SCRIPTING_4': return '結論や補遺を執筆し、オブジェクトにタイトルを付けてください。';
+            case 'SCRIPTING_1': return 'Draft Special Containment Procedures.';
+            case 'SCRIPTING_2': return 'Describe physical appearance and basic properties.';
+            case 'SCRIPTING_3': return 'Detail anomalous effects and test logs.';
+            case 'SCRIPTING_4': return 'Provide conclusion/addendum and assign designation.';
             default: return '';
         }
     };
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white p-4">
-            <div className="w-full max-w-6xl bg-gray-800 p-6 rounded-lg shadow-lg flex flex-col md:flex-row gap-6">
+        <div className="flex flex-col items-center justify-center min-h-screen p-4 font-mono">
+            <div className="w-full max-w-7xl border-2 border-scp-green bg-black/95 p-6 relative shadow-[0_0_20px_rgba(0,255,65,0.1)] flex flex-col md:flex-row gap-6 h-[90vh]">
 
                 {/* Left Panel: Context (Constraints & Previous Parts) */}
-                <div className="w-full md:w-1/3 space-y-6 overflow-y-auto max-h-[80vh] pr-2">
-                    <div className="bg-gray-700 p-4 rounded border border-gray-600">
-                        <h3 className="text-lg font-bold text-yellow-400 mb-2">制約</h3>
-                        <div className="mb-2">
-                            <span className="text-xs text-gray-400 uppercase">キーワード</span>
-                            <div className="mt-1 text-sm text-blue-200 font-medium">
+                <div className="w-full md:w-1/3 space-y-6 overflow-y-auto pr-2 border-r border-scp-green/30 custom-scrollbar">
+                    <div className="border border-scp-green/50 p-4 bg-scp-green/5">
+                        <h3 className="text-lg font-bold text-scp-green mb-4 uppercase border-b border-scp-green/30 pb-1">
+                            Directives
+                        </h3>
+                        <div className="mb-4">
+                            <span className="text-xs text-scp-green-dim uppercase tracking-widest">Keywords</span>
+                            <div className="mt-1 text-sm text-scp-text font-bold border border-scp-green/30 p-2 bg-black">
                                 {assignedReport.selectedKeywords.join(', ')}
                             </div>
                         </div>
-                        <div className="mb-2">
-                            <span className="text-xs text-gray-400 uppercase">公開制約</span>
-                            <ul className="list-disc list-inside font-medium text-sm">
+                        <div className="mb-4">
+                            <span className="text-xs text-scp-green-dim uppercase tracking-widest">Public Classification</span>
+                            <ul className="space-y-2 mt-2">
                                 {assignedReport.constraint.publicDescriptions.map((desc, i) => (
-                                    <li key={i}>
-                                        <span className="font-bold text-yellow-200">
-                                            {["Object class", "SCPの性質", "観測時の特徴", "財団による対応"][i]}:
-                                        </span> {desc}
+                                    <li key={i} className="text-xs">
+                                        <span className="font-bold text-scp-green uppercase block mb-1">
+                                            {["Object Class", "Properties", "Observation", "Containment"][i]}
+                                        </span>
+                                        <span className="text-scp-text block pl-2 border-l border-scp-green/30">
+                                            {desc}
+                                        </span>
                                     </li>
                                 ))}
                             </ul>
                         </div>
                         {phase === 'SCRIPTING_4' && (
-                            <div>
-                                <span className="text-xs text-gray-400 uppercase">非公開制約</span>
-                                <p className="font-medium text-pink-400">{assignedReport.constraint.hiddenDescription}</p>
+                            <div className="border border-scp-red/50 bg-scp-red/10 p-3 mt-4">
+                                <span className="text-xs text-scp-red uppercase tracking-widest block mb-1">Clearance Level 4</span>
+                                <p className="font-bold text-scp-red animate-pulse text-sm">{assignedReport.constraint.hiddenDescription}</p>
                             </div>
                         )}
                     </div>
 
-                    <div className="bg-gray-700 p-4 rounded border border-gray-600 space-y-4">
-                        <h3 className="text-lg font-bold text-blue-400">現在のレポート</h3>
+                    <div className="border border-scp-green/50 p-4 bg-scp-green/5 space-y-4">
+                        <h3 className="text-lg font-bold text-scp-green uppercase border-b border-scp-green/30 pb-1">
+                            Current File
+                        </h3>
 
                         {phase !== 'SCRIPTING_1' && (
                             <div>
-                                <h4 className="text-sm font-bold text-gray-400">特別収容プロトコル</h4>
-                                <p className="text-sm bg-gray-800 p-2 rounded mt-1 whitespace-pre-wrap">{assignedReport.containmentProcedures}</p>
+                                <h4 className="text-xs font-bold text-scp-green-dim uppercase mb-1">Special Containment Procedures</h4>
+                                <div className="text-sm bg-black border border-scp-green/30 p-3 text-scp-text whitespace-pre-wrap font-mono">
+                                    {assignedReport.containmentProcedures}
+                                </div>
                             </div>
                         )}
 
                         {(phase === 'SCRIPTING_3' || phase === 'SCRIPTING_4') && (
                             <div>
-                                <h4 className="text-sm font-bold text-gray-400">説明(前半)</h4>
-                                <p className="text-sm bg-gray-800 p-2 rounded mt-1 whitespace-pre-wrap">{assignedReport.descriptionEarly}</p>
+                                <h4 className="text-xs font-bold text-scp-green-dim uppercase mb-1">Description (Part 1)</h4>
+                                <div className="text-sm bg-black border border-scp-green/30 p-3 text-scp-text whitespace-pre-wrap font-mono">
+                                    {assignedReport.descriptionEarly}
+                                </div>
                             </div>
                         )}
 
                         {phase === 'SCRIPTING_4' && (
                             <div>
-                                <h4 className="text-sm font-bold text-gray-400">説明(後半)</h4>
-                                <p className="text-sm bg-gray-800 p-2 rounded mt-1 whitespace-pre-wrap">{assignedReport.descriptionLate}</p>
+                                <h4 className="text-xs font-bold text-scp-green-dim uppercase mb-1">Description (Part 2)</h4>
+                                <div className="text-sm bg-black border border-scp-green/30 p-3 text-scp-text whitespace-pre-wrap font-mono">
+                                    {assignedReport.descriptionLate}
+                                </div>
                             </div>
                         )}
                     </div>
                 </div>
 
                 {/* Right Panel: Writing Area */}
-                <div className="w-full md:w-2/3 flex flex-col">
-                    <div className="flex justify-between items-center mb-4">
-                        <h2 className="text-2xl font-bold text-purple-400">{getPhaseTitle()}</h2>
-                        <div className={`text-xl font-mono ${timer.isBlinking ? 'animate-pulse text-red-500' : 'text-green-400'}`}>
-                            {Math.floor(timer.remaining / 60)}:{(timer.remaining % 60).toString().padStart(2, '0')}
+                <div className="w-full md:w-2/3 flex flex-col h-full">
+                    <div className="flex justify-between items-end mb-6 border-b border-scp-green pb-4">
+                        <h2 className="text-2xl font-bold text-scp-green uppercase tracking-widest">{getPhaseTitle()}</h2>
+                        <div className={`text-xl font-bold ${timer.isBlinking ? 'text-scp-red animate-pulse' : 'text-scp-green'}`}>
+                            T-{Math.floor(timer.remaining / 60)}:{(timer.remaining % 60).toString().padStart(2, '0')}
                         </div>
                     </div>
 
-                    <p className="text-gray-300 mb-4">{getInstruction()}</p>
+                    <p className="text-scp-green-dim mb-4 uppercase text-sm tracking-wider">{getInstruction()}</p>
 
                     {!isSubmitted ? (
-                        <div className="flex-1 flex flex-col gap-4">
+                        <div className="flex-1 flex flex-col gap-4 min-h-0">
                             {phase === 'SCRIPTING_4' && (
                                 <div>
-                                    <label className="block text-sm text-gray-400 mb-1">SCPタイトル (例: "泣き虫天使")</label>
+                                    <label className="block text-xs text-scp-green uppercase tracking-widest mb-2">SCP Designation (Title)</label>
                                     <input
                                         type="text"
                                         value={title}
                                         onChange={(e) => setTitle(e.target.value)}
-                                        className="w-full p-3 bg-gray-700 rounded border border-gray-600 focus:outline-none focus:border-purple-500"
-                                        placeholder="タイトルを入力"
+                                        className="w-full p-3 bg-black border border-scp-green text-scp-green placeholder-scp-green-dim focus:outline-none focus:bg-scp-green/10 uppercase font-mono"
+                                        placeholder="ENTER DESIGNATION..."
                                     />
                                 </div>
                             )}
-                            <div className="flex-1">
-                                <label className="block text-sm text-gray-400 mb-1">本文</label>
+                            <div className="flex-1 flex flex-col min-h-0">
+                                <label className="block text-xs text-scp-green uppercase tracking-widest mb-2">Data Entry</label>
                                 <textarea
                                     value={content}
                                     onChange={(e) => setContent(e.target.value)}
-                                    className="w-full h-64 p-4 bg-gray-700 rounded border border-gray-600 focus:outline-none focus:border-purple-500 resize-none font-mono"
-                                    placeholder="ここに執筆..."
+                                    className="flex-1 w-full p-4 bg-black border border-scp-green text-scp-green placeholder-scp-green-dim focus:outline-none focus:bg-scp-green/5 resize-none font-mono leading-relaxed"
+                                    placeholder="Begin typing..."
                                 />
                             </div>
                             <button
                                 onClick={handleSubmit}
                                 disabled={!content.trim() || (phase === 'SCRIPTING_4' && !title.trim())}
-                                className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-4 rounded transition duration-200 disabled:opacity-50"
+                                className="w-full bg-scp-green text-black font-bold py-4 px-6 uppercase tracking-widest hover:bg-white transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed mt-4"
                             >
-                                送信
+                                Submit Entry
                             </button>
                         </div>
                     ) : (
-                        <div className="flex-1 flex flex-col items-center justify-center bg-gray-800 rounded border border-gray-700">
-                            <div className="text-green-500 text-xl mb-4">✓ 送信済み</div>
-                            <p className="text-gray-400">他のプレイヤーを待っています...</p>
-                            <div className="mt-4 flex justify-center space-x-2">
+                        <div className="flex-1 flex flex-col items-center justify-center border border-scp-green/30 bg-scp-green/5">
+                            <div className="text-scp-green text-xl mb-4 uppercase tracking-widest animate-pulse">
+                                {">> Entry Submitted <<"}
+                            </div>
+                            <p className="text-scp-green-dim uppercase text-sm">Awaiting team synchronization...</p>
+                            <div className="mt-6 flex justify-center space-x-2">
                                 {gameState.users.map(u => (
                                     <div
                                         key={u.id}
-                                        className={`w-3 h-3 rounded-full ${gameState.readyStates[u.id] ? 'bg-green-500' : 'bg-gray-600'}`}
+                                        className={`w-3 h-3 ${gameState.readyStates[u.id] ? 'bg-scp-green shadow-[0_0_5px_#00ff41]' : 'bg-scp-border'}`}
                                         title={u.name}
                                     ></div>
                                 ))}
@@ -204,9 +219,9 @@ export default function Scripting({ socket, gameState }: ScriptingProps) {
                             {isHost && allReady && (
                                 <button
                                     onClick={handleNextPhase}
-                                    className="mt-8 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded transition duration-200 animate-bounce"
+                                    className="mt-8 bg-scp-red text-black font-bold py-4 px-6 uppercase tracking-widest hover:bg-red-600 transition-colors duration-200"
                                 >
-                                    次のフェーズへ
+                                    Proceed to Next Phase
                                 </button>
                             )}
                         </div>

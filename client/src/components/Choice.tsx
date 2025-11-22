@@ -18,13 +18,11 @@ export default function Choice({ socket, gameState }: ChoiceProps) {
     useEffect(() => {
         if (socket.id && gameState.readyStates[socket.id]) {
             setIsSubmitted(true);
-            // If we had a way to know which ones were selected from server, we would set them here
-            // But for now, we just show submitted state
         }
     }, [gameState.readyStates, socket.id]);
 
     if (!myReport) {
-        return <div className="text-white">Loading your data...</div>;
+        return <div className="text-scp-green font-mono p-8 animate-pulse">Accessing Database...</div>;
     }
 
     const toggleSelection = (index: number) => {
@@ -56,62 +54,82 @@ export default function Choice({ socket, gameState }: ChoiceProps) {
     const allReady = gameState.users.every(u => gameState.readyStates[u.id]);
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white p-4">
-            <div className="w-full max-w-4xl bg-gray-800 p-8 rounded-lg shadow-lg">
-                <div className="flex justify-between items-center mb-6">
-                    <h2 className="text-2xl font-bold text-purple-400">選択フェーズ</h2>
-                    <div className={`text-xl font-mono ${timer.isBlinking ? 'animate-pulse text-red-500' : 'text-green-400'}`}>
-                        Time: {Math.floor(timer.remaining / 60)}:{(timer.remaining % 60).toString().padStart(2, '0')}
+        <div className="flex flex-col items-center justify-center min-h-screen p-4 font-mono">
+            <div className="w-full max-w-5xl border-2 border-scp-green bg-black/90 p-8 relative shadow-[0_0_20px_rgba(0,255,65,0.1)]">
+                <div className="flex justify-between items-end mb-8 border-b border-scp-green pb-4">
+                    <h2 className="text-2xl font-bold text-scp-green uppercase tracking-widest">
+                        Protocol: Constraint Selection
+                    </h2>
+                    <div className={`text-xl font-bold ${timer.isBlinking ? 'text-scp-red animate-pulse' : 'text-scp-green'}`}>
+                        T-{Math.floor(timer.remaining / 60)}:{(timer.remaining % 60).toString().padStart(2, '0')}
                     </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
                     {/* Constraints Section */}
-                    <div className="bg-gray-700 p-6 rounded-lg border border-gray-600">
-                        <h3 className="text-xl font-bold mb-4 text-yellow-400">あなたの制約</h3>
-                        <div className="mb-4">
-                            <span className="block text-sm text-gray-400 uppercase tracking-wider">公開制約</span>
-                            <ul className="list-disc list-inside text-lg font-medium">
+                    <div className="border border-scp-green/50 p-6 bg-scp-green/5 relative">
+                        <div className="absolute top-0 left-0 bg-scp-green text-black text-xs px-2 py-1 font-bold uppercase">
+                            Assigned Constraints
+                        </div>
+                        <h3 className="text-xl font-bold mb-6 text-scp-green mt-4 uppercase tracking-wider">
+                            Directives
+                        </h3>
+                        <div className="mb-6">
+                            <span className="block text-xs text-scp-green-dim uppercase tracking-widest mb-2 border-b border-scp-green/30 pb-1">
+                                Public Classification
+                            </span>
+                            <ul className="space-y-3 text-sm">
                                 {myReport.constraint.publicDescriptions.map((desc, i) => (
-                                    <li key={i}>
-                                        <span className="font-bold text-yellow-200">
-                                            {["Object class", "SCPの性質", "観測時の特徴", "財団による対応"][i]}:
-                                        </span> {desc}
+                                    <li key={i} className="flex flex-col">
+                                        <span className="font-bold text-scp-green uppercase text-xs">
+                                            {["Object Class", "Properties", "Observation", "Containment"][i]}
+                                        </span>
+                                        <span className="text-scp-text pl-2 border-l-2 border-scp-green/30">
+                                            {desc}
+                                        </span>
                                     </li>
                                 ))}
                             </ul>
                         </div>
                         <div className="mb-4">
-                            <span className="block text-sm text-gray-400 uppercase tracking-wider">非公開制約</span>
-                            <p className="text-lg font-medium text-pink-400">{myReport.constraint.hiddenDescription}</p>
-                            <p className="text-xs text-gray-500 mt-1">あなただけが見ることができます！</p>
+                            <span className="block text-xs text-scp-green-dim uppercase tracking-widest mb-2 border-b border-scp-green/30 pb-1">
+                                Clearance Level 4 Only
+                            </span>
+                            <div className="border border-scp-red/50 bg-scp-red/10 p-3">
+                                <p className="text-lg font-bold text-scp-red animate-pulse">{myReport.constraint.hiddenDescription}</p>
+                                <p className="text-xs text-scp-red mt-2 uppercase tracking-widest">
+                                    [EYES ONLY]
+                                </p>
+                            </div>
                         </div>
                     </div>
 
                     {/* Keywords Selection Section */}
                     <div>
-                        <h3 className="text-xl font-bold mb-4 text-blue-400">キーワードを3つ選択</h3>
-                        <p className="text-gray-300 mb-4">
-                            以下のリストから、レポートに使用するキーワードを3つ選んでください。
+                        <h3 className="text-xl font-bold mb-4 text-scp-green uppercase tracking-wider">
+                            Select 3 Keywords
+                        </h3>
+                        <p className="text-scp-green-dim mb-6 text-sm uppercase">
+                            Identify critical data points for report generation.
                         </p>
-                        <div className="space-y-2">
+                        <div className="space-y-3">
                             {myReport.selectedKeywords.map((keyword, index) => (
                                 <button
                                     key={index}
                                     onClick={() => toggleSelection(index)}
                                     disabled={isSubmitted}
-                                    className={`w-full text-left p-3 rounded transition duration-200 flex justify-between items-center ${selectedIndices.includes(index)
-                                        ? 'bg-blue-600 text-white'
-                                        : 'bg-gray-700 hover:bg-gray-600 text-gray-200'
+                                    className={`w-full text-left p-4 border transition-all duration-200 flex justify-between items-center group ${selectedIndices.includes(index)
+                                        ? 'bg-scp-green text-black border-scp-green font-bold shadow-[0_0_10px_rgba(0,255,65,0.3)]'
+                                        : 'bg-black text-scp-green border-scp-green/30 hover:border-scp-green hover:bg-scp-green/10'
                                         } ${isSubmitted ? 'opacity-50 cursor-not-allowed' : ''}`}
                                 >
-                                    <span>{keyword}</span>
-                                    {selectedIndices.includes(index) && <span>✓</span>}
+                                    <span className="uppercase tracking-wider">{keyword}</span>
+                                    {selectedIndices.includes(index) && <span className="font-bold">[SELECTED]</span>}
                                 </button>
                             ))}
                         </div>
-                        <div className="mt-2 text-right text-sm text-gray-400">
-                            選択済み: {selectedIndices.length}/3
+                        <div className="mt-4 text-right text-sm text-scp-green font-bold">
+                            SELECTED: {selectedIndices.length}/3
                         </div>
                     </div>
                 </div>
@@ -120,19 +138,21 @@ export default function Choice({ socket, gameState }: ChoiceProps) {
                     <button
                         onClick={handleSubmit}
                         disabled={selectedIndices.length !== 3}
-                        className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-4 rounded transition duration-200 disabled:opacity-50"
+                        className="w-full bg-scp-green text-black font-bold py-4 px-6 uppercase tracking-widest hover:bg-white transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed border border-transparent hover:border-scp-green"
                     >
-                        選択を確定
+                        Confirm Selection
                     </button>
                 ) : (
-                    <div className="text-center py-4">
-                        <div className="text-green-500 text-xl mb-2">✓ 選択を確定しました</div>
-                        <p className="text-gray-400">他のプレイヤーを待っています...</p>
+                    <div className="text-center py-4 border border-scp-green/30 bg-scp-green/5">
+                        <div className="text-scp-green text-xl mb-2 uppercase tracking-widest animate-pulse">
+                            {">> Selection Confirmed <<"}
+                        </div>
+                        <p className="text-scp-green-dim uppercase text-sm">Awaiting team synchronization...</p>
                         <div className="mt-4 flex justify-center space-x-2">
                             {gameState.users.map(u => (
                                 <div
                                     key={u.id}
-                                    className={`w-3 h-3 rounded-full ${gameState.readyStates[u.id] ? 'bg-green-500' : 'bg-gray-600'}`}
+                                    className={`w-3 h-3 ${gameState.readyStates[u.id] ? 'bg-scp-green shadow-[0_0_5px_#00ff41]' : 'bg-scp-border'}`}
                                     title={u.name}
                                 ></div>
                             ))}
@@ -143,9 +163,9 @@ export default function Choice({ socket, gameState }: ChoiceProps) {
                 {isHost && allReady && (
                     <button
                         onClick={handleNextPhase}
-                        className="w-full mt-6 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded transition duration-200 animate-bounce"
+                        className="w-full mt-6 bg-scp-red text-black font-bold py-4 px-6 uppercase tracking-widest hover:bg-red-600 transition-colors duration-200"
                     >
-                        執筆開始
+                        Commence Writing Protocol
                     </button>
                 )}
             </div>

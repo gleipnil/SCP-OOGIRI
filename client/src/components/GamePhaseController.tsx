@@ -51,21 +51,25 @@ export default function GamePhaseController() {
     }, []);
 
     if (!isMounted) {
-        return null; // Or a loading spinner that matches server output if possible, but null is safe for client-only
+        return null;
     }
 
     if (!isConnected) {
         return (
-            <div className="flex items-center justify-center min-h-screen bg-gray-900 text-white">
-                <div className="text-xl">Connecting to server...</div>
+            <div className="flex items-center justify-center min-h-screen bg-black text-scp-green font-mono">
+                <div className="text-xl animate-pulse uppercase tracking-widest border border-scp-green p-4 shadow-[0_0_15px_rgba(0,255,65,0.2)]">
+                    Establishing Secure Connection...
+                </div>
             </div>
         );
     }
 
     if (!gameState) {
         return (
-            <div className="flex items-center justify-center min-h-screen bg-gray-900 text-white">
-                <div className="text-xl">Loading game state...</div>
+            <div className="flex items-center justify-center min-h-screen bg-black text-scp-green font-mono">
+                <div className="text-xl animate-pulse uppercase tracking-widest border border-scp-green p-4 shadow-[0_0_15px_rgba(0,255,65,0.2)]">
+                    Synchronizing Database...
+                </div>
             </div>
         );
     }
@@ -89,6 +93,6 @@ export default function GamePhaseController() {
         case 'RESULT':
             return <Result socket={socket} gameState={gameState} />;
         default:
-            return <div className="text-white">Unknown Phase</div>;
+            return <div className="text-scp-red font-mono bg-black min-h-screen flex items-center justify-center uppercase tracking-widest">Unknown Phase Protocol</div>;
     }
 }

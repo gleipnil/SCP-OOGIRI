@@ -43,76 +43,88 @@ export default function Voting({ socket, gameState }: VotingProps) {
     };
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white p-4">
-            <div className="w-full max-w-5xl bg-gray-800 p-8 rounded-lg shadow-lg">
-                <h2 className="text-3xl font-bold text-purple-400 mb-6 text-center">投票フェーズ</h2>
-                <p className="text-gray-300 text-center mb-8">
-                    最も優れたSCPレポートに投票し、非公開制約が満たされているか確認してください。
+        <div className="flex flex-col items-center justify-center min-h-screen p-4 font-mono">
+            <div className="w-full max-w-6xl border-2 border-scp-green bg-black/95 p-8 relative shadow-[0_0_20px_rgba(0,255,65,0.1)]">
+                <h2 className="text-3xl font-bold text-scp-green mb-2 text-center uppercase tracking-widest border-b border-scp-green pb-4">
+                    Voting Protocol
+                </h2>
+                <p className="text-scp-green-dim text-center mb-8 uppercase tracking-wider text-sm">
+                    Evaluate files and verify hidden directive compliance.
                 </p>
 
-                <div className="space-y-8 max-h-[60vh] overflow-y-auto pr-2">
+                <div className="space-y-8 max-h-[60vh] overflow-y-auto pr-4 custom-scrollbar mb-8">
                     {reports.map((report) => {
                         const owner = users.find(u => u.id === report.ownerId);
                         const isMyReport = report.ownerId === socket.id;
+                        const isSelected = bestReportId === report.id;
 
                         return (
-                            <div key={report.id} className="bg-gray-700 p-6 rounded border border-gray-600">
-                                <div className="flex justify-between items-start mb-4">
+                            <div key={report.id} className={`border ${isSelected ? 'border-scp-green bg-scp-green/10' : 'border-scp-green/30 bg-black'} p-6 transition-all duration-200`}>
+                                <div className="flex justify-between items-start mb-6">
                                     <div>
-                                        <h3 className="text-xl font-bold text-white">{report.title || "Untitled"}</h3>
-                                        <p className="text-sm text-gray-400">執筆者: {owner?.name}</p>
+                                        <h3 className="text-xl font-bold text-scp-green uppercase tracking-wider">
+                                            {report.title || "Untitled"}
+                                        </h3>
+                                        <p className="text-xs text-scp-green-dim uppercase tracking-widest">Author: {owner?.name}</p>
                                     </div>
                                     {!isMyReport && !isSubmitted && (
-                                        <label className="flex items-center space-x-2 cursor-pointer bg-purple-900 p-2 rounded hover:bg-purple-800 transition">
+                                        <label className={`flex items-center space-x-3 cursor-pointer p-3 border ${isSelected ? 'border-scp-green bg-scp-green text-black' : 'border-scp-green text-scp-green hover:bg-scp-green/20'} transition-all duration-200`}>
                                             <input
                                                 type="radio"
                                                 name="bestReport"
                                                 value={report.id}
                                                 checked={bestReportId === report.id}
                                                 onChange={() => setBestReportId(report.id)}
-                                                className="form-radio text-purple-500 h-5 w-5"
+                                                className="hidden"
                                             />
-                                            <span className="font-bold text-purple-200">最も優れたレポートとして投票</span>
+                                            <span className="font-bold uppercase tracking-wider text-sm">
+                                                {isSelected ? '>> VOTE REGISTERED <<' : 'VOTE FOR FILE'}
+                                            </span>
                                         </label>
                                     )}
                                 </div>
 
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 bg-gray-800 p-3 rounded">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 bg-scp-green/5 p-4 border border-scp-green/20">
                                     <div>
-                                        <span className="text-xs text-gray-500 uppercase">公開制約</span>
-                                        <ul className="list-disc list-inside text-sm">
+                                        <span className="text-xs text-scp-green-dim uppercase tracking-widest block mb-2">Public Classification</span>
+                                        <ul className="space-y-1 text-sm">
                                             {report.constraint.publicDescriptions.map((desc, i) => (
-                                                <li key={i}>
-                                                    <span className="font-bold text-yellow-200">
-                                                        {["Object class", "SCPの性質", "観測時の特徴", "財団による対応"][i]}:
-                                                    </span> {desc}
+                                                <li key={i} className="flex flex-col">
+                                                    <span className="font-bold text-scp-green uppercase text-xs">
+                                                        {["Object Class", "Properties", "Observation", "Containment"][i]}
+                                                    </span>
+                                                    <span className="text-scp-text pl-2 border-l border-scp-green/30 text-xs">
+                                                        {desc}
+                                                    </span>
                                                 </li>
                                             ))}
                                         </ul>
                                     </div>
                                     <div>
-                                        <span className="text-xs text-gray-500 uppercase">非公開制約</span>
-                                        <p className="text-sm text-pink-400">{report.constraint.hiddenDescription}</p>
+                                        <span className="text-xs text-scp-green-dim uppercase tracking-widest block mb-2">Hidden Directive</span>
+                                        <p className="text-sm text-scp-red font-bold border border-scp-red/30 p-2 bg-scp-red/5">
+                                            {report.constraint.hiddenDescription}
+                                        </p>
                                     </div>
                                 </div>
 
                                 {!isMyReport && !isSubmitted && (
-                                    <div className="flex items-center space-x-3 bg-gray-800 p-3 rounded border border-gray-600">
+                                    <div className="flex items-center space-x-3 bg-black p-3 border border-scp-green/30">
                                         <input
                                             type="checkbox"
                                             id={`check-${report.id}`}
                                             checked={constraintChecks[report.id] || false}
                                             onChange={(e) => handleConstraintCheckChange(report.id, e.target.checked)}
-                                            className="form-checkbox text-green-500 h-5 w-5 rounded"
+                                            className="form-checkbox text-scp-green h-5 w-5 rounded bg-black border-scp-green focus:ring-scp-green"
                                         />
-                                        <label htmlFor={`check-${report.id}`} className="text-sm cursor-pointer select-none">
-                                            非公開制約達成？ (達成ならチェック)
+                                        <label htmlFor={`check-${report.id}`} className="text-sm cursor-pointer select-none text-scp-green uppercase tracking-wider">
+                                            Directive Compliant? (Check if Yes)
                                         </label>
                                     </div>
                                 )}
                                 {isMyReport && (
-                                    <div className="text-sm text-gray-500 italic text-center">
-                                        自分のレポートには投票できません。
+                                    <div className="text-xs text-scp-green-dim italic text-center uppercase tracking-widest border border-scp-green/10 p-2">
+                                        [Self-Voting Prohibited]
                                     </div>
                                 )}
                             </div>
@@ -124,19 +136,21 @@ export default function Voting({ socket, gameState }: VotingProps) {
                     <button
                         onClick={handleSubmit}
                         disabled={!bestReportId}
-                        className="w-full mt-8 bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-4 rounded transition duration-200 disabled:opacity-50"
+                        className="w-full bg-scp-green text-black font-bold py-4 px-6 uppercase tracking-widest hover:bg-white transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                        投票を送信
+                        Submit Evaluation
                     </button>
                 ) : (
-                    <div className="mt-8 text-center">
-                        <div className="text-green-500 text-xl mb-4">✓ 投票を送信しました</div>
-                        <p className="text-gray-400">他のプレイヤーを待っています...</p>
+                    <div className="mt-8 text-center border border-scp-green/30 bg-scp-green/5 p-6">
+                        <div className="text-scp-green text-xl mb-4 uppercase tracking-widest animate-pulse">
+                            {">> Evaluation Submitted <<"}
+                        </div>
+                        <p className="text-scp-green-dim uppercase text-sm">Awaiting consensus...</p>
                         <div className="mt-4 flex justify-center space-x-2">
                             {gameState.users.map(u => (
                                 <div
                                     key={u.id}
-                                    className={`w-3 h-3 rounded-full ${gameState.readyStates[u.id] ? 'bg-green-500' : 'bg-gray-600'}`}
+                                    className={`w-3 h-3 ${gameState.readyStates[u.id] ? 'bg-scp-green shadow-[0_0_5px_#00ff41]' : 'bg-scp-border'}`}
                                     title={u.name}
                                 ></div>
                             ))}
@@ -144,9 +158,9 @@ export default function Voting({ socket, gameState }: VotingProps) {
                         {isHost && allReady && (
                             <button
                                 onClick={handleNextPhase}
-                                className="w-full mt-6 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded transition duration-200 animate-bounce"
+                                className="w-full mt-6 bg-scp-red text-black font-bold py-4 px-6 uppercase tracking-widest hover:bg-red-600 transition-colors duration-200"
                             >
-                                結果を表示
+                                Display Final Results
                             </button>
                         )}
                     </div>

@@ -11,6 +11,14 @@ const config: Config = {
             colors: {
                 background: "var(--background)",
                 foreground: "var(--foreground)",
+                'scp-black': '#050505',
+                'scp-green': '#00ff41',
+                'scp-green-dim': '#008F11',
+                'scp-red': '#ff3333',
+                'scp-border': '#333333',
+            },
+            fontFamily: {
+                mono: ['var(--font-share-tech-mono)', 'monospace'],
             },
         },
     },

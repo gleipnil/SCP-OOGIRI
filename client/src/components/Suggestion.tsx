@@ -47,43 +47,49 @@ export default function Suggestion({ socket, gameState }: SuggestionProps) {
     const allReady = gameState.users.every(u => gameState.readyStates[u.id]);
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white p-4">
-            <div className="w-full max-w-2xl bg-gray-800 p-8 rounded-lg shadow-lg">
-                <div className="flex justify-between items-center mb-6">
-                    <h2 className="text-2xl font-bold text-purple-400">お題フェーズ</h2>
-                    <div className={`text-xl font-mono ${timer.isBlinking ? 'animate-pulse text-red-500' : 'text-green-400'}`}>
-                        Time: {Math.floor(timer.remaining / 60)}:{(timer.remaining % 60).toString().padStart(2, '0')}
+        <div className="flex flex-col items-center justify-center min-h-screen p-4 font-mono">
+            <div className="w-full max-w-2xl border-2 border-scp-green bg-black/90 p-8 relative shadow-[0_0_20px_rgba(0,255,65,0.1)]">
+                <div className="flex justify-between items-end mb-8 border-b border-scp-green pb-4">
+                    <h2 className="text-2xl font-bold text-scp-green uppercase tracking-widest">
+                        Protocol: Keyword Entry
+                    </h2>
+                    <div className={`text-xl font-bold ${timer.isBlinking ? 'text-scp-red animate-pulse' : 'text-scp-green'}`}>
+                        T-{Math.floor(timer.remaining / 60)}:{(timer.remaining % 60).toString().padStart(2, '0')}
                     </div>
                 </div>
 
                 {!isSubmitted ? (
                     <div>
-                        <p className="text-gray-300 mb-4">お題となるキーワードを5個提案してください。</p>
+                        <p className="text-scp-green-dim mb-4 uppercase tracking-wider text-sm">
+                            Input 5 keywords for database seeding.
+                        </p>
 
-                        <div className="flex gap-2 mb-4">
+                        <div className="flex gap-0 mb-6">
                             <input
                                 type="text"
                                 value={input}
                                 onChange={(e) => setInput(e.target.value)}
                                 onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
-                                placeholder="キーワードを入力"
-                                className="flex-1 p-3 bg-gray-700 rounded border border-gray-600 focus:outline-none focus:border-purple-500"
+                                placeholder="INPUT DATA..."
+                                className="flex-1 p-3 bg-black border border-scp-green text-scp-green placeholder-scp-green-dim focus:outline-none focus:bg-scp-green/10 uppercase"
                             />
                             <button
                                 onClick={handleAdd}
-                                className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-200"
+                                className="bg-scp-green text-black font-bold py-2 px-6 hover:bg-white transition-colors duration-200 uppercase tracking-wider"
                             >
-                                追加
+                                Add
                             </button>
                         </div>
 
-                        <div className="mb-6">
-                            <h3 className="text-sm font-bold text-gray-400 mb-2">あなたのお題 ({suggestions.length}/5)</h3>
+                        <div className="mb-8">
+                            <h3 className="text-xs font-bold text-scp-green mb-2 uppercase tracking-widest border-b border-scp-green/30 pb-1">
+                                Buffer Content ({suggestions.length}/5)
+                            </h3>
                             <div className="flex flex-wrap gap-2">
                                 {suggestions.map((s, i) => (
-                                    <div key={i} className="bg-gray-700 px-3 py-1 rounded flex items-center gap-2">
-                                        <span>{s}</span>
-                                        <button onClick={() => removeSuggestion(i)} className="text-red-400 hover:text-red-300">×</button>
+                                    <div key={i} className="border border-scp-green/50 px-3 py-1 flex items-center gap-2 bg-scp-green/5">
+                                        <span className="text-scp-green uppercase">{s}</span>
+                                        <button onClick={() => removeSuggestion(i)} className="text-scp-red hover:text-red-400 font-bold px-1">×</button>
                                     </div>
                                 ))}
                             </div>
@@ -92,20 +98,22 @@ export default function Suggestion({ socket, gameState }: SuggestionProps) {
                         <button
                             onClick={handleSubmit}
                             disabled={suggestions.length < 3}
-                            className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-4 rounded transition duration-200 disabled:opacity-50"
+                            className="w-full bg-scp-green text-black font-bold py-3 px-4 uppercase tracking-widest hover:bg-white transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                            お題を送信
+                            Upload Data
                         </button>
                     </div>
                 ) : (
-                    <div className="text-center py-8">
-                        <div className="text-green-500 text-xl mb-4">✓ お題を送信しました</div>
-                        <p className="text-gray-400">他のプレイヤーを待っています...</p>
-                        <div className="mt-4 flex justify-center space-x-2">
+                    <div className="text-center py-8 border border-scp-green/30 bg-scp-green/5">
+                        <div className="text-scp-green text-xl mb-4 uppercase tracking-widest animate-pulse">
+                            {">> Data Upload Complete <<"}
+                        </div>
+                        <p className="text-scp-green-dim uppercase text-sm">Awaiting synchronization...</p>
+                        <div className="mt-6 flex justify-center space-x-2">
                             {gameState.users.map(u => (
                                 <div
                                     key={u.id}
-                                    className={`w-3 h-3 rounded-full ${gameState.readyStates[u.id] ? 'bg-green-500' : 'bg-gray-600'}`}
+                                    className={`w-3 h-3 ${gameState.readyStates[u.id] ? 'bg-scp-green shadow-[0_0_5px_#00ff41]' : 'bg-scp-border'}`}
                                     title={u.name}
                                 ></div>
                             ))}
@@ -116,9 +124,9 @@ export default function Suggestion({ socket, gameState }: SuggestionProps) {
                 {isHost && allReady && (
                     <button
                         onClick={handleNextPhase}
-                        className="w-full mt-4 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded transition duration-200 animate-bounce"
+                        className="w-full mt-6 bg-scp-red text-black font-bold py-3 px-4 uppercase tracking-widest hover:bg-red-600 transition-colors duration-200"
                     >
-                        次のフェーズへ
+                        Initiate Next Phase
                     </button>
                 )}
             </div>
