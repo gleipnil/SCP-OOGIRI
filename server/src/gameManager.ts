@@ -35,34 +35,62 @@ export class GameManager {
         return this.state;
     }
 
-    public addUser(socketId: string, name: string) {
-        const existingUser = this.state.users.find(u => u.id === socketId);
-        if (existingUser) return;
+    public addUser(socketId: string, name: string, userId: string) {
+        const existingUser = this.state.users.find(u => u.userId === userId);
+        if (existingUser) {
+            // User exists, update socket ID and connection status
+            existingUser.id = socketId;
+            existingUser.isConnected = true;
+            existingUser.name = name; // Update name if changed
+            this.broadcastState();
+            return;
+        }
+
+        if (this.state.phase !== 'LOBBY') {
+            this.io.to(socketId).emit('join_error', 'Protocol Active: Access Denied. Operation in progress.');
+            return;
+        }
+
+        if (this.state.users.length >= 4) {
+            this.io.to(socketId).emit('join_error', 'Capacity Reached: Team Full. Access Denied.');
+            return;
+        }
 
         const newUser: User = {
             id: socketId,
+            userId,
             name,
             isHost: this.state.users.length === 0,
             score: 0,
+            isConnected: true,
         };
         this.state.users.push(newUser);
         this.broadcastState();
     }
 
-    public removeUser(socketId: string) {
-        this.state.users = this.state.users.filter(u => u.id !== socketId);
-        if (this.state.users.length > 0 && !this.state.users.some(u => u.isHost)) {
-            this.state.users[0].isHost = true;
+    public rejoinGame(socketId: string, userId: string) {
+        const existingUser = this.state.users.find(u => u.userId === userId);
+        if (existingUser) {
+            existingUser.id = socketId;
+            existingUser.isConnected = true;
+            this.broadcastState();
         }
-        // If game is in progress, we might need to handle it, but for MVP we just let it be or reset
-        if (this.state.users.length === 0) {
-            this.resetGame();
+    }
+
+    public removeUser(socketId: string) {
+        const user = this.state.users.find(u => u.id === socketId);
+        if (user) {
+            user.isConnected = false;
+            // We don't remove the user from the list to allow reconnection
+            // But if they are in LOBBY and not started, maybe we should?
+            // For now, let's keep them to support reload in lobby too.
         }
         this.broadcastState();
     }
 
     public startGame() {
         if (this.state.phase !== 'LOBBY') return;
+        if (this.state.users.length !== 4) return;
         this.changePhase('SUGGESTION');
         this.startTimer(180); // 3 minutes for suggestion
     }

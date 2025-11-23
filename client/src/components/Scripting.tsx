@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Socket } from 'socket.io-client';
 import { GameState, GamePhase } from '../types';
+import PlayerStatusPanel from './PlayerStatusPanel';
 
 interface ScriptingProps {
     socket: Socket;
@@ -161,10 +162,16 @@ export default function Scripting({ socket, gameState }: ScriptingProps) {
 
                 {/* Right Panel: Writing Area */}
                 <div className="w-full md:w-2/3 flex flex-col h-full">
+
+                    // ... (inside component)
+
                     <div className="flex justify-between items-end mb-6 border-b border-scp-green pb-4">
                         <h2 className="text-2xl font-bold text-scp-green uppercase tracking-widest">{getPhaseTitle()}</h2>
-                        <div className={`text-xl font-bold ${timer.isBlinking ? 'text-scp-red animate-pulse' : 'text-scp-green'}`}>
-                            T-{Math.floor(timer.remaining / 60)}:{(timer.remaining % 60).toString().padStart(2, '0')}
+                        <div className="flex items-end">
+                            <PlayerStatusPanel gameState={gameState} />
+                            <div className={`text-xl font-bold ml-6 ${timer.isBlinking ? 'text-scp-red animate-pulse' : 'text-scp-green'}`}>
+                                T-{Math.floor(timer.remaining / 60)}:{(timer.remaining % 60).toString().padStart(2, '0')}
+                            </div>
                         </div>
                     </div>
 

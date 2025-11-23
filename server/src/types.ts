@@ -1,9 +1,11 @@
 export interface User {
-    id: string;
+    id: string; // Socket ID (ephemeral)
+    userId: string; // Persistent ID
     name: string;
     isHost: boolean;
     score: number;
     avatar?: string;
+    isConnected: boolean;
 }
 
 export interface Constraint {

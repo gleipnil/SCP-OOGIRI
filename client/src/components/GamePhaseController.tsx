@@ -22,6 +22,12 @@ export default function GamePhaseController() {
         function onConnect() {
             console.log('Socket connected:', socket.id);
             setIsConnected(true);
+
+            // Auto-rejoin if session exists
+            const userId = localStorage.getItem('scp_user_id');
+            if (userId) {
+                socket.emit('rejoin_game', userId);
+            }
         }
 
         function onDisconnect() {

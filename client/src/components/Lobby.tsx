@@ -11,9 +11,28 @@ export default function Lobby({ socket, gameState }: LobbyProps) {
     const [name, setName] = useState('');
     const [isJoined, setIsJoined] = useState(false);
 
+    const [error, setError] = useState('');
+
+    React.useEffect(() => {
+        const onJoinError = (msg: string) => {
+            setError(msg);
+            setIsJoined(false);
+        };
+        socket.on('join_error', onJoinError);
+        return () => {
+            socket.off('join_error', onJoinError);
+        };
+    }, [socket]);
+
     const handleJoin = () => {
         if (name.trim()) {
-            socket.emit('join_game', name);
+            setError(''); // Clear previous errors
+            let userId = localStorage.getItem('scp_user_id');
+            if (!userId) {
+                userId = crypto.randomUUID();
+                localStorage.setItem('scp_user_id', userId);
+            }
+            socket.emit('join_game', { name, userId });
             setIsJoined(true);
         }
     };
@@ -41,6 +60,11 @@ export default function Lobby({ socket, gameState }: LobbyProps) {
                 {!isJoined ? (
                     <div className="flex flex-col gap-6">
                         <div className="flex flex-col gap-2">
+                            {error && (
+                                <div className="text-scp-red border border-scp-red p-3 bg-scp-red/10 text-sm uppercase tracking-widest animate-pulse mb-2">
+                                    ! {error}
+                                </div>
+                            )}
                             <label className="text-scp-green text-sm uppercase tracking-wider">Identify Personnel</label>
                             <input
                                 type="text"
@@ -92,7 +116,7 @@ export default function Lobby({ socket, gameState }: LobbyProps) {
                         {isHost ? (
                             <button
                                 onClick={handleStart}
-                                disabled={gameState.users.length < 2}
+                                disabled={gameState.users.length !== 4}
                                 className="w-full bg-scp-red text-black font-bold py-4 px-6 uppercase tracking-widest hover:bg-red-600 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 Execute Protocol

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Socket } from 'socket.io-client';
 import { GameState } from '../types';
+import PlayerStatusPanel from './PlayerStatusPanel';
 
 interface SuggestionProps {
     socket: Socket;
@@ -49,12 +50,21 @@ export default function Suggestion({ socket, gameState }: SuggestionProps) {
     return (
         <div className="flex flex-col items-center justify-center min-h-screen p-4 font-mono">
             <div className="w-full max-w-2xl border-2 border-scp-green bg-black/90 p-8 relative shadow-[0_0_20px_rgba(0,255,65,0.1)]">
+
+                // ... (inside component)
+
                 <div className="flex justify-between items-end mb-8 border-b border-scp-green pb-4">
-                    <h2 className="text-2xl font-bold text-scp-green uppercase tracking-widest">
-                        Protocol: Keyword Entry
-                    </h2>
-                    <div className={`text-xl font-bold ${timer.isBlinking ? 'text-scp-red animate-pulse' : 'text-scp-green'}`}>
-                        T-{Math.floor(timer.remaining / 60)}:{(timer.remaining % 60).toString().padStart(2, '0')}
+                    <div>
+                        <h2 className="text-2xl font-bold text-scp-green uppercase tracking-widest">
+                            Protocol: Keyword Entry
+                        </h2>
+                    </div>
+
+                    <div className="flex items-end">
+                        <PlayerStatusPanel gameState={gameState} />
+                        <div className={`text-xl font-bold ml-6 ${timer.isBlinking ? 'text-scp-red animate-pulse' : 'text-scp-green'}`}>
+                            T-{Math.floor(timer.remaining / 60)}:{(timer.remaining % 60).toString().padStart(2, '0')}
+                        </div>
                     </div>
                 </div>
 

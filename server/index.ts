@@ -23,8 +23,12 @@ io.on('connection', (socket) => {
     // Send current state to new user
     socket.emit('game_state_update', gameManager.getState());
 
-    socket.on('join_game', (name: string) => {
-        gameManager.addUser(socket.id, name);
+    socket.on('join_game', (data: { name: string, userId: string }) => {
+        gameManager.addUser(socket.id, data.name, data.userId);
+    });
+
+    socket.on('rejoin_game', (userId: string) => {
+        gameManager.rejoinGame(socket.id, userId);
     });
 
     socket.on('start_game', () => {
