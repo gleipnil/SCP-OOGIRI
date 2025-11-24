@@ -90,7 +90,7 @@ export class GameManager {
 
     public startGame() {
         if (this.state.phase !== 'LOBBY') return;
-        if (this.state.users.length !== 4) return;
+        if (this.state.users.length < 3 || this.state.users.length > 4) return;
         this.changePhase('SUGGESTION');
         this.startTimer(180); // 3 minutes for suggestion
     }
@@ -180,7 +180,11 @@ export class GameManager {
                 this.startTimer(300);
                 break;
             case 'SCRIPTING_2':
-                this.changePhase('SCRIPTING_3');
+                if (this.state.users.length === 3) {
+                    this.changePhase('SCRIPTING_4');
+                } else {
+                    this.changePhase('SCRIPTING_3');
+                }
                 this.startTimer(300);
                 break;
             case 'SCRIPTING_3':
@@ -318,6 +322,11 @@ export class GameManager {
         if (phase === 'SCRIPTING_2') offset = 2;
         if (phase === 'SCRIPTING_3') offset = 3;
         if (phase === 'SCRIPTING_4') offset = 0;
+
+        // For 3 players, we skip phase 3, so offset logic remains consistent for 1, 2, and 4 (0).
+        // Phase 1 (Offset 1): i writes for i-1.
+        // Phase 2 (Offset 2): i writes for i-2.
+        // Phase 4 (Offset 0): i writes for i.
 
         // Logic: User I writes for Report (I - offset)
         // Example: User 1 (Index 1) in Scripting 1 (Offset 1) writes for Report 0.

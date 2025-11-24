@@ -106,7 +106,9 @@ export default function Presentation({ socket, gameState }: PresentationProps) {
                                 Description
                             </h3>
                             <p className="whitespace-pre-wrap mb-4 leading-relaxed">{currentReport.descriptionEarly}</p>
-                            <p className="whitespace-pre-wrap leading-relaxed">{currentReport.descriptionLate}</p>
+                            {currentReport.descriptionLate && (
+                                <p className="whitespace-pre-wrap leading-relaxed">{currentReport.descriptionLate}</p>
+                            )}
                         </div>
 
                         <div>

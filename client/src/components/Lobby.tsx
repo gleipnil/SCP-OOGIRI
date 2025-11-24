@@ -116,7 +116,7 @@ export default function Lobby({ socket, gameState }: LobbyProps) {
                         {isHost ? (
                             <button
                                 onClick={handleStart}
-                                disabled={gameState.users.length !== 4}
+                                disabled={gameState.users.length < 3 || gameState.users.length > 4}
                                 className="w-full bg-scp-red text-black font-bold py-4 px-6 uppercase tracking-widest hover:bg-red-600 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 Execute Protocol
@@ -124,7 +124,9 @@ export default function Lobby({ socket, gameState }: LobbyProps) {
                         ) : (
                             <div className="border border-scp-green/30 p-4 bg-scp-green/5">
                                 <p className="text-scp-green animate-pulse uppercase tracking-widest">
-                                    Waiting for Admin Authorization...
+                                    {gameState.users.length < 3
+                                        ? `Waiting for ${3 - gameState.users.length} more personnel (Min 3 required)...`
+                                        : "Waiting for Admin Authorization..."}
                                 </p>
                             </div>
                         )}

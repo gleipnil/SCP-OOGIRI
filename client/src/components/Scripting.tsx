@@ -68,6 +68,9 @@ export default function Scripting({ socket, gameState }: ScriptingProps) {
     const allReady = gameState.users.every(u => gameState.readyStates[u.id]);
 
     const getPhaseTitle = () => {
+        if (gameState.users.length === 3 && phase === 'SCRIPTING_2') {
+            return 'Phase 2: Description (Complete)';
+        }
         switch (phase) {
             case 'SCRIPTING_1': return 'Phase 1: Containment Procedures';
             case 'SCRIPTING_2': return 'Phase 2: Description (Initial)';
@@ -78,6 +81,9 @@ export default function Scripting({ socket, gameState }: ScriptingProps) {
     };
 
     const getInstruction = () => {
+        if (gameState.users.length === 3 && phase === 'SCRIPTING_2') {
+            return 'Describe physical appearance, properties, and anomalous effects.';
+        }
         switch (phase) {
             case 'SCRIPTING_1': return 'Draft Special Containment Procedures.';
             case 'SCRIPTING_2': return 'Describe physical appearance and basic properties.';
@@ -140,7 +146,7 @@ export default function Scripting({ socket, gameState }: ScriptingProps) {
                             </div>
                         )}
 
-                        {(phase === 'SCRIPTING_3' || phase === 'SCRIPTING_4') && (
+                        {(phase === 'SCRIPTING_3' || (phase === 'SCRIPTING_4' && gameState.users.length === 4)) && (
                             <div>
                                 <h4 className="text-xs font-bold text-scp-green-dim uppercase mb-1">Description (Part 1)</h4>
                                 <div className="text-sm bg-black border border-scp-green/30 p-3 text-scp-text whitespace-pre-wrap font-mono">
@@ -149,7 +155,16 @@ export default function Scripting({ socket, gameState }: ScriptingProps) {
                             </div>
                         )}
 
-                        {phase === 'SCRIPTING_4' && (
+                        {phase === 'SCRIPTING_4' && gameState.users.length === 3 && (
+                            <div>
+                                <h4 className="text-xs font-bold text-scp-green-dim uppercase mb-1">Description</h4>
+                                <div className="text-sm bg-black border border-scp-green/30 p-3 text-scp-text whitespace-pre-wrap font-mono">
+                                    {assignedReport.descriptionEarly}
+                                </div>
+                            </div>
+                        )}
+
+                        {phase === 'SCRIPTING_4' && gameState.users.length === 4 && (
                             <div>
                                 <h4 className="text-xs font-bold text-scp-green-dim uppercase mb-1">Description (Part 2)</h4>
                                 <div className="text-sm bg-black border border-scp-green/30 p-3 text-scp-text whitespace-pre-wrap font-mono">
