@@ -201,7 +201,7 @@ export default function Scripting({ socket, gameState }: ScriptingProps) {
                                         type="text"
                                         value={title}
                                         onChange={(e) => setTitle(e.target.value)}
-                                        className="w-full p-3 bg-black border border-scp-green text-scp-green placeholder-scp-green-dim focus:outline-none focus:bg-scp-green/10 uppercase font-mono"
+                                        className="w-full min-w-0 box-border p-3 bg-black border border-scp-green text-scp-green placeholder-scp-green-dim focus:outline-none focus:bg-scp-green/10 uppercase font-mono"
                                         placeholder="ENTER DESIGNATION..."
                                     />
                                 </div>
@@ -211,7 +211,7 @@ export default function Scripting({ socket, gameState }: ScriptingProps) {
                                 <textarea
                                     value={content}
                                     onChange={(e) => setContent(e.target.value)}
-                                    className="flex-1 w-full p-4 bg-black border border-scp-green text-scp-green placeholder-scp-green-dim focus:outline-none focus:bg-scp-green/5 resize-none font-mono leading-relaxed"
+                                    className="flex-1 w-full min-w-0 box-border p-4 bg-black border border-scp-green text-scp-green placeholder-scp-green-dim focus:outline-none focus:bg-scp-green/5 resize-none font-mono leading-relaxed"
                                     placeholder="Begin typing..."
                                 />
                             </div>

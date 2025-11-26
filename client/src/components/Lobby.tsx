@@ -71,7 +71,7 @@ export default function Lobby({ socket, gameState }: LobbyProps) {
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
                                 placeholder="ENTER CODENAME..."
-                                className="p-4 bg-black border border-scp-green text-scp-green placeholder-scp-green-dim focus:outline-none focus:ring-1 focus:ring-scp-green w-full uppercase"
+                                className="p-4 bg-black border border-scp-green text-scp-green placeholder-scp-green-dim focus:outline-none focus:ring-1 focus:ring-scp-green w-full min-w-0 box-border uppercase"
                                 onKeyDown={(e) => e.key === 'Enter' && handleJoin()}
                             />
                         </div>
