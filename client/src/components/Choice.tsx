@@ -18,7 +18,7 @@ export default function Choice({ socket, gameState }: ChoiceProps) {
     // Recover state
     useEffect(() => {
         if (socket.id && gameState.readyStates[socket.id]) {
-            setIsSubmitted(true);
+            setTimeout(() => setIsSubmitted(true), 0);
         }
     }, [gameState.readyStates, socket.id]);
 
@@ -58,7 +58,7 @@ export default function Choice({ socket, gameState }: ChoiceProps) {
         <div className="flex flex-col items-center justify-center min-h-screen p-4 font-mono">
             <div className="w-full max-w-5xl border-2 border-scp-green bg-black/90 p-8 relative shadow-[0_0_20px_rgba(0,255,65,0.1)]">
 
-                // ... (inside component)
+
 
                 <div className="flex justify-between items-end mb-8 border-b border-scp-green pb-4">
                     <div>

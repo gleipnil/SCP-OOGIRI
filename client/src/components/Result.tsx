@@ -10,7 +10,7 @@ interface ResultProps {
 
 export default function Result({ socket, gameState }: ResultProps) {
     const sortedUsers = [...gameState.users].sort((a, b) => b.score - a.score);
-    const winner = sortedUsers[0];
+
 
     const handleDownloadLog = () => {
         const markdown = generateGameLogMarkdown(gameState);

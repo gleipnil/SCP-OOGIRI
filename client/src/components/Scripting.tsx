@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Socket } from 'socket.io-client';
-import { GameState, GamePhase } from '../types';
+import { GameState } from '../types';
 import PlayerStatusPanel from './PlayerStatusPanel';
 
 interface ScriptingProps {
@@ -29,15 +29,17 @@ export default function Scripting({ socket, gameState }: ScriptingProps) {
 
     // Reset state on phase change
     useEffect(() => {
-        setIsSubmitted(false);
-        setContent('');
-        setTitle('');
+        setTimeout(() => {
+            setIsSubmitted(false);
+            setContent('');
+            setTitle('');
+        }, 0);
     }, [phase]);
 
     // Recover submitted state
     useEffect(() => {
         if (socket.id && gameState.readyStates[socket.id]) {
-            setIsSubmitted(true);
+            setTimeout(() => setIsSubmitted(true), 0);
         }
     }, [gameState.readyStates, socket.id]);
 
@@ -178,7 +180,7 @@ export default function Scripting({ socket, gameState }: ScriptingProps) {
                 {/* Right Panel: Writing Area */}
                 <div className="w-full md:w-2/3 flex flex-col h-full">
 
-                    // ... (inside component)
+
 
                     <div className="flex justify-between items-end mb-6 border-b border-scp-green pb-4">
                         <h2 className="text-2xl font-bold text-scp-green uppercase tracking-widest">{getPhaseTitle()}</h2>

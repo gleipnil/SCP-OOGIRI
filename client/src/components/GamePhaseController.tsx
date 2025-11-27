@@ -16,8 +16,10 @@ export default function GamePhaseController() {
     const [isMounted, setIsMounted] = useState(false);
 
     useEffect(() => {
-        setIsMounted(true);
-        setIsConnected(socket.connected);
+        setTimeout(() => {
+            setIsMounted(true);
+            setIsConnected(socket.connected);
+        }, 0);
 
         function onConnect() {
             console.log('Socket connected:', socket.id);

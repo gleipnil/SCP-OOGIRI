@@ -16,7 +16,7 @@ export default function Voting({ socket, gameState }: VotingProps) {
     // Recover state
     useEffect(() => {
         if (socket.id && gameState.readyStates[socket.id]) {
-            setIsSubmitted(true);
+            setTimeout(() => setIsSubmitted(true), 0);
         }
     }, [gameState.readyStates, socket.id]);
 
