@@ -10,10 +10,13 @@ import Voting from './Voting';
 import Result from './Result';
 // Will import other components as they are created
 
+import { createClient } from '../utils/supabase/client';
+
 export default function GamePhaseController() {
     const [gameState, setGameState] = useState<GameState | null>(null);
     const [isConnected, setIsConnected] = useState(false);
     const [isMounted, setIsMounted] = useState(false);
+    const supabase = createClient();
 
     useEffect(() => {
         setTimeout(() => {
@@ -21,14 +24,14 @@ export default function GamePhaseController() {
             setIsConnected(socket.connected);
         }, 0);
 
-        function onConnect() {
+        async function onConnect() {
             console.log('Socket connected:', socket.id);
             setIsConnected(true);
 
             // Auto-rejoin if session exists
-            const userId = localStorage.getItem('scp_user_id');
-            if (userId) {
-                socket.emit('rejoin_game', userId);
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                socket.emit('rejoin_game', user.id);
             }
         }
 

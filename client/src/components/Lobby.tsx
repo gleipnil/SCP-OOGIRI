@@ -7,13 +7,36 @@ interface LobbyProps {
     gameState: GameState;
 }
 
+import { createClient } from '../utils/supabase/client';
+
 export default function Lobby({ socket, gameState }: LobbyProps) {
     const [name, setName] = useState('');
     const [isJoined, setIsJoined] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
+    const [userId, setUserId] = useState<string | null>(null);
 
     const [error, setError] = useState('');
+    const supabase = createClient();
 
     React.useEffect(() => {
+        const fetchProfile = async () => {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                setUserId(user.id);
+                const { data: profile } = await supabase
+                    .from('profiles')
+                    .select('display_name')
+                    .eq('id', user.id)
+                    .single();
+
+                if (profile?.display_name) {
+                    setName(profile.display_name);
+                }
+            }
+            setIsLoading(false);
+        };
+        fetchProfile();
+
         const onJoinError = (msg: string) => {
             setError(msg);
             setIsJoined(false);
@@ -24,14 +47,17 @@ export default function Lobby({ socket, gameState }: LobbyProps) {
         };
     }, [socket]);
 
-    const handleJoin = () => {
-        if (name.trim()) {
+    const handleJoin = async () => {
+        if (name.trim() && userId) {
             setError(''); // Clear previous errors
-            let userId = localStorage.getItem('scp_user_id');
-            if (!userId) {
-                userId = crypto.randomUUID();
-                localStorage.setItem('scp_user_id', userId);
-            }
+
+            // Update profile in Supabase
+            await supabase.from('profiles').upsert({
+                id: userId,
+                display_name: name,
+                updated_at: new Date().toISOString(),
+            });
+
             socket.emit('join_game', { name, userId });
             setIsJoined(true);
         }
@@ -135,7 +161,7 @@ export default function Lobby({ socket, gameState }: LobbyProps) {
                                 onClick={() => {
                                     if (confirm('Are you sure you want to abort the protocol?')) {
                                         socket.emit('leave_game');
-                                        localStorage.removeItem('scp_user_id');
+                                        // localStorage.removeItem('scp_user_id'); // No longer needed
                                         window.location.reload();
                                     }
                                 }}

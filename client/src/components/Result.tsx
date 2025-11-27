@@ -84,7 +84,7 @@ export default function Result({ socket, gameState }: ResultProps) {
                         onClick={() => {
                             if (confirm('Are you sure you want to terminate this session?')) {
                                 socket.emit('leave_game');
-                                localStorage.removeItem('scp_user_id');
+                                // localStorage.removeItem('scp_user_id'); // No longer needed
                                 window.location.reload();
                             }
                         }}
