@@ -9,9 +9,11 @@ export class GameManager {
     private io: Server;
     private state: GameState;
     private timerInterval: NodeJS.Timeout | null = null;
+    public sessionId: string;
 
-    constructor(io: Server) {
+    constructor(io: Server, sessionId: string) {
         this.io = io;
+        this.sessionId = sessionId;
         this.state = {
             phase: 'LOBBY',
             users: [],
@@ -65,6 +67,13 @@ export class GameManager {
             isConnected: true,
         };
         this.state.users.push(newUser);
+
+        // Join the socket to the session room
+        const socket = this.io.sockets.sockets.get(socketId);
+        if (socket) {
+            socket.join(this.sessionId);
+        }
+
         this.broadcastState();
     }
 
@@ -73,6 +82,13 @@ export class GameManager {
         if (existingUser) {
             existingUser.id = socketId;
             existingUser.isConnected = true;
+
+            // Re-join the socket to the session room
+            const socket = this.io.sockets.sockets.get(socketId);
+            if (socket) {
+                socket.join(this.sessionId);
+            }
+
             this.broadcastState();
         }
     }
@@ -400,7 +416,11 @@ export class GameManager {
         this.state.users.forEach(u => u.score = 0);
     }
 
+    public isEmpty(): boolean {
+        return this.state.users.length === 0;
+    }
+
     private broadcastState() {
-        this.io.emit('game_state_update', this.state);
+        this.io.to(this.sessionId).emit('game_state_update', this.state);
     }
 }
