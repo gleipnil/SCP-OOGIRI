@@ -77,7 +77,20 @@ export default function Result({ socket, gameState }: ResultProps) {
                         onClick={handleBackToTitle}
                         className="bg-transparent border border-scp-green text-scp-green font-bold py-3 px-6 uppercase tracking-widest hover:bg-scp-green hover:text-black transition-colors duration-200"
                     >
-                        Return to Terminal
+                        Next Mission (Lobby)
+                    </button>
+
+                    <button
+                        onClick={() => {
+                            if (confirm('Are you sure you want to terminate this session?')) {
+                                socket.emit('leave_game');
+                                localStorage.removeItem('scp_user_id');
+                                window.location.reload();
+                            }
+                        }}
+                        className="bg-transparent border border-scp-red text-scp-red font-bold py-3 px-6 uppercase tracking-widest hover:bg-scp-red hover:text-black transition-colors duration-200"
+                    >
+                        Terminate Session
                     </button>
                 </div>
             </div>

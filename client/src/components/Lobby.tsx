@@ -113,23 +113,37 @@ export default function Lobby({ socket, gameState }: LobbyProps) {
                             </div>
                         </div>
 
-                        {isHost ? (
+                        <div className="flex flex-col gap-4">
+                            {isHost ? (
+                                <button
+                                    onClick={handleStart}
+                                    disabled={gameState.users.length < 3 || gameState.users.length > 4}
+                                    className="w-full bg-scp-red text-black font-bold py-4 px-6 uppercase tracking-widest hover:bg-red-600 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_10px_rgba(255,0,0,0.3)]"
+                                >
+                                    Execute Protocol (Start)
+                                </button>
+                            ) : (
+                                <div className="border border-scp-green/30 p-4 bg-scp-green/5">
+                                    <p className="text-scp-green animate-pulse uppercase tracking-widest">
+                                        {gameState.users.length < 3
+                                            ? `Waiting for ${3 - gameState.users.length} more personnel (Min 3 required)...`
+                                            : "Waiting for Admin Authorization..."}
+                                    </p>
+                                </div>
+                            )}
                             <button
-                                onClick={handleStart}
-                                disabled={gameState.users.length < 3 || gameState.users.length > 4}
-                                className="w-full bg-scp-red text-black font-bold py-4 px-6 uppercase tracking-widest hover:bg-red-600 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                                onClick={() => {
+                                    if (confirm('Are you sure you want to abort the protocol?')) {
+                                        socket.emit('leave_game');
+                                        localStorage.removeItem('scp_user_id');
+                                        window.location.reload();
+                                    }
+                                }}
+                                className="w-full border border-scp-green text-scp-green font-bold py-3 px-6 uppercase tracking-widest hover:bg-scp-green hover:text-black transition-colors duration-200"
                             >
-                                Execute Protocol
+                                Abort Protocol (Leave)
                             </button>
-                        ) : (
-                            <div className="border border-scp-green/30 p-4 bg-scp-green/5">
-                                <p className="text-scp-green animate-pulse uppercase tracking-widest">
-                                    {gameState.users.length < 3
-                                        ? `Waiting for ${3 - gameState.users.length} more personnel (Min 3 required)...`
-                                        : "Waiting for Admin Authorization..."}
-                                </p>
-                            </div>
-                        )}
+                        </div>
                     </div>
                 )}
             </div>

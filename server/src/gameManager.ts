@@ -88,6 +88,25 @@ export class GameManager {
         this.broadcastState();
     }
 
+    public leaveGame(socketId: string) {
+        const userIndex = this.state.users.findIndex(u => u.id === socketId);
+        if (userIndex !== -1) {
+            const wasHost = this.state.users[userIndex].isHost;
+            this.state.users.splice(userIndex, 1);
+
+            // Reassign host if needed
+            if (wasHost && this.state.users.length > 0) {
+                this.state.users[0].isHost = true;
+            }
+
+            // If game was in progress and users drop below 3, maybe reset?
+            // For now, just broadcast. The game might break if users drop mid-game, 
+            // but this is primarily for Lobby/Result.
+
+            this.broadcastState();
+        }
+    }
+
     public startGame() {
         if (this.state.phase !== 'LOBBY') return;
         if (this.state.users.length < 3 || this.state.users.length > 4) return;

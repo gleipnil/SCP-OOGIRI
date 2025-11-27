@@ -69,6 +69,11 @@ io.on('connection', (socket) => {
         console.log('User disconnected:', socket.id);
         gameManager.removeUser(socket.id);
     });
+
+    socket.on('leave_game', () => {
+        console.log('User left game:', socket.id);
+        gameManager.leaveGame(socket.id);
+    });
 });
 
 const PORT = process.env.PORT || 3001;
