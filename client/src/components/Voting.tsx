@@ -146,14 +146,23 @@ export default function Voting({ socket, gameState }: VotingProps) {
                             {">> Evaluation Submitted <<"}
                         </div>
                         <p className="text-scp-green-dim uppercase text-sm">Awaiting consensus...</p>
-                        <div className="mt-4 flex justify-center space-x-2">
-                            {gameState.users.map(u => (
-                                <div
-                                    key={u.id}
-                                    className={`w-3 h-3 ${gameState.readyStates[u.id] ? 'bg-scp-green shadow-[0_0_5px_#00ff41]' : 'bg-scp-border'}`}
-                                    title={u.name}
-                                ></div>
-                            ))}
+                        <div className="mt-4 flex justify-center gap-2">
+                            {gameState.users.filter(u => u.id !== socket.id).map(u => {
+                                const isReady = gameState.readyStates[u.id];
+                                return (
+                                    <div
+                                        key={u.id}
+                                        className={`px-3 py-1 border transition-all duration-300 ${isReady
+                                            ? 'bg-scp-green text-black border-scp-green font-bold shadow-[0_0_10px_rgba(0,255,65,0.4)]'
+                                            : 'bg-scp-green/5 text-scp-green-dim border-scp-green/30'
+                                            }`}
+                                    >
+                                        <span className="text-xs uppercase tracking-wider">
+                                            {u.name}
+                                        </span>
+                                    </div>
+                                );
+                            })}
                         </div>
                         {isHost && allReady && (
                             <button

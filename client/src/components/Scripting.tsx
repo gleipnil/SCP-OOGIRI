@@ -185,7 +185,7 @@ export default function Scripting({ socket, gameState }: ScriptingProps) {
                     <div className="flex justify-between items-end mb-6 border-b border-scp-green pb-4">
                         <h2 className="text-2xl font-bold text-scp-green uppercase tracking-widest">{getPhaseTitle()}</h2>
                         <div className="flex items-end">
-                            <PlayerStatusPanel gameState={gameState} />
+                            <PlayerStatusPanel gameState={gameState} myId={socket.id} />
                             <div className={`text-xl font-bold ml-6 ${timer.isBlinking ? 'text-scp-red animate-pulse' : 'text-scp-green'}`}>
                                 T-{Math.floor(timer.remaining / 60)}:{(timer.remaining % 60).toString().padStart(2, '0')}
                             </div>

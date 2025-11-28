@@ -18,6 +18,23 @@ body {
   min-height: 100vh;
 }
 
+/* Global Link Styles */
+a {
+  color: var(--terminal-accent);
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+a:visited {
+  color: #00cc33; /* High visibility green for visited links */
+}
+
+a:hover {
+  color: #fff;
+  text-shadow: 0 0 8px var(--terminal-accent);
+  text-decoration: underline;
+}
+
 /* Scanline effect */
 body::before {
   content: " ";

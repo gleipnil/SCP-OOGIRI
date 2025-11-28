@@ -61,7 +61,7 @@ export default function Suggestion({ socket, gameState }: SuggestionProps) {
                     </div>
 
                     <div className="flex items-end">
-                        <PlayerStatusPanel gameState={gameState} />
+                        <PlayerStatusPanel gameState={gameState} myId={socket.id} />
                         <div className={`text-xl font-bold ml-6 ${timer.isBlinking ? 'text-scp-red animate-pulse' : 'text-scp-green'}`}>
                             T-{Math.floor(timer.remaining / 60)}:{(timer.remaining % 60).toString().padStart(2, '0')}
                         </div>
