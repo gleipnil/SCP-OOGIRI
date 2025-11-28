@@ -52,6 +52,10 @@ export default function CreditsPage() {
                             <p className="text-sm text-scp-green-dim">
                                 This project is licensed under <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener noreferrer" className="underline hover:text-scp-green">Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)</a>.
                             </p>
+                            <div className="mt-4 text-sm text-scp-green-dim space-y-1">
+                                <p>このゲームはSCP財団の世界観に基づいています</p>
+                                <p>SCP Wiki <a href="https://scp-wiki.wikidot.com/" target="_blank" rel="noopener noreferrer" className="underline hover:text-scp-green">https://scp-wiki.wikidot.com/</a></p>
+                            </div>
                         </div>
                     </section>
 
