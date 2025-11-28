@@ -165,6 +165,9 @@ export default function Entrance({ socket, userName, userId }: EntranceProps) {
                 <a href="/instructions/jp" className="text-xs text-scp-green-dim uppercase tracking-widest hover:text-scp-green border-b border-transparent hover:border-scp-green pb-0.5 inline-block">
                     :: Field Manual (JP) ::
                 </a>
+                <a href="/records" className="text-xs text-scp-green-dim uppercase tracking-widest hover:text-scp-green border-b border-transparent hover:border-scp-green pb-0.5 inline-block">
+                    :: Access Archives ::
+                </a>
                 <a href="/credits" className="text-xs text-scp-green-dim uppercase tracking-widest hover:text-scp-green border-b border-transparent hover:border-scp-green pb-0.5 inline-block">
                     :: System Credits & Legal ::
                 </a>

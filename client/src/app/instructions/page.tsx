@@ -52,13 +52,18 @@ export default function InstructionsPage() {
 
                         <div className="space-y-6">
                             <div className="border border-scp-green/30 p-4 bg-scp-green/5">
+                                <h3 className="text-xl font-bold text-scp-green mb-2">Phase 0: Entrance</h3>
+                                <p>Select a secure channel. You can create a new session or join an existing one (Max 4 active sessions).</p>
+                            </div>
+
+                            <div className="border border-scp-green/30 p-4 bg-scp-green/5">
                                 <h3 className="text-xl font-bold text-scp-green mb-2">Phase 1: Lobby</h3>
-                                <p>Initialize terminal connection. Await personnel synchronization.</p>
+                                <p>Await personnel synchronization. The first user to enter becomes the ADMIN and controls the protocol flow.</p>
                             </div>
 
                             <div className="border border-scp-green/30 p-4 bg-scp-green/5">
                                 <h3 className="text-xl font-bold text-scp-green mb-2">Phase 2: Data Seeding (Suggestion)</h3>
-                                <p>Input 5 keywords to seed the database. These terms will form the vocabulary pool for the session.</p>
+                                <p>Input 5 keywords to seed the database. Recommended: Physical objects existing on Earth (avoid abstract concepts).</p>
                             </div>
 
                             <div className="border border-scp-green/30 p-4 bg-scp-green/5">
@@ -68,22 +73,29 @@ export default function InstructionsPage() {
                                     <li>Review your <strong>Public Classification</strong> (Object Class, Properties).</li>
                                     <li>Memorize your <strong>Hidden Directive</strong> (Secret rule known only to you).</li>
                                 </ul>
+                                <p className="mt-2 text-xs text-scp-green-dim">* This defines the conditions for the report you will eventually own.</p>
                             </div>
 
                             <div className="border border-scp-green/30 p-4 bg-scp-green/5">
                                 <h3 className="text-xl font-bold text-scp-green mb-2">Phase 4: Collaborative Writing (Scripting)</h3>
-                                <p className="mb-2">Execute the writing protocol in 4 rotating stages:</p>
+                                <p className="mb-2">Execute the writing protocol in rotating stages (4 players: 4 parts / 3 players: 3 parts).</p>
                                 <ol className="list-decimal list-inside space-y-1 ml-4 text-scp-green-dim">
                                     <li><strong className="text-scp-green">Containment Procedures:</strong> How to contain the anomaly.</li>
                                     <li><strong className="text-scp-green">Description (Initial):</strong> Appearance and basic properties.</li>
                                     <li><strong className="text-scp-green">Description (Analysis):</strong> Experiments and detailed anomalies.</li>
-                                    <li><strong className="text-scp-green">Conclusion & Designation:</strong> Addenda and final naming.</li>
+                                    <li><strong className="text-scp-green">Conclusion & Designation:</strong> Addenda, conclusion, and final naming.</li>
                                 </ol>
+                                <p className="mt-2 text-xs text-scp-green-dim">* In 3-player mode, Description parts are combined.</p>
                             </div>
 
                             <div className="border border-scp-green/30 p-4 bg-scp-green/5">
                                 <h3 className="text-xl font-bold text-scp-green mb-2">Phase 5 & 6: Review & Evaluation</h3>
                                 <p>Present findings. Vote for the most cohesive report. Verify if colleagues adhered to their Hidden Directives.</p>
+                            </div>
+
+                            <div className="border border-scp-green/30 p-4 bg-scp-green/5">
+                                <h3 className="text-xl font-bold text-scp-green mb-2">Phase 7: Result</h3>
+                                <p>Final score calculation. The highest scoring personnel is awarded "Top Clearance". Game logs can be saved.</p>
                             </div>
                         </div>
                     </section>

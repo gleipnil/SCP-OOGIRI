@@ -2,6 +2,7 @@ import { Server, Socket } from 'socket.io';
 import { GameState, User, Report, Constraint, GamePhase } from './types';
 
 import { RULESETS } from './constraintsData';
+import { supabaseAdmin } from '../utils/supabaseAdmin';
 
 // ... (keep imports)
 
@@ -217,14 +218,15 @@ export class GameManager {
             case 'SCRIPTING_2':
                 if (this.state.users.length === 3) {
                     this.changePhase('SCRIPTING_4');
+                    this.startTimer(900); // 15 minutes
                 } else {
                     this.changePhase('SCRIPTING_3');
+                    this.startTimer(300);
                 }
-                this.startTimer(300);
                 break;
             case 'SCRIPTING_3':
                 this.changePhase('SCRIPTING_4');
-                this.startTimer(300);
+                this.startTimer(900); // 15 minutes
                 break;
             case 'SCRIPTING_4':
                 this.changePhase('PRESENTATION');
@@ -244,9 +246,58 @@ export class GameManager {
                 this.changePhase('RESULT');
                 break;
             case 'RESULT':
+                // Save reports to Supabase
+                this.saveReportsToSupabase();
+
                 this.resetGame(); // Or just go back to lobby
                 this.changePhase('LOBBY');
                 break;
+        }
+    }
+
+    private async saveReportsToSupabase() {
+        try {
+            const reportsToInsert = this.state.reports.map(report => {
+                // Map socket IDs to Supabase User IDs
+                const owner = this.state.users.find(u => u.id === report.ownerId);
+                const procedureAuthor = this.state.users.find(u => u.id === report.authors.procedures);
+                const descEarlyAuthor = this.state.users.find(u => u.id === report.authors.descEarly);
+                const descLateAuthor = this.state.users.find(u => u.id === report.authors.descLate);
+
+                // Collect all unique author IDs (including owner)
+                const authorIds = new Set<string>();
+                if (owner?.userId) authorIds.add(owner.userId);
+                if (procedureAuthor?.userId) authorIds.add(procedureAuthor.userId);
+                if (descEarlyAuthor?.userId) authorIds.add(descEarlyAuthor.userId);
+                if (descLateAuthor?.userId) authorIds.add(descLateAuthor.userId);
+
+                return {
+                    title: report.title || 'Untitled Report',
+                    content: {
+                        containmentProcedures: report.containmentProcedures,
+                        descriptionEarly: report.descriptionEarly,
+                        descriptionLate: report.descriptionLate,
+                        conclusion: report.conclusion,
+                        constraint: report.constraint,
+                        selectedKeywords: report.selectedKeywords
+                    },
+                    author_ids: Array.from(authorIds)
+                };
+            });
+
+            if (reportsToInsert.length > 0) {
+                const { error } = await supabaseAdmin
+                    .from('reports')
+                    .insert(reportsToInsert);
+
+                if (error) {
+                    console.error('Error saving reports to Supabase:', error);
+                } else {
+                    console.log('Reports saved successfully.');
+                }
+            }
+        } catch (err) {
+            console.error('Unexpected error saving reports:', err);
         }
     }
 
