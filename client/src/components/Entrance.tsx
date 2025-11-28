@@ -160,6 +160,12 @@ export default function Entrance({ socket, userName, userId }: EntranceProps) {
                     </div>
                 </div>
             </div>
+
+            <div className="mt-8 text-center opacity-50 hover:opacity-100 transition-opacity duration-300">
+                <a href="/credits" className="text-xs text-scp-green-dim uppercase tracking-widest hover:text-scp-green border-b border-transparent hover:border-scp-green pb-0.5">
+                    :: System Credits & Legal ::
+                </a>
+            </div>
         </div>
     );
 }
