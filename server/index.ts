@@ -11,7 +11,13 @@ app.use(cors());
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
     cors: {
-        origin: process.env.CLIENT_URL || "http://localhost:3000",
+        origin: [
+            "http://localhost:3000",
+            "https://scp-oogiri.vercel.app",
+            "https://scp-oogiri.com",
+            "https://www.scp-oogiri.com",
+            process.env.CLIENT_URL || ""
+        ].filter(Boolean),
         methods: ["GET", "POST"]
     }
 });

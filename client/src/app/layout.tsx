@@ -9,6 +9,7 @@ const shareTechMono = Share_Tech_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://scp-oogiri.com'),
   title: "SCP Foundation Database",
   description: "Secure, Contain, Protect",
 };
