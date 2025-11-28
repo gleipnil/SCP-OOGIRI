@@ -20,8 +20,8 @@ export default async function RecordDetailPage({ params }: { params: Promise<{ i
     const content = report.content;
 
     return (
-        <div className="min-h-screen bg-black text-scp-text font-serif p-4 md:p-8">
-            <div className="max-w-4xl mx-auto bg-[#f4f4f4] text-black p-8 shadow-lg border-t-[20px] border-t-[#700] relative">
+        <div className="min-h-screen bg-black font-serif p-4 md:p-8">
+            <div className="max-w-4xl mx-auto bg-[#f4f4f4] text-[#1a1a1a] p-8 shadow-lg border-t-[20px] border-t-[#700] relative">
                 {/* Header */}
                 <div className="border-b-2 border-black pb-4 mb-8 flex justify-between items-end">
                     <div>
