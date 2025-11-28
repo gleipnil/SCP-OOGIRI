@@ -161,8 +161,11 @@ export default function Entrance({ socket, userName, userId }: EntranceProps) {
                 </div>
             </div>
 
-            <div className="mt-8 text-center opacity-50 hover:opacity-100 transition-opacity duration-300">
-                <a href="/credits" className="text-xs text-scp-green-dim uppercase tracking-widest hover:text-scp-green border-b border-transparent hover:border-scp-green pb-0.5">
+            <div className="mt-8 text-center flex flex-col gap-2 opacity-50 hover:opacity-100 transition-opacity duration-300">
+                <a href="/instructions/jp" className="text-xs text-scp-green-dim uppercase tracking-widest hover:text-scp-green border-b border-transparent hover:border-scp-green pb-0.5 inline-block">
+                    :: Field Manual (JP) ::
+                </a>
+                <a href="/credits" className="text-xs text-scp-green-dim uppercase tracking-widest hover:text-scp-green border-b border-transparent hover:border-scp-green pb-0.5 inline-block">
                     :: System Credits & Legal ::
                 </a>
             </div>
