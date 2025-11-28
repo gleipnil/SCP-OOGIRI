@@ -43,7 +43,7 @@ export default function CreditsPage() {
                             <div className="bg-white/10 p-2 rounded">
                                 <Image
                                     src="/CC_BY-SA_icon.svg.png"
-                                    alt="CC BY-SA 4.0"
+                                    alt="CC BY-SA 3.0"
                                     width={120}
                                     height={42}
                                     className="opacity-90 hover:opacity-100 transition-opacity"
@@ -53,7 +53,7 @@ export default function CreditsPage() {
                                 This project is licensed under
                                 <br />
                                 <br />
-                                <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener noreferrer" className="underline hover:text-scp-green">Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)</a>.
+                                <a href="https://creativecommons.org/licenses/by-sa/3.0/" target="_blank" rel="noopener noreferrer" className="underline hover:text-scp-green">Creative Commons Attribution-ShareAlike 3.0 Unported (CC BY-SA 3.0)</a>.
                             </p>
                             <div className="mt-4 text-sm text-scp-green-dim space-y-1">
                                 <p>このゲームはSCP財団の世界観に基づいています</p>
