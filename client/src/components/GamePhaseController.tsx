@@ -37,6 +37,13 @@ export default function GamePhaseController() {
             // Check auth and profile
             const { data: { user } } = await supabase.auth.getUser();
             if (user) {
+                // Check if account is logically deleted
+                if (user.user_metadata?.deleted) {
+                    await supabase.auth.signOut();
+                    window.location.href = '/login';
+                    return;
+                }
+
                 setUserId(user.id);
                 const { data: profile } = await supabase
                     .from('profiles')
