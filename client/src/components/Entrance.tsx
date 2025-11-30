@@ -56,8 +56,8 @@ export default function Entrance({ socket, userName, userId }: EntranceProps) {
                 </h1>
 
                 <div className="mb-6 text-center">
-                    <p className="text-scp-green-dim uppercase tracking-wider text-sm flex items-center justify-center gap-2">
-                        Identified Personnel: <span className="text-scp-green font-bold">{userName}</span>
+                    <p className="text-scp-green-dim uppercase tracking-wider text-sm flex items-center justify-center gap-4">
+                        <span>Identified Personnel: <span className="text-scp-green font-bold">{userName}</span></span>
                         <a href="/profile" className="text-[10px] border border-scp-green/30 px-1 hover:bg-scp-green hover:text-black transition-colors" title="Manage Profile">
                             [EDIT]
                         </a>
