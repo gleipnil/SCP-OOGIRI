@@ -135,10 +135,10 @@ export default function ProfilePage() {
                     </div>
                 )}
 
-                <div className="flex flex-col md:flex-row gap-8 mb-12">
+                <div className="flex flex-col md:flex-row gap-8 mb-12 items-start">
                     {/* Avatar */}
-                    <div className="flex-shrink-0 flex justify-center">
-                        <div className="w-32 h-32 border border-scp-green/50 bg-scp-green/5 flex items-center justify-center rounded-full overflow-hidden relative">
+                    <div className="flex-shrink-0">
+                        <div className="w-20 h-20 border border-scp-green/50 bg-scp-green/5 flex items-center justify-center rounded-full overflow-hidden relative">
                             {/* Use generated placeholder image */}
                             <img src="/avatar_placeholder.png" alt="Personnel Avatar" className="w-full h-full object-cover opacity-80" />
                             <div className="absolute inset-0 bg-scp-green/10 mix-blend-overlay"></div>
