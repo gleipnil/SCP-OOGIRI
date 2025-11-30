@@ -3,6 +3,7 @@ import { createClient } from '@/utils/supabase/client';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function ProfilePage() {
     const [user, setUser] = useState<any>(null);
@@ -140,7 +141,13 @@ export default function ProfilePage() {
                     <div className="flex-shrink-0">
                         <div className="w-20 h-20 border border-scp-green/50 bg-scp-green/5 flex items-center justify-center rounded-full overflow-hidden relative">
                             {/* Use generated placeholder image */}
-                            <img src="/avatar_placeholder.png" alt="Personnel Avatar" className="w-full h-full object-cover opacity-80" />
+                            <Image
+                                src="/avatar_placeholder.png"
+                                alt="Personnel Avatar"
+                                width={80}
+                                height={80}
+                                className="object-cover opacity-80"
+                            />
                             <div className="absolute inset-0 bg-scp-green/10 mix-blend-overlay"></div>
                         </div>
                     </div>
