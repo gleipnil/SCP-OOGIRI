@@ -14,6 +14,7 @@ export default function ProfilePage() {
     const [newPassword, setNewPassword] = useState('');
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [message, setMessage] = useState<{ text: string, type: 'success' | 'error' } | null>(null);
+    const [isChangingPassword, setIsChangingPassword] = useState(false);
 
     const router = useRouter();
     const supabase = createClient();
@@ -36,12 +37,20 @@ export default function ProfilePage() {
             setProfile(profile);
             setNewName(profile?.display_name || '');
 
-            // Fetch game count (count reports where author_ids contains user.id)
-            const { count } = await supabase
+            // Fetch game count logic:
+            // Fetch all reports where user is an author, then count unique created_at timestamps (grouped by minute)
+            const { data: reports } = await supabase
                 .from('reports')
-                .select('*', { count: 'exact', head: true })
+                .select('created_at')
                 .contains('author_ids', [user.id]);
-            setGameCount(count || 0);
+
+            if (reports) {
+                const uniqueGames = new Set(reports.map(r => {
+                    const date = new Date(r.created_at);
+                    return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()} ${date.getHours()}:${date.getMinutes()}`;
+                }));
+                setGameCount(uniqueGames.size);
+            }
 
             setLoading(false);
         };
@@ -74,6 +83,7 @@ export default function ProfilePage() {
             setMessage({ text: error.message, type: 'error' });
         } else {
             setNewPassword('');
+            setIsChangingPassword(false);
             setMessage({ text: 'Password updated successfully.', type: 'success' });
         }
     };
@@ -128,10 +138,10 @@ export default function ProfilePage() {
                 <div className="flex flex-col md:flex-row gap-8 mb-12">
                     {/* Avatar */}
                     <div className="flex-shrink-0 flex justify-center">
-                        <div className="w-32 h-32 border border-scp-green/50 bg-scp-green/5 flex items-center justify-center rounded-full overflow-hidden">
-                            <svg className="w-20 h-20 text-scp-green/50" fill="currentColor" viewBox="0 0 20 20">
-                                <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
-                            </svg>
+                        <div className="w-32 h-32 border border-scp-green/50 bg-scp-green/5 flex items-center justify-center rounded-full overflow-hidden relative">
+                            {/* Use generated placeholder image */}
+                            <img src="/avatar_placeholder.png" alt="Personnel Avatar" className="w-full h-full object-cover opacity-80" />
+                            <div className="absolute inset-0 bg-scp-green/10 mix-blend-overlay"></div>
                         </div>
                     </div>
 
@@ -183,29 +193,45 @@ export default function ProfilePage() {
                     <section>
                         <h2 className="text-lg font-bold mb-4 uppercase text-scp-green-dim border-l-4 border-scp-green pl-3">Security Settings</h2>
                         <div className="flex flex-col gap-4 max-w-md">
-                            <label className="block text-xs text-scp-green-dim uppercase tracking-wider">Update Password</label>
-                            <div className="flex gap-2">
-                                <input
-                                    type="password"
-                                    value={newPassword}
-                                    onChange={(e) => setNewPassword(e.target.value)}
-                                    placeholder="New Password"
-                                    className="flex-grow bg-black border border-scp-green/50 text-scp-green px-3 py-2 focus:outline-none focus:border-scp-green placeholder-scp-green-dim/50"
-                                />
+                            <label className="block text-xs text-scp-green-dim uppercase tracking-wider">Password Management</label>
+
+                            {isChangingPassword ? (
+                                <div className="flex gap-2">
+                                    <input
+                                        type="password"
+                                        value={newPassword}
+                                        onChange={(e) => setNewPassword(e.target.value)}
+                                        placeholder="New Password"
+                                        className="flex-grow bg-black border border-scp-green/50 text-scp-green px-3 py-2 focus:outline-none focus:border-scp-green placeholder-scp-green-dim/50"
+                                    />
+                                    <button
+                                        onClick={handleUpdatePassword}
+                                        disabled={!newPassword}
+                                        className="border border-scp-green text-scp-green px-4 py-2 hover:bg-scp-green hover:text-black transition-colors uppercase text-sm disabled:opacity-50"
+                                    >
+                                        Update
+                                    </button>
+                                    <button
+                                        onClick={() => { setIsChangingPassword(false); setNewPassword(''); }}
+                                        className="text-scp-red hover:underline uppercase text-xs self-center"
+                                    >
+                                        Cancel
+                                    </button>
+                                </div>
+                            ) : (
                                 <button
-                                    onClick={handleUpdatePassword}
-                                    disabled={!newPassword}
-                                    className="border border-scp-green text-scp-green px-4 py-2 hover:bg-scp-green hover:text-black transition-colors uppercase text-sm disabled:opacity-50"
+                                    onClick={() => setIsChangingPassword(true)}
+                                    className="w-fit border border-scp-green/50 text-scp-green-dim px-4 py-2 hover:bg-scp-green/10 hover:text-scp-green transition-colors uppercase text-sm"
                                 >
-                                    Update
+                                    Change Password
                                 </button>
-                            </div>
+                            )}
                         </div>
                     </section>
 
-                    {/* Danger Zone */}
+                    {/* Restricted Actions */}
                     <section className="border border-scp-red/30 p-4 bg-scp-red/5">
-                        <h2 className="text-lg font-bold mb-4 uppercase text-scp-red border-l-4 border-scp-red pl-3">Danger Zone</h2>
+                        <h2 className="text-lg font-bold mb-4 uppercase text-scp-red border-l-4 border-scp-red pl-3">Restricted Protocols</h2>
                         <div className="flex gap-4">
                             <button
                                 onClick={handleLogout}
