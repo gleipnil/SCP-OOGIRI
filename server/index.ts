@@ -60,6 +60,15 @@ io.on('connection', (socket) => {
         }
     });
 
+    socket.on('check_active_session', (userId: string) => {
+        const sessionId = sessionManager.findSessionByUserId(userId);
+        if (sessionId) {
+            socket.emit('active_session_found', sessionId);
+        } else {
+            socket.emit('no_active_session');
+        }
+    });
+
     // Game Events - Route to correct session
     const getGame = () => sessionManager.getSessionBySocket(socket.id);
 

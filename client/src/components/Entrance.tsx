@@ -18,8 +18,13 @@ interface EntranceProps {
 export default function Entrance({ socket, userName, userId }: EntranceProps) {
     const [sessions, setSessions] = useState<SessionInfo[]>([]);
     const [error, setError] = useState('');
+    const [isCheckingSession, setIsCheckingSession] = useState(true);
+    const [rejoiningSessionId, setRejoiningSessionId] = useState<string | null>(null);
 
     useEffect(() => {
+        // Check for active session first
+        socket.emit('check_active_session', userId);
+
         // Request initial session list
         socket.emit('get_sessions');
 
@@ -29,24 +34,57 @@ export default function Entrance({ socket, userName, userId }: EntranceProps) {
 
         const onJoinError = (msg: string) => {
             setError(msg);
+            setIsCheckingSession(false); // Stop checking on error
+            setRejoiningSessionId(null);
+        };
+
+        const onActiveSessionFound = (sessionId: string) => {
+            setRejoiningSessionId(sessionId);
+            // Auto-rejoin
+            socket.emit('join_session', { sessionId, name: userName, userId });
+        };
+
+        const onNoActiveSession = () => {
+            setIsCheckingSession(false);
         };
 
         socket.on('session_list_update', onSessionListUpdate);
         socket.on('join_error', onJoinError);
+        socket.on('active_session_found', onActiveSessionFound);
+        socket.on('no_active_session', onNoActiveSession);
 
         return () => {
             socket.off('session_list_update', onSessionListUpdate);
             socket.off('join_error', onJoinError);
+            socket.off('active_session_found', onActiveSessionFound);
+            socket.off('no_active_session', onNoActiveSession);
         };
-    }, [socket]);
+    }, [socket, userId, userName]);
 
     const handleCreateSession = () => {
+        if (isCheckingSession || rejoiningSessionId) return;
         socket.emit('create_session', { hostName: userName, hostUserId: userId });
     };
 
     const handleJoinSession = (sessionId: string) => {
+        if (isCheckingSession || rejoiningSessionId) return;
         socket.emit('join_session', { sessionId, name: userName, userId });
     };
+
+    if (isCheckingSession || rejoiningSessionId) {
+        return (
+            <div className="flex flex-col items-center justify-center min-h-screen p-4 font-mono bg-black text-scp-green">
+                <div className="animate-pulse text-center">
+                    <h2 className="text-2xl font-bold mb-4 uppercase tracking-widest">
+                        {rejoiningSessionId ? 'Restoring Secure Connection...' : 'Verifying Personnel Status...'}
+                    </h2>
+                    <p className="text-sm text-scp-green-dim uppercase">
+                        Please wait while we retrieve your assignment.
+                    </p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen p-4 font-mono">

@@ -153,8 +153,8 @@ export default function Voting({ socket, gameState }: VotingProps) {
                                     <div
                                         key={u.id}
                                         className={`px-3 py-1 border transition-all duration-300 ${isReady
-                                            ? 'bg-scp-green text-black border-scp-green font-bold shadow-[0_0_10px_rgba(0,255,65,0.4)]'
-                                            : 'bg-scp-green/5 text-scp-green-dim border-scp-green/30'
+                                            ? 'bg-white text-black border-white font-bold shadow-[0_0_10px_rgba(255,255,255,0.4)]'
+                                            : 'bg-black text-white border-white/30'
                                             }`}
                                     >
                                         <span className="text-xs uppercase tracking-wider">

@@ -100,4 +100,14 @@ export class SessionManager {
         });
         return infos;
     }
+
+    public findSessionByUserId(userId: string): string | undefined {
+        for (const [sessionId, game] of this.sessions.entries()) {
+            const state = game.getState();
+            if (state.users.some(u => u.userId === userId)) {
+                return sessionId;
+            }
+        }
+        return undefined;
+    }
 }
