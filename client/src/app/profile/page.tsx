@@ -16,6 +16,8 @@ export default function ProfilePage() {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [message, setMessage] = useState<{ text: string, type: 'success' | 'error' } | null>(null);
     const [isChangingPassword, setIsChangingPassword] = useState(false);
+    const [difficulty, setDifficulty] = useState<'A' | 'B' | 'C'>('C');
+    const [isEditingDifficulty, setIsEditingDifficulty] = useState(false);
 
     const router = useRouter();
     const supabase = createClient();
@@ -37,6 +39,7 @@ export default function ProfilePage() {
                 .single();
             setProfile(profile);
             setNewName(profile?.display_name || '');
+            setDifficulty(profile?.difficulty_level || 'C');
 
             // Fetch game count logic:
             // Fetch all reports where user is an author, then count unique created_at timestamps (grouped by minute)
@@ -72,6 +75,21 @@ export default function ProfilePage() {
             setProfile({ ...profile, display_name: newName });
             setIsEditingName(false);
             setMessage({ text: 'Codename updated successfully.', type: 'success' });
+        }
+    };
+
+    const handleUpdateDifficulty = async (newLevel: 'A' | 'B' | 'C') => {
+        const { error } = await supabase
+            .from('profiles')
+            .update({ difficulty_level: newLevel, updated_at: new Date().toISOString() })
+            .eq('id', user.id);
+
+        if (error) {
+            setMessage({ text: 'Failed to update clearance level.', type: 'error' });
+        } else {
+            setDifficulty(newLevel);
+            setIsEditingDifficulty(false);
+            setMessage({ text: 'Clearance level updated successfully.', type: 'success' });
         }
     };
 
@@ -196,6 +214,56 @@ export default function ProfilePage() {
                 </div>
 
                 <div className="border-t border-scp-green/30 pt-8 space-y-8">
+                    {/* Assignment Protocol (Difficulty) */}
+                    <section>
+                        <h2 className="text-lg font-bold mb-4 uppercase text-scp-green-dim border-l-4 border-scp-green pl-3">Assignment Protocol</h2>
+                        <div className="flex flex-col gap-4">
+                            <label className="block text-xs text-scp-green-dim uppercase tracking-wider">Clearance Level (Difficulty)</label>
+
+                            {isEditingDifficulty ? (
+                                <div className="space-y-2">
+                                    {[
+                                        { level: 'C', label: 'Security Clearance 1 (Easy) - 初心者向け' },
+                                        { level: 'B', label: 'Security Clearance 3 (Normal) - 慣れてきた人向け' },
+                                        { level: 'A', label: 'Security Clearance 5 (Hard) - 全ての縛りが出現' }
+                                    ].map((option) => (
+                                        <label key={option.level} className="flex items-center space-x-3 cursor-pointer p-2 border border-scp-green/30 hover:bg-scp-green/10 transition-colors">
+                                            <input
+                                                type="radio"
+                                                name="difficulty"
+                                                value={option.level}
+                                                checked={difficulty === option.level}
+                                                onChange={() => handleUpdateDifficulty(option.level as 'A' | 'B' | 'C')}
+                                                className="form-radio text-scp-green bg-black border-scp-green focus:ring-scp-green accent-scp-green"
+                                            />
+                                            <span className="text-sm text-scp-green">{option.label}</span>
+                                        </label>
+                                    ))}
+                                    <button
+                                        onClick={() => setIsEditingDifficulty(false)}
+                                        className="text-xs text-scp-red hover:underline uppercase mt-2 pl-2"
+                                    >
+                                        Cancel
+                                    </button>
+                                </div>
+                            ) : (
+                                <div className="flex items-center gap-4">
+                                    <span className="text-sm font-bold text-scp-green">
+                                        {difficulty === 'C' && 'Security Clearance 1 (Easy)'}
+                                        {difficulty === 'B' && 'Security Clearance 3 (Normal)'}
+                                        {difficulty === 'A' && 'Security Clearance 5 (Hard)'}
+                                    </span>
+                                    <button
+                                        onClick={() => setIsEditingDifficulty(true)}
+                                        className="text-xs text-scp-green-dim hover:text-scp-green underline uppercase"
+                                    >
+                                        [Edit]
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    </section>
+
                     {/* Security Settings */}
                     <section>
                         <h2 className="text-lg font-bold mb-4 uppercase text-scp-green-dim border-l-4 border-scp-green pl-3">Security Settings</h2>

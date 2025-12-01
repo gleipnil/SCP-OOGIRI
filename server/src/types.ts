@@ -6,6 +6,7 @@ export interface User {
     score: number;
     avatar?: string;
     isConnected: boolean;
+    difficulty_level?: 'A' | 'B' | 'C';
 }
 
 export interface Constraint {

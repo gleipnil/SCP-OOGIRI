@@ -38,7 +38,7 @@ export class GameManager {
         return this.state;
     }
 
-    public addUser(socketId: string, name: string, userId: string) {
+    public async addUser(socketId: string, name: string, userId: string) {
         const existingUser = this.state.users.find(u => u.userId === userId);
         if (existingUser) {
             // User exists, update socket ID and connection status
@@ -59,6 +59,22 @@ export class GameManager {
             return;
         }
 
+        // Fetch user difficulty from Supabase
+        let difficulty_level: 'A' | 'B' | 'C' = 'C';
+        try {
+            const { data, error } = await supabaseAdmin
+                .from('profiles')
+                .select('difficulty_level')
+                .eq('id', userId)
+                .single();
+
+            if (data && data.difficulty_level) {
+                difficulty_level = data.difficulty_level as 'A' | 'B' | 'C';
+            }
+        } catch (err) {
+            console.error('Error fetching user difficulty:', err);
+        }
+
         const newUser: User = {
             id: socketId,
             userId,
@@ -66,6 +82,7 @@ export class GameManager {
             isHost: this.state.users.length === 0,
             score: 0,
             isConnected: true,
+            difficulty_level
         };
         this.state.users.push(newUser);
 
@@ -363,8 +380,20 @@ export class GameManager {
             // Give 5 keywords to each user
             const userKeywords = shuffledKeywords.slice(index * 5, (index + 1) * 5);
 
-            // Assign random constraint from RULESETS
-            const randomRuleset = RULESETS[Math.floor(Math.random() * RULESETS.length)];
+            // Filter RULESETS based on user difficulty
+            // C: tier 'C' only
+            // B: tier 'C', 'B'
+            // A: all ('A', 'B', 'C')
+            const userDifficulty = user.difficulty_level || 'C';
+            const allowedDifficulties = userDifficulty === 'A' ? ['A', 'B', 'C'] : userDifficulty === 'B' ? ['B', 'C'] : ['C'];
+
+            const availableRulesets = RULESETS.filter(r => allowedDifficulties.includes(r.difficulty));
+
+            // Fallback if no rulesets found (should not happen with current data)
+            const targetRulesets = availableRulesets.length > 0 ? availableRulesets : RULESETS;
+
+            // Assign random constraint from filtered RULESETS
+            const randomRuleset = targetRulesets[Math.floor(Math.random() * targetRulesets.length)];
 
             // Pick one from each front_rule category
             const publicDescriptions = [
