@@ -4,6 +4,7 @@ import { Server } from 'socket.io';
 import cors from 'cors';
 import { GameManager } from './src/gameManager';
 import { SessionManager } from './src/sessionManager';
+import { supabaseAdmin } from './utils/supabaseAdmin';
 
 const app = express();
 app.use(cors());
@@ -138,6 +139,30 @@ io.on('connection', (socket) => {
         console.log('User disconnected:', socket.id);
         sessionManager.removeUser(socket.id);
         io.emit('session_list_update', sessionManager.getAllSessions());
+    });
+
+    // Admin Events
+    socket.on('admin_force_close_session', async (data: { sessionId: string, userId: string }) => {
+        try {
+            // Verify admin
+            const { data: profile, error } = await supabaseAdmin
+                .from('profiles')
+                .select('is_admin')
+                .eq('id', data.userId)
+                .single();
+
+            if (error || !profile?.is_admin) {
+                socket.emit('admin_error', 'Unauthorized access.');
+                return;
+            }
+
+            sessionManager.forceCloseSession(data.sessionId);
+            io.emit('session_list_update', sessionManager.getAllSessions());
+            socket.emit('admin_action_success', 'Protocol terminated successfully.');
+        } catch (e: any) {
+            console.error('Admin action failed:', e);
+            socket.emit('admin_error', 'Action failed.');
+        }
     });
 });
 

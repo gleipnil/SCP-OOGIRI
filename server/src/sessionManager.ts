@@ -84,6 +84,21 @@ export class SessionManager {
         }
     }
 
+    public forceCloseSession(sessionId: string) {
+        const session = this.sessions.get(sessionId);
+        if (session) {
+            // Notify all users in the session?
+            // Ideally we should emit an event to them, but for now we just remove them.
+            // The socket connection remains, but the session is gone.
+            // We should probably clear the socketSessionMap for these users.
+            const state = session.getState();
+            state.users.forEach(u => {
+                this.socketSessionMap.delete(u.id);
+            });
+            this.sessions.delete(sessionId);
+        }
+    }
+
     public getAllSessions(): SessionInfo[] {
         const infos: SessionInfo[] = [];
         this.sessions.forEach((game, id) => {
