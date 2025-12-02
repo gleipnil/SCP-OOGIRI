@@ -20,19 +20,19 @@ export interface Achievement {
 // Achievement Definitions
 const ACHIEVEMENTS_DEF: Omit<Achievement, 'stars'>[] = [
     // SERVICE (Plays)
-    { id: 'svc_3', category: 'SERVICE', tier: 3, label: 'Junior Researcher', description: 'Participated in 15 protocols.', className: 'r-svc-low', threshold: 15, stars: 0 },
-    { id: 'svc_2', category: 'SERVICE', tier: 2, label: 'Senior Researcher', description: 'Participated in 150 protocols.', className: 'r-svc-mid', threshold: 150, stars: 0 },
-    { id: 'svc_1', category: 'SERVICE', tier: 1, label: 'Site Director', description: 'Participated in 2000 protocols.', className: 'r-svc-high', threshold: 2000, stars: 0 },
+    { id: 'svc_3', category: 'SERVICE', tier: 3, label: 'Junior Researcher', description: 'Participated in 15 protocols.', className: 'r-svc-low', threshold: 15 },
+    { id: 'svc_2', category: 'SERVICE', tier: 2, label: 'Senior Researcher', description: 'Participated in 150 protocols.', className: 'r-svc-mid', threshold: 150 },
+    { id: 'svc_1', category: 'SERVICE', tier: 1, label: 'Site Director', description: 'Participated in 2000 protocols.', className: 'r-svc-high', threshold: 2000 },
 
     // HONOR (Likes)
-    { id: 'honor_3', category: 'HONOR', tier: 3, label: 'Commended', description: 'Received 15 commendations.', className: 'r-star-low', threshold: 15, stars: 0 },
-    { id: 'honor_2', category: 'HONOR', tier: 2, label: 'Distinguished', description: 'Received 150 commendations.', className: 'r-star-mid', threshold: 150, stars: 0 },
-    { id: 'honor_1', category: 'HONOR', tier: 1, label: 'Foundation Star', description: 'Received 2000 commendations.', className: 'r-star-high', threshold: 2000, stars: 0 },
+    { id: 'honor_3', category: 'HONOR', tier: 3, label: 'Commended', description: 'Received 15 commendations.', className: 'r-star-low', threshold: 15 },
+    { id: 'honor_2', category: 'HONOR', tier: 2, label: 'Distinguished', description: 'Received 150 commendations.', className: 'r-star-mid', threshold: 150 },
+    { id: 'honor_1', category: 'HONOR', tier: 1, label: 'Foundation Star', description: 'Received 2000 commendations.', className: 'r-star-high', threshold: 2000 },
 
     // SURVIVAL (Apollyon Wins)
     // Only Tier 1 for now as per request? Or maybe 1, 3, 5, 7, 10 wins.
     // Let's define a Tier 1 for 10 wins.
-    { id: 'surv_1', category: 'SURVIVAL', tier: 1, label: 'K-Class Survivor', description: 'Survived 10 Apollyon events.', className: 'r-surv-high', threshold: 10, stars: 0 },
+    { id: 'surv_1', category: 'SURVIVAL', tier: 1, label: 'K-Class Survivor', description: 'Survived 10 Apollyon events.', className: 'r-surv-high', threshold: 10 },
 ];
 
 export function calculateAchievements(stats: {

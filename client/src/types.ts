@@ -1,5 +1,6 @@
 export interface User {
     id: string;
+    userId: string; // Added to match server type
     name: string;
     isHost: boolean;
     score: number;
