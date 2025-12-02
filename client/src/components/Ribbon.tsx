@@ -5,10 +5,10 @@ interface RibbonProps {
     className: string;
     label: string;
     stars: number; // 0-4
-    description?: string;
+    statLabel?: string;
 }
 
-export default function Ribbon({ className, label, stars, description }: RibbonProps) {
+export default function Ribbon({ className, label, stars, description, statLabel }: RibbonProps) {
     return (
         <div className="group relative flex flex-col items-center">
             {/* The Ribbon Itself */}
@@ -24,7 +24,8 @@ export default function Ribbon({ className, label, stars, description }: RibbonP
             {/* Tooltip */}
             <div className="absolute bottom-full mb-2 hidden group-hover:block w-48 bg-[#f0f0f0] border border-black text-black text-xs p-2 z-10 text-center shadow-lg">
                 <div className="font-bold uppercase mb-1">{label}</div>
-                <div className="text-gray-600 text-[9px] leading-tight">{description}</div>
+                <div className="text-gray-600 text-[10px] leading-tight mb-1">{description}</div>
+                {statLabel && <div className="text-black font-mono text-[10px] font-bold border-t border-gray-300 pt-1 mt-1">{statLabel}</div>}
             </div>
         </div>
     );

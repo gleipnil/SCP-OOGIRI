@@ -54,6 +54,7 @@ export default function SecurityCard({ user, achievements }: SecurityCardProps) 
                         label={ach.label}
                         stars={ach.stars}
                         description={ach.description}
+                        statLabel={ach.statLabel}
                     />
                 ))}
             </div>
