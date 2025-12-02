@@ -62,7 +62,9 @@ export function calculateAchievements(stats: {
         1: [250, 500, 750, 1000, 2000]
     };
     const svc = getBestTier(stats.total_plays, 'SERVICE', svcSteps, ACHIEVEMENTS_DEF);
-    if (svc) earned.push(svc);
+    if (svc) {
+        earned.push({ ...svc, statLabel: `Plays: ${stats.total_plays}` });
+    }
 
     // HONOR
     const honorSteps = {
@@ -71,7 +73,9 @@ export function calculateAchievements(stats: {
         1: [250, 500, 750, 1000, 2000]
     };
     const honor = getBestTier(stats.total_likes_received, 'HONOR', honorSteps, ACHIEVEMENTS_DEF);
-    if (honor) earned.push(honor);
+    if (honor) {
+        earned.push({ ...honor, statLabel: `Commendations: ${stats.total_likes_received}` });
+    }
 
     // SURVIVAL (Apollyon)
     // 1, 3, 5, 7, 10
@@ -79,7 +83,9 @@ export function calculateAchievements(stats: {
         1: [1, 3, 5, 7, 10]
     };
     const surv = getBestTier(stats.apollyon_wins, 'SURVIVAL', survSteps, ACHIEVEMENTS_DEF);
-    if (surv) earned.push(surv);
+    if (surv) {
+        earned.push({ ...surv, statLabel: `Apollyon Wins: ${stats.apollyon_wins}` });
+    }
 
     return earned;
 }
