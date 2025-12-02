@@ -91,9 +91,11 @@ export default function SecurityCard({ user, achievements }: SecurityCardProps) 
             >
                 <div className="flex flex-col">
                     <span className="text-3xl font-black uppercase leading-none tracking-tight">SCP FOUNDATION</span>
-                    <span className="text-sm font-bold tracking-[0.2em] uppercase text-gray-800 mt-1">
-                        SECURE. CONTAIN. PROTECT.
-                    </span>
+                    <div className="flex flex-col text-sm font-bold tracking-[0.2em] uppercase text-gray-800 mt-1 leading-tight">
+                        <span>SECURE.</span>
+                        <span>CONTAIN.</span>
+                        <span>PROTECT.</span>
+                    </div>
                 </div>
             </div>
 
