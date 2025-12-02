@@ -6,6 +6,7 @@ interface RibbonProps {
     label: string;
     stars: number; // 0-4
     statLabel?: string;
+    description?: string;
 }
 
 export default function Ribbon({ className, label, stars, description, statLabel }: RibbonProps) {

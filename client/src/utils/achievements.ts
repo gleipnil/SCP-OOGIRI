@@ -15,10 +15,11 @@ export interface Achievement {
     className: string;
     threshold: number;
     stars: number; // 0-4
+    statLabel?: string;
 }
 
 // Achievement Definitions
-const ACHIEVEMENTS_DEF: Omit<Achievement, 'stars'>[] = [
+const ACHIEVEMENTS_DEF: Omit<Achievement, 'stars' | 'statLabel'>[] = [
     // SERVICE (Plays)
     { id: 'svc_3', category: 'SERVICE', tier: 3, label: '5年勤続章', description: '5年間の財団貢献への証.', className: 'r-svc-low', threshold: 15 },
     { id: 'svc_2', category: 'SERVICE', tier: 2, label: '10年勤続章', description: '10年間の財団貢献への証.', className: 'r-svc-mid', threshold: 150 },
