@@ -15,7 +15,7 @@ interface SecurityCardProps {
 
 export default function SecurityCard({ user, achievements }: SecurityCardProps) {
     return (
-        <div className="w-full max-w-[600px] aspect-[1.586] bg-[#f0f0f0] text-[#111] rounded-3xl border-[6px] border-black relative overflow-hidden shadow-2xl font-sans">
+        <div className="w-full max-w-[600px] aspect-[1.586] bg-[#f0f0f0] text-[#111] rounded-3xl border-[6px] border-black relative shadow-2xl font-sans">
 
             {/* Name & ID - Left at 5%, Top at 5% */}
             {/* Name has py-2 (0.5rem = 8px). So text starts 8px down from container top. */}
