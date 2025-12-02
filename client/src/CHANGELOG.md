@@ -1,6 +1,12 @@
 # Update History
 
 
+## v1.0.5
+### 2025-12-02
+- Add Achievements
+- Redesign Profile Page
+- Fix Bug
+
 ## v1.0.4
 ### 2025-12-01
 - Add Difficulty Setting
