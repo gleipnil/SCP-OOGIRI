@@ -57,6 +57,19 @@ export default function LikeButton({ reportId }: LikeButtonProps) {
                     .from('likes')
                     .insert({ report_id: reportId, user_id: userId });
                 if (error) throw error;
+
+                // Increment stats for authors
+                const { data: report } = await supabase
+                    .from('reports')
+                    .select('author_ids')
+                    .eq('id', reportId)
+                    .single();
+
+                if (report && report.author_ids) {
+                    for (const authorId of report.author_ids) {
+                        await supabase.rpc('increment_total_likes_received', { user_id: authorId });
+                    }
+                }
             } else {
                 const { error } = await supabase
                     .from('likes')
@@ -77,8 +90,8 @@ export default function LikeButton({ reportId }: LikeButtonProps) {
         <button
             onClick={handleToggle}
             className={`flex items-center gap-2 px-3 py-1 border-2 text-sm font-bold uppercase tracking-wider transition-all duration-200 ${isLiked
-                    ? 'bg-[#700] text-white border-[#700] shadow-md'
-                    : 'bg-transparent text-[#700] border-[#700] hover:bg-[#700] hover:text-white'
+                ? 'bg-[#700] text-white border-[#700] shadow-md'
+                : 'bg-transparent text-[#700] border-[#700] hover:bg-[#700] hover:text-white'
                 }`}
             title={userId ? (isLiked ? "Remove Commendation" : "Commend Report") : "Login to Commend"}
         >

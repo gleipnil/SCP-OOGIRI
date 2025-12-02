@@ -1,0 +1,107 @@
+/* Ribbon Gradients derived from ai_studio_code.html */
+
+.ribbon {
+    width: 80px;
+    /* Reduced by 20% from 100px */
+    height: 24px;
+    /* Reduced by 20% from 30px */
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    position: relative;
+    flex-shrink: 0;
+    border: 1px solid #000;
+    /* Added black border */
+}
+
+/* Texture overlay */
+.ribbon::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: repeating-linear-gradient(90deg,
+            transparent,
+            transparent 1px,
+            rgba(255, 255, 255, 0.15) 1px,
+            rgba(255, 255, 255, 0.15) 2px);
+    pointer-events: none;
+}
+
+/* --- 1. GENERAL VALOR --- */
+.r-star-high {
+    background: linear-gradient(90deg, #1a1a1a 0% 35%, #d4af37 35% 45%, #ffffff 45% 55%, #d4af37 55% 65%, #1a1a1a 65% 100%);
+}
+
+.r-star-mid {
+    background: linear-gradient(90deg, #1a1a1a 0% 35%, #d4af37 35% 65%, #1a1a1a 65% 100%);
+}
+
+.r-star-low {
+    background: linear-gradient(90deg, #1a1a1a 0% 48%, #d4af37 48% 52%, #1a1a1a 52% 100%);
+}
+
+/* --- 2. COMBAT / MTF --- */
+.r-mtf-high {
+    background: linear-gradient(90deg, #8b0000 0% 15%, #4a4a4a 15% 20%, #8b0000 20% 40%, #4a4a4a 40% 60%, #8b0000 60% 80%, #4a4a4a 80% 85%, #8b0000 85% 100%);
+}
+
+.r-mtf-mid {
+    background: linear-gradient(90deg, #8b0000 0% 35%, #4a4a4a 35% 65%, #8b0000 65% 100%);
+}
+
+.r-mtf-low {
+    background: linear-gradient(90deg, #8b0000 0% 10%, #4a4a4a 10% 90%, #8b0000 90% 100%);
+}
+
+/* --- 3. SURVIVAL --- */
+.r-surv-high {
+    background: linear-gradient(90deg, #000 0% 20%, #8b0000 20% 30%, #000 30% 50%, #fff 50% 70%, #003366 70% 80%, #fff 80% 100%);
+}
+
+.r-surv-mid {
+    background: linear-gradient(90deg, #ff8c00 0% 40%, #000000 40% 45%, #555555 45% 100%);
+}
+
+.r-surv-low {
+    background: linear-gradient(90deg, #000000 0% 35%, #ffffff 35% 65%, #000000 65% 100%);
+}
+
+/* --- 4. SCIENCE --- */
+.r-sci-high {
+    background: linear-gradient(90deg, #f0f0f0 0% 30%, #663399 30% 35%, #f0f0f0 35% 45%, #ffd700 45% 55%, #f0f0f0 55% 65%, #663399 65% 70%, #f0f0f0 70% 100%);
+}
+
+.r-sci-mid {
+    background: linear-gradient(90deg, #f0f0f0 0% 20%, #663399 20% 30%, #f0f0f0 30% 70%, #663399 70% 80%, #f0f0f0 80% 100%);
+}
+
+.r-sci-low {
+    background: linear-gradient(90deg, #663399 0% 5%, #f0f0f0 5% 95%, #663399 95% 100%);
+}
+
+/* --- 5. CONTAINMENT / HAZARD --- */
+.r-haz-high {
+    background: linear-gradient(90deg, #ff8c00 0% 25%, #000000 25% 30%, #32cd32 30% 70%, #000000 70% 75%, #ff8c00 75% 100%);
+}
+
+.r-haz-mid {
+    background: linear-gradient(90deg, #ffd700 0% 15%, #000 15% 25%, #ffd700 25% 40%, #000 40% 50%, #ffd700 50% 65%, #000 65% 75%, #ffd700 75% 100%);
+}
+
+.r-haz-low {
+    background: linear-gradient(90deg, #556b2f 0% 40%, #ffd700 40% 60%, #556b2f 60% 100%);
+}
+
+/* --- 6. SERVICE --- */
+.r-svc-high {
+    background: linear-gradient(90deg, #555 0% 10%, #ddd 10% 20%, #555 20% 30%, #ddd 30% 40%, #555 40% 50%, #ddd 50% 60%, #555 60% 70%, #ddd 70% 80%, #555 80% 90%, #ddd 90% 100%);
+}
+
+.r-svc-mid {
+    background: linear-gradient(90deg, #555 0% 30%, #ddd 30% 40%, #555 40% 60%, #ddd 60% 70%, #555 70% 100%);
+}
+
+.r-svc-low {
+    background: linear-gradient(90deg, #555 0% 40%, #ddd 40% 60%, #555 60% 100%);
+}

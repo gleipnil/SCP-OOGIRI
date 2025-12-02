@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { Socket } from 'socket.io-client';
 import { GameState } from '../types';
+import { createClient } from '@/utils/supabase/client';
+import SecurityCard from './SecurityCard';
+import { calculateAchievements } from '@/utils/achievements';
 
 interface LobbyProps {
     socket: Socket;
@@ -9,6 +12,10 @@ interface LobbyProps {
 
 export default function Lobby({ socket, gameState }: LobbyProps) {
     const [error, setError] = useState('');
+    const [selectedUser, setSelectedUser] = useState<any>(null);
+    const [isLoadingProfile, setIsLoadingProfile] = useState(false);
+
+    const supabase = createClient();
 
     React.useEffect(() => {
         const onJoinError = (msg: string) => {
@@ -22,6 +29,47 @@ export default function Lobby({ socket, gameState }: LobbyProps) {
 
     const handleStart = () => {
         socket.emit('start_game');
+    };
+
+    const handleUserClick = async (userId: string) => {
+        setIsLoadingProfile(true);
+        setSelectedUser(null);
+
+        try {
+            // Fetch profile from Supabase
+            const { data: profile, error } = await supabase
+                .from('profiles')
+                .select('*')
+                .eq('id', userId)
+                .single();
+
+            if (error) throw error;
+
+            // Calculate achievements
+            const achievements = calculateAchievements({
+                total_plays: profile.total_plays || 0,
+                total_likes_received: profile.total_likes_received || 0,
+                apollyon_wins: profile.apollyon_wins || 0,
+                joined_at: profile.joined_at || new Date().toISOString()
+            });
+
+            setSelectedUser({
+                user: {
+                    name: profile.display_name || 'Unknown',
+                    id: userId,
+                    joinedAt: new Date(profile.joined_at || Date.now()).toLocaleDateString(),
+                    comment: profile.comment || '[[DATA EXPUNGED]]',
+                    avatarUrl: "/avatar_placeholder.png"
+                },
+                achievements
+            });
+
+        } catch (err) {
+            console.error('Error fetching profile:', err);
+            // Maybe show a toast or simplified error
+        } finally {
+            setIsLoadingProfile(false);
+        }
     };
 
     const myUser = gameState.users.find(u => u.id === socket.id);
@@ -47,10 +95,14 @@ export default function Lobby({ socket, gameState }: LobbyProps) {
                         </h2>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             {gameState.users.map((user) => (
-                                <div key={user.id} className="border border-scp-green/50 p-3 flex items-center justify-between bg-scp-green/5">
+                                <div
+                                    key={user.id}
+                                    onClick={() => handleUserClick(user.userId)}
+                                    className="border border-scp-green/50 p-3 flex items-center justify-between bg-scp-green/5 cursor-pointer hover:bg-scp-green/20 transition-colors group"
+                                >
                                     <div className="flex items-center gap-3">
                                         <div className={`w-2 h-2 ${user.isHost ? 'bg-yellow-500' : 'bg-scp-green'} animate-pulse`}></div>
-                                        <span className="text-scp-green uppercase">{user.name}</span>
+                                        <span className="text-scp-green uppercase group-hover:underline">{user.name}</span>
                                     </div>
                                     {user.isHost && <span className="text-xs text-yellow-500 border border-yellow-500 px-2 py-0.5">ADMIN</span>}
                                 </div>
@@ -93,6 +145,31 @@ export default function Lobby({ socket, gameState }: LobbyProps) {
             <div className="mt-4 text-xs text-scp-green-dim uppercase tracking-widest">
                 Secure. Contain. Protect.
             </div>
+
+            {/* Profile Modal */}
+            {(selectedUser || isLoadingProfile) && (
+                <div className="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4" onClick={() => !isLoadingProfile && setSelectedUser(null)}>
+                    <div className="relative" onClick={e => e.stopPropagation()}>
+                        {isLoadingProfile ? (
+                            <div className="text-scp-green animate-pulse uppercase tracking-widest border border-scp-green p-8 bg-black">
+                                Accessing Personnel File...
+                            </div>
+                        ) : (
+                            <div className="transform scale-90 md:scale-100 transition-transform">
+                                <SecurityCard user={selectedUser.user} achievements={selectedUser.achievements} />
+                                <div className="mt-4 text-center">
+                                    <button
+                                        onClick={() => setSelectedUser(null)}
+                                        className="text-scp-green hover:underline uppercase tracking-widest text-sm"
+                                    >
+                                        [Close File]
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

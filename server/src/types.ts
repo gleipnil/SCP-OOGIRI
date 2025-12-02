@@ -7,6 +7,12 @@ export interface User {
     avatar?: string;
     isConnected: boolean;
     difficulty_level?: 'A' | 'B' | 'C';
+    // Profile Stats
+    total_plays?: number;
+    total_likes_received?: number;
+    apollyon_wins?: number;
+    joined_at?: string;
+    comment?: string;
 }
 
 export interface Constraint {

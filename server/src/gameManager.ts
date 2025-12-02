@@ -313,6 +313,34 @@ export class GameManager {
                     console.log('Reports saved successfully.');
                 }
             }
+
+            // Update User Stats (Total Plays & Apollyon Wins)
+            // Apollyon Win Condition: Everyone survived? Or just participating in an Apollyon game?
+            // "Apollyon Wins" implies winning a hard mode game.
+            // Let's assume if difficulty was 'A' (Hard) and they completed the game (reached RESULT), it counts.
+            // Or maybe we need a specific win condition?
+            // For now, let's count it if they are in the game at RESULT phase.
+
+            for (const user of this.state.users) {
+                if (!user.userId) continue;
+
+                try {
+                    // Increment total_plays
+                    await supabaseAdmin.rpc('increment_total_plays', { user_id: user.userId });
+
+                    // Increment apollyon_wins if difficulty was A (Hard)
+                    // We need to check if the game was actually Hard mode.
+                    // The game difficulty is mixed per user, but maybe we check if *this user* was on Hard?
+                    // Or if the game had Hard constraints?
+                    // Let's use the user's difficulty_level setting.
+                    if (user.difficulty_level === 'A') {
+                        await supabaseAdmin.rpc('increment_apollyon_wins', { user_id: user.userId });
+                    }
+                } catch (err) {
+                    console.error(`Error updating stats for user ${user.userId}:`, err);
+                }
+            }
+
         } catch (err) {
             console.error('Unexpected error saving reports:', err);
         }
