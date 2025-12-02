@@ -22,9 +22,9 @@ export default function Ribbon({ className, label, stars, description }: RibbonP
             </div>
 
             {/* Tooltip */}
-            <div className="absolute bottom-full mb-2 hidden group-hover:block w-48 bg-black/95 border border-scp-green text-scp-green text-xs p-2 z-10 text-center shadow-[0_0_10px_rgba(0,255,65,0.2)]">
+            <div className="absolute bottom-full mb-2 hidden group-hover:block w-48 bg-[#f0f0f0] border border-black text-black text-xs p-2 z-10 text-center shadow-lg">
                 <div className="font-bold uppercase mb-1">{label}</div>
-                <div className="text-gray-400">{description}</div>
+                <div className="text-gray-700">{description}</div>
             </div>
         </div>
     );
