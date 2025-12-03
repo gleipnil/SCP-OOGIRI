@@ -1,6 +1,10 @@
 # Update History
 
 
+## v1.0.6
+### 2025-12-03
+- Fix bug about reconnection issue
+
 ## v1.0.5
 ### 2025-12-02
 - Add Achievements

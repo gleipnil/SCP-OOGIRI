@@ -98,6 +98,9 @@ export class GameManager {
     public rejoinGame(socketId: string, userId: string) {
         const existingUser = this.state.users.find(u => u.userId === userId);
         if (existingUser) {
+            const oldSocketId = existingUser.id;
+
+            // 1. Update User Socket ID
             existingUser.id = socketId;
             existingUser.isConnected = true;
 
@@ -106,6 +109,42 @@ export class GameManager {
             if (socket) {
                 socket.join(this.sessionId);
             }
+
+            // 2. Migrate Reports (Owner & Authors)
+            this.state.reports.forEach(report => {
+                if (report.ownerId === oldSocketId) {
+                    report.ownerId = socketId;
+                }
+                if (report.authors.procedures === oldSocketId) {
+                    report.authors.procedures = socketId;
+                }
+                if (report.authors.descEarly === oldSocketId) {
+                    report.authors.descEarly = socketId;
+                }
+                if (report.authors.descLate === oldSocketId) {
+                    report.authors.descLate = socketId;
+                }
+            });
+
+            // 3. Migrate Ready States
+            if (this.state.readyStates[oldSocketId]) {
+                this.state.readyStates[socketId] = this.state.readyStates[oldSocketId];
+                delete this.state.readyStates[oldSocketId];
+            }
+
+            // 4. Migrate Votes (Constraint Checks)
+            // bestReportVotes are keyed by reportId, so they don't need migration unless we track *who* voted there (we don't seem to track voter ID for best report, just count?)
+            // Wait, looking at submitVote: this.state.votes.bestReportVotes[bestReportId]++; 
+            // It seems we don't track WHO voted for best report, just the count. So that's fine.
+
+            // Constraint Checks: { [reportId: string]: { [voterId: string]: boolean } }
+            Object.keys(this.state.votes.constraintChecks).forEach(reportId => {
+                const checks = this.state.votes.constraintChecks[reportId];
+                if (checks && checks[oldSocketId] !== undefined) {
+                    checks[socketId] = checks[oldSocketId];
+                    delete checks[oldSocketId];
+                }
+            });
 
             this.broadcastState();
         }
