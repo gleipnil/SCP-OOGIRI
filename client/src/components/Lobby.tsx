@@ -149,7 +149,7 @@ export default function Lobby({ socket, gameState }: LobbyProps) {
             {/* Profile Modal */}
             {(selectedUser || isLoadingProfile) && (
                 <div className="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4" onClick={() => !isLoadingProfile && setSelectedUser(null)}>
-                    <div className="relative" onClick={e => e.stopPropagation()}>
+                    <div className="relative w-full max-w-[600px]" onClick={e => e.stopPropagation()}>
                         {isLoadingProfile ? (
                             <div className="text-scp-green animate-pulse uppercase tracking-widest border border-scp-green p-8 bg-black">
                                 Accessing Personnel File...
