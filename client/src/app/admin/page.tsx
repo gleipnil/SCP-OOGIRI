@@ -30,12 +30,307 @@ interface Profile {
     created_at: string;
 }
 
+
+
+function ManualEntryForm({ user, supabase }: { user: User | null, supabase: any }) {
+    const [formData, setFormData] = useState({
+        title: '',
+        created_at: '',
+        owner_id: '',
+        keywords: '',
+        constraints: {
+            public: ['', '', '', ''],
+            hidden: ''
+        },
+        content: {
+            procedures: { author_id: '', text: '' },
+            desc_early: { author_id: '', text: '' },
+            desc_late: { author_id: '', text: '' },
+            conclusion: { author_id: '', text: '' }
+        }
+    });
+    const [status, setStatus] = useState<{ text: string, type: 'success' | 'error' } | null>(null);
+
+    const handleSubmit = () => {
+        if (!formData.title || !formData.owner_id) {
+            setStatus({ text: 'Title and Owner are required.', type: 'error' });
+            return;
+        }
+
+        const payload = {
+            userId: user?.id,
+            title: formData.title,
+            created_at: formData.created_at || undefined,
+            owner_id: formData.owner_id,
+            keywords: formData.keywords.split(',').map(k => k.trim()).filter(k => k),
+            constraints: {
+                public: formData.constraints.public,
+                hidden: formData.constraints.hidden
+            },
+            content: {
+                procedures: formData.content.procedures,
+                desc_early: formData.content.desc_early,
+                desc_late: formData.content.desc_late,
+                conclusion: formData.content.conclusion
+            }
+        };
+
+        socket.emit('admin_create_report', payload);
+    };
+
+    useEffect(() => {
+        const onSuccess = (msg: string) => setStatus({ text: msg, type: 'success' });
+        const onError = (msg: string) => setStatus({ text: msg, type: 'error' });
+
+        socket.on('admin_action_success', onSuccess);
+        socket.on('admin_error', onError);
+
+        return () => {
+            socket.off('admin_action_success', onSuccess);
+            socket.off('admin_error', onError);
+        };
+    }, []);
+
+    return (
+        <div className="space-y-6">
+            <h2 className="text-xl font-bold uppercase mb-4">Manual Report Entry</h2>
+
+            {status && (
+                <div className={`p-2 border ${status.type === 'success' ? 'border-green-500 text-green-500' : 'border-red-500 text-red-500'} uppercase text-center`}>
+                    {status.text}
+                </div>
+            )}
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* General Info */}
+                <div className="border border-red-600/30 p-4">
+                    <h3 className="text-red-400 uppercase mb-4 border-b border-red-600/30 pb-2">General Info</h3>
+                    <div className="space-y-4">
+                        <div>
+                            <label className="block text-xs text-red-500 uppercase mb-1">Title</label>
+                            <input
+                                type="text"
+                                value={formData.title}
+                                onChange={e => setFormData({ ...formData, title: e.target.value })}
+                                className="w-full bg-black border border-red-800 p-2 text-red-500 focus:border-red-500 outline-none"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-xs text-red-500 uppercase mb-1">Created At (Optional)</label>
+                            <input
+                                type="datetime-local"
+                                value={formData.created_at}
+                                onChange={e => setFormData({ ...formData, created_at: e.target.value })}
+                                className="w-full bg-black border border-red-800 p-2 text-red-500 focus:border-red-500 outline-none scheme-dark"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-xs text-red-500 uppercase mb-1">Owner (Host)</label>
+                            <UserSelector
+                                supabase={supabase}
+                                value={formData.owner_id}
+                                onChange={id => setFormData({ ...formData, owner_id: id })}
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-xs text-red-500 uppercase mb-1">Keywords (Comma separated)</label>
+                            <input
+                                type="text"
+                                value={formData.keywords}
+                                onChange={e => setFormData({ ...formData, keywords: e.target.value })}
+                                className="w-full bg-black border border-red-800 p-2 text-red-500 focus:border-red-500 outline-none"
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                {/* Constraints */}
+                <div className="border border-red-600/30 p-4">
+                    <h3 className="text-red-400 uppercase mb-4 border-b border-red-600/30 pb-2">Constraints</h3>
+                    <div className="space-y-4">
+                        <div>
+                            <label className="block text-xs text-red-500 uppercase mb-1">Public Constraints (4 Parts)</label>
+                            {formData.constraints.public.map((c, i) => (
+                                <input
+                                    key={i}
+                                    type="text"
+                                    value={c}
+                                    onChange={e => {
+                                        const newPublic = [...formData.constraints.public];
+                                        newPublic[i] = e.target.value;
+                                        setFormData({ ...formData, constraints: { ...formData.constraints, public: newPublic } });
+                                    }}
+                                    placeholder={`Part ${i + 1}`}
+                                    className="w-full bg-black border border-red-800 p-2 text-red-500 focus:border-red-500 outline-none mb-2"
+                                />
+                            ))}
+                        </div>
+                        <div>
+                            <label className="block text-xs text-red-500 uppercase mb-1">Hidden Constraint</label>
+                            <input
+                                type="text"
+                                value={formData.constraints.hidden}
+                                onChange={e => setFormData({ ...formData, constraints: { ...formData.constraints, hidden: e.target.value } })}
+                                className="w-full bg-black border border-red-800 p-2 text-red-500 focus:border-red-500 outline-none"
+                            />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Content Sections */}
+            <div className="border border-red-600/30 p-4">
+                <h3 className="text-red-400 uppercase mb-4 border-b border-red-600/30 pb-2">Report Content</h3>
+                <div className="space-y-6">
+                    <ContentSection
+                        label="Containment Procedures"
+                        supabase={supabase}
+                        data={formData.content.procedures}
+                        onChange={val => setFormData({ ...formData, content: { ...formData.content, procedures: val } })}
+                    />
+                    <ContentSection
+                        label="Description (Early)"
+                        supabase={supabase}
+                        data={formData.content.desc_early}
+                        onChange={val => setFormData({ ...formData, content: { ...formData.content, desc_early: val } })}
+                    />
+                    <ContentSection
+                        label="Description (Late)"
+                        supabase={supabase}
+                        data={formData.content.desc_late}
+                        onChange={val => setFormData({ ...formData, content: { ...formData.content, desc_late: val } })}
+                        note="May be empty for 3-player games"
+                    />
+                    <ContentSection
+                        label="Conclusion"
+                        supabase={supabase}
+                        data={formData.content.conclusion}
+                        onChange={val => setFormData({ ...formData, content: { ...formData.content, conclusion: val } })}
+                    />
+                </div>
+            </div>
+
+            <button
+                onClick={handleSubmit}
+                className="w-full bg-red-600 text-black font-bold py-4 hover:bg-white transition-colors uppercase tracking-widest"
+            >
+                Save Report
+            </button>
+        </div>
+    );
+}
+
+function ContentSection({ label, supabase, data, onChange, note }: {
+    label: string,
+    supabase: any,
+    data: { author_id: string, text: string },
+    onChange: (val: { author_id: string, text: string }) => void,
+    note?: string
+}) {
+    return (
+        <div className="border-l-2 border-red-900 pl-4">
+            <div className="flex justify-between items-baseline mb-2">
+                <label className="text-sm font-bold text-red-500 uppercase">{label}</label>
+                {note && <span className="text-xs text-red-700 italic">{note}</span>}
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-[300px_1fr] gap-4">
+                <div>
+                    <label className="block text-xs text-red-800 uppercase mb-1">Author</label>
+                    <UserSelector
+                        supabase={supabase}
+                        value={data.author_id}
+                        onChange={id => onChange({ ...data, author_id: id })}
+                    />
+                </div>
+                <div>
+                    <label className="block text-xs text-red-800 uppercase mb-1">Content</label>
+                    <textarea
+                        value={data.text}
+                        onChange={e => onChange({ ...data, text: e.target.value })}
+                        rows={3}
+                        className="w-full bg-black border border-red-800 p-2 text-red-500 focus:border-red-500 outline-none font-mono text-sm"
+                    />
+                </div>
+            </div>
+        </div>
+    );
+}
+
+function UserSelector({ supabase, value, onChange }: { supabase: any, value: string, onChange: (id: string) => void }) {
+    const [search, setSearch] = useState('');
+    const [results, setResults] = useState<Profile[]>([]);
+    const [selectedName, setSelectedName] = useState('');
+
+    useEffect(() => {
+        if (value) {
+            // Fetch name if value exists (initial load or set)
+            supabase.from('profiles').select('display_name').eq('id', value).single()
+                .then(({ data }: any) => {
+                    if (data) setSelectedName(data.display_name);
+                });
+        }
+    }, [value, supabase]);
+
+    const handleSearch = async () => {
+        if (!search.trim()) return;
+        const { data } = await supabase
+            .from('profiles')
+            .select('*')
+            .ilike('display_name', `%${search}%`)
+            .limit(5);
+        if (data) setResults(data);
+    };
+
+    return (
+        <div className="relative">
+            {value ? (
+                <div className="flex justify-between items-center bg-red-900/20 border border-red-600 p-2">
+                    <span className="text-sm font-bold">{selectedName || value}</span>
+                    <button onClick={() => onChange('')} className="text-xs text-red-400 hover:text-white">CHANGE</button>
+                </div>
+            ) : (
+                <div>
+                    <div className="flex gap-2">
+                        <input
+                            type="text"
+                            value={search}
+                            onChange={e => setSearch(e.target.value)}
+                            onKeyDown={e => e.key === 'Enter' && handleSearch()}
+                            placeholder="Search User..."
+                            className="w-full bg-black border border-red-800 p-2 text-xs text-red-500 focus:border-red-500 outline-none"
+                        />
+                        <button onClick={handleSearch} className="bg-red-900/30 border border-red-800 px-2 text-xs hover:bg-red-600 hover:text-black">GO</button>
+                    </div>
+                    {results.length > 0 && (
+                        <div className="absolute z-10 w-full bg-black border border-red-600 mt-1 max-h-40 overflow-y-auto">
+                            {results.map(r => (
+                                <div
+                                    key={r.id}
+                                    onClick={() => {
+                                        onChange(r.id);
+                                        setSelectedName(r.display_name);
+                                        setResults([]);
+                                        setSearch('');
+                                    }}
+                                    className="p-2 hover:bg-red-900/50 cursor-pointer text-xs border-b border-red-900/30"
+                                >
+                                    {r.display_name}
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            )}
+        </div>
+    );
+}
+
 export default function AdminPage() {
     const router = useRouter();
     const supabase = createClient();
     const [loading, setLoading] = useState(true);
     const [user, setUser] = useState<User | null>(null);
-    const [activeTab, setActiveTab] = useState<'dashboard' | 'rooms' | 'reports' | 'users'>('dashboard');
+    const [activeTab, setActiveTab] = useState<'dashboard' | 'rooms' | 'reports' | 'users' | 'manual'>('dashboard');
     const [message, setMessage] = useState<{ text: string, type: 'success' | 'error' } | null>(null);
 
     // Data States
@@ -197,13 +492,13 @@ export default function AdminPage() {
 
             {/* Tabs */}
             <div className="flex gap-2 mb-6 border-b border-red-900">
-                {['dashboard', 'rooms', 'reports', 'users'].map((tab) => (
+                {['dashboard', 'rooms', 'reports', 'users', 'manual'].map((tab) => (
                     <button
                         key={tab}
-                        onClick={() => setActiveTab(tab as 'dashboard' | 'rooms' | 'reports' | 'users')}
+                        onClick={() => setActiveTab(tab as 'dashboard' | 'rooms' | 'reports' | 'users' | 'manual')}
                         className={`px-4 py-2 uppercase tracking-wider transition-colors ${activeTab === tab
-                                ? 'bg-red-600 text-black font-bold'
-                                : 'bg-black text-red-800 hover:text-red-500'
+                            ? 'bg-red-600 text-black font-bold'
+                            : 'bg-black text-red-800 hover:text-red-500'
                             }`}
                     >
                         {tab}
@@ -352,8 +647,8 @@ export default function AdminPage() {
                                                 <button
                                                     onClick={() => handleBanUser(profile.id, profile.is_banned)}
                                                     className={`text-xs border px-2 py-1 uppercase ${profile.is_banned
-                                                            ? 'border-green-600 text-green-600 hover:bg-green-600 hover:text-black'
-                                                            : 'border-red-600 text-red-600 hover:bg-red-600 hover:text-black'
+                                                        ? 'border-green-600 text-green-600 hover:bg-green-600 hover:text-black'
+                                                        : 'border-red-600 text-red-600 hover:bg-red-600 hover:text-black'
                                                         }`}
                                                 >
                                                     {profile.is_banned ? 'RESTORE' : 'REVOKE'}
@@ -368,6 +663,11 @@ export default function AdminPage() {
                             )}
                         </div>
                     </div>
+                )}
+
+                {/* MANUAL ENTRY */}
+                {activeTab === 'manual' && (
+                    <ManualEntryForm user={user} supabase={supabase} />
                 )}
 
             </div>

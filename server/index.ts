@@ -164,6 +164,78 @@ io.on('connection', (socket) => {
             socket.emit('admin_error', 'Action failed.');
         }
     });
+
+    socket.on('admin_create_report', async (data: {
+        userId: string;
+        title: string;
+        created_at?: string;
+        owner_id: string;
+        keywords: string[];
+        constraints: {
+            public: string[];
+            hidden: string;
+        };
+        content: {
+            procedures: { author_id: string, text: string };
+            desc_early: { author_id: string, text: string };
+            desc_late: { author_id: string, text: string };
+            conclusion: { author_id: string, text: string };
+        }
+    }) => {
+        try {
+            // Verify admin
+            const { data: profile, error } = await supabaseAdmin
+                .from('profiles')
+                .select('is_admin')
+                .eq('id', data.userId)
+                .single();
+
+            if (error || !profile?.is_admin) {
+                socket.emit('admin_error', 'Unauthorized access.');
+                return;
+            }
+
+            // Collect unique author IDs
+            const authorIds = new Set<string>();
+            if (data.owner_id) authorIds.add(data.owner_id);
+            if (data.content.procedures.author_id) authorIds.add(data.content.procedures.author_id);
+            if (data.content.desc_early.author_id) authorIds.add(data.content.desc_early.author_id);
+            if (data.content.desc_late.author_id) authorIds.add(data.content.desc_late.author_id);
+            if (data.content.conclusion.author_id) authorIds.add(data.content.conclusion.author_id);
+
+            const reportToInsert = {
+                title: data.title,
+                created_at: data.created_at || new Date().toISOString(),
+                content: {
+                    containmentProcedures: data.content.procedures.text,
+                    descriptionEarly: data.content.desc_early.text,
+                    descriptionLate: data.content.desc_late.text,
+                    conclusion: data.content.conclusion.text,
+                    constraint: {
+                        publicDescriptions: data.constraints.public,
+                        hiddenDescription: data.constraints.hidden
+                    },
+                    selectedKeywords: data.keywords
+                },
+                author_ids: Array.from(authorIds)
+            };
+
+            const { error: insertError } = await supabaseAdmin
+                .from('reports')
+                .insert([reportToInsert]);
+
+            if (insertError) {
+                console.error('Error creating report:', insertError);
+                socket.emit('admin_error', 'Failed to create report: ' + insertError.message);
+            } else {
+                socket.emit('admin_action_success', 'Report created successfully.');
+            }
+
+        } catch (e: any) {
+            console.error('Admin create report failed:', e);
+            socket.emit('admin_error', 'Action failed: ' + e.message);
+        }
+    });
 });
 
 const PORT = process.env.PORT || 3001;

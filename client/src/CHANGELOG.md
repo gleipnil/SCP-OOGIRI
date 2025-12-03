@@ -1,5 +1,8 @@
 # Update History
 
+## v1.0.7
+### 2025-12-03
+- Add an admin feature to append report
 
 ## v1.0.6
 ### 2025-12-03
