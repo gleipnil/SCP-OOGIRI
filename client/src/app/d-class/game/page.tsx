@@ -16,7 +16,7 @@ function DClassGameContent() {
     const [loading, setLoading] = useState(true);
     const [gameStatus, setGameStatus] = useState<'PLAYING' | 'DEAD' | 'CLEAR'>('PLAYING');
 
-    const { messages, input, handleInputChange, handleSubmit, setMessages, isLoading } = useChat({
+    const { messages, input = '', handleInputChange, handleSubmit, setMessages, isLoading } = useChat({
         api: '/api/chat',
         body: { reportContent },
         onFinish: (message: any) => {
