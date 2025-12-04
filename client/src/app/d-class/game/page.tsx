@@ -48,7 +48,11 @@ function DClassGameContent() {
                 console.error('Error fetching report:', error);
                 router.push('/d-class');
             } else {
-                setReportContent(data.content);
+                // Ensure content is a string to avoid [object Object] in AI prompt
+                const contentStr = typeof data.content === 'string'
+                    ? data.content
+                    : JSON.stringify(data.content);
+                setReportContent(contentStr);
                 setLoading(false);
             }
         };
@@ -97,8 +101,8 @@ function DClassGameContent() {
                 {messages.map((m: any) => (
                     <div key={m.id} className={`flex flex-col ${m.role === 'user' ? 'items-end' : 'items-start'}`}>
                         <div className={`max-w-[80%] p-4 border ${m.role === 'user'
-                                ? 'border-scp-green bg-scp-green/10 text-scp-green'
-                                : 'border-scp-red/50 bg-black text-scp-green-dim font-typewriter'
+                            ? 'border-scp-green bg-scp-green/10 text-scp-green'
+                            : 'border-scp-red/50 bg-black text-scp-green-dim font-typewriter'
                             }`}>
                             <div className="text-xs uppercase mb-1 opacity-50 font-bold tracking-wider">
                                 {m.role === 'user' ? 'You' : 'Foundation GM'}

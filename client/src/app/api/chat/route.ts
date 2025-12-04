@@ -10,6 +10,7 @@ const google = createGoogleGenerativeAI({
 
 export async function POST(req: Request) {
     const { messages, reportContent } = await req.json();
+    const contentStr = typeof reportContent === 'string' ? reportContent : JSON.stringify(reportContent);
 
     const systemPrompt = `
 You are a cold, emotionless Game Master (GM) for the SCP Foundation.
@@ -18,7 +19,7 @@ Your goal is to guide the player through a text-based adventure based on the pro
 
 **CONTEXT:**
 The player is interacting with the following SCP Object:
-${reportContent}
+${contentStr}
 
 **RULES:**
 1. **Persona**: You are the Foundation. You are cold, clinical, and objective. Do not break character. Do not be helpful unless it serves the experiment.
