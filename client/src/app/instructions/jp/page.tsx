@@ -102,13 +102,36 @@ export default function InstructionPage() {
                             </div>
 
                             <div className="border border-scp-green/30 p-4 bg-scp-green/5">
-                                <h3 className="text-xl font-bold text-scp-green mb-2">Phase 5 & 6: 査読・投票 (Review & Voting)</h3>
-                                <p>完成した全ての報告書が公開されます。内容を精査し、最も優れた報告書に投票してください。また、各報告書が非公開制約を満たしているかどうかの審議も行われます。</p>
+                                <h3 className="text-xl font-bold text-scp-green mb-2">Phase 5: 査読 (Review)</h3>
+                                <p>完成した全ての報告書が公開されます。職員ごとに順番に、完成した報告書を説明し、どういったオブジェクトなのか他の職員に伝達してください。</p>
+                            </div>
+
+                            <div className="border border-scp-green/30 p-4 bg-scp-green/5">
+                                <h3 className="text-xl font-bold text-scp-green mb-2">Phase 6: 投票 (Voting)</h3>
+                                <p>内容を精査し、最も優れた報告書に投票してください。また、各報告書が非公開制約を満たしているかどうかの審議も行われます。</p>
                             </div>
 
                             <div className="border border-scp-green/30 p-4 bg-scp-green/5">
                                 <h3 className="text-xl font-bold text-scp-green mb-2">Phase 7: 結果発表 (Result)</h3>
                                 <p>投票結果と制約達成状況に基づき、最終スコアが算出されます。最高得点の職員が勝者となります。</p>
+                            </div>
+
+                            <div className="border border-scp-green/30 p-4 bg-scp-green/5">
+                                <h3 className="text-xl font-bold text-scp-green mb-2">評価基準 (Scoring Metrics)</h3>
+                                <ul className="list-none space-y-2">
+                                    <li className="flex justify-between border-b border-scp-green/30 pb-1">
+                                        <span>ベストレポート得票</span>
+                                        <span className="font-bold text-scp-green">10 pts / 票</span>
+                                    </li>
+                                    <li className="flex justify-between border-b border-scp-green/30 pb-1">
+                                        <span>オーナー非公開制約達成</span>
+                                        <span className="font-bold text-scp-green">20 pts</span>
+                                    </li>
+                                    <li className="flex justify-between border-b border-scp-green/30 pb-1">
+                                        <span>協力者非公開制約達成</span>
+                                        <span className="font-bold text-scp-green">5 pts</span>
+                                    </li>
+                                </ul>
                             </div>
                         </div>
                     </section>
@@ -144,26 +167,6 @@ export default function InstructionPage() {
                                 </ul>
                             </div>
                         </div>
-                    </section>
-
-                    <section>
-                        <h2 className="text-2xl font-bold text-scp-green mb-4 uppercase tracking-wider border-l-4 border-scp-green pl-4">
-                            5. 評価基準 (Scoring Metrics)
-                        </h2>
-                        <ul className="list-none space-y-2">
-                            <li className="flex justify-between border-b border-scp-green/30 pb-1">
-                                <span>ベストレポート得票</span>
-                                <span className="font-bold text-scp-green">10 pts / 票</span>
-                            </li>
-                            <li className="flex justify-between border-b border-scp-green/30 pb-1">
-                                <span>オーナー非公開制約達成</span>
-                                <span className="font-bold text-scp-green">20 pts</span>
-                            </li>
-                            <li className="flex justify-between border-b border-scp-green/30 pb-1">
-                                <span>協力者非公開制約達成</span>
-                                <span className="font-bold text-scp-green">5 pts</span>
-                            </li>
-                        </ul>
                     </section>
                 </div>
 
