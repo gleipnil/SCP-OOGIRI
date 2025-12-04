@@ -46,15 +46,22 @@ export default function DClassLobby() {
         if (!content) return '';
         try {
             const parsed = JSON.parse(content);
-            // If it's a structured report, use descriptionEarly or descriptionLate
-            if (parsed.descriptionEarly || parsed.descriptionLate) {
-                return parsed.descriptionEarly || parsed.descriptionLate;
+            if (parsed && typeof parsed === 'object') {
+                if (parsed.descriptionEarly || parsed.descriptionLate) {
+                    return parsed.descriptionEarly || parsed.descriptionLate;
+                }
             }
-            // If it's a JSON but not our structure, return stringified
-            return JSON.stringify(parsed);
+            return typeof parsed === 'string' ? parsed : JSON.stringify(parsed);
         } catch (e) {
-            // Not JSON, return as is
             return content;
+        }
+    };
+
+    const formatDate = (dateString: string) => {
+        try {
+            return new Date(dateString).toLocaleDateString();
+        } catch (e) {
+            return 'Unknown Date';
         }
     };
 
@@ -87,8 +94,8 @@ export default function DClassLobby() {
                                         }`}
                                 >
                                     <div className="flex justify-between">
-                                        <span>{report.title}</span>
-                                        <span className="text-xs opacity-70">{new Date(report.created_at).toLocaleDateString()}</span>
+                                        <span>{report.title || 'Untitled'}</span>
+                                        <span className="text-xs opacity-70">{formatDate(report.created_at)}</span>
                                     </div>
                                 </div>
                             ))}
@@ -110,7 +117,7 @@ export default function DClassLobby() {
                                 {selectedReport.title || 'Untitled Report'}
                             </h2>
                             <div className="flex-grow overflow-y-auto custom-scrollbar mb-6 font-typewriter text-sm text-scp-green-dim whitespace-pre-wrap">
-                                {getReportPreview(selectedReport.content).substring(0, 500)}...
+                                {(getReportPreview(selectedReport.content) || '').substring(0, 500)}...
                                 <br />
                                 <br />
                                 <span className="text-scp-red">[REMAINDER OF FILE ENCRYPTED UNTIL DEPLOYMENT]</span>
