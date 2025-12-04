@@ -49,9 +49,10 @@ function DClassGameContent() {
                 router.push('/d-class');
             } else {
                 // Ensure content is a string to avoid [object Object] in AI prompt
-                const contentStr = typeof data.content === 'string'
-                    ? data.content
-                    : JSON.stringify(data.content);
+                const rawContent = data.content || '';
+                const contentStr = typeof rawContent === 'string'
+                    ? rawContent
+                    : JSON.stringify(rawContent);
                 setReportContent(contentStr);
                 setLoading(false);
             }
