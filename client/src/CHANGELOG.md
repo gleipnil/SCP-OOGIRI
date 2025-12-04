@@ -1,5 +1,10 @@
 # Update History
 
+## v1.0.8
+### 2025-12-05
+- Add D-class mode
+- Fix bug about D-class mode
+
 ## v1.0.7
 ### 2025-12-03
 - Add an admin feature to append report
