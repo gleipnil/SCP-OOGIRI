@@ -69,9 +69,19 @@ function DClassGameContent() {
 
     const handleFormSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (!inputValue.trim() || isLoading) return;
+        console.log('Form submitted. Input:', inputValue, 'Loading:', isLoading);
+        if (!inputValue.trim() || isLoading) {
+            console.log('Submission blocked.');
+            return;
+        }
 
-        append({ role: 'user', content: inputValue });
+        console.log('Appending message:', inputValue);
+        try {
+            append({ role: 'user', content: inputValue });
+            console.log('Message appended.');
+        } catch (err) {
+            console.error('Error appending message:', err);
+        }
         setInputValue('');
     };
 
