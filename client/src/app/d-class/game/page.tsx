@@ -13,10 +13,11 @@ function DClassGameContent() {
     const supabase = createClient();
 
     const [reportContent, setReportContent] = useState<string | null>(null);
+    const [inputValue, setInputValue] = useState('');
     const [loading, setLoading] = useState(true);
     const [gameStatus, setGameStatus] = useState<'PLAYING' | 'DEAD' | 'CLEAR'>('PLAYING');
 
-    const { messages, input = '', handleInputChange, handleSubmit, setMessages, isLoading } = useChat({
+    const { messages, append, setMessages, isLoading } = useChat({
         api: '/api/chat',
         body: { reportContent },
         onFinish: (message: any) => {
@@ -65,6 +66,14 @@ function DClassGameContent() {
     useEffect(() => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [messages]);
+
+    const handleFormSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!inputValue.trim() || isLoading) return;
+
+        append({ role: 'user', content: inputValue });
+        setInputValue('');
+    };
 
     if (loading) {
         return (
@@ -129,18 +138,18 @@ function DClassGameContent() {
             <div className="fixed bottom-0 left-0 right-0 p-4 bg-black border-t border-scp-green/50 z-20">
                 <div className="max-w-6xl mx-auto">
                     {gameStatus === 'PLAYING' ? (
-                        <form onSubmit={handleSubmit} className="flex gap-4">
+                        <form onSubmit={handleFormSubmit} className="flex gap-4">
                             <input
                                 className="flex-grow bg-black border border-scp-green text-scp-green p-4 focus:outline-none focus:ring-1 focus:ring-scp-green font-mono placeholder-scp-green-dim/50 uppercase"
-                                value={input}
-                                onChange={handleInputChange}
+                                value={inputValue}
+                                onChange={(e) => setInputValue(e.target.value)}
                                 placeholder="Enter action..."
                                 autoFocus
                                 disabled={isLoading}
                             />
                             <button
                                 type="submit"
-                                disabled={isLoading || !input.trim()}
+                                disabled={isLoading || !inputValue.trim()}
                                 className="bg-scp-green text-black font-bold px-8 py-4 uppercase tracking-widest hover:bg-white transition-colors disabled:opacity-50"
                             >
                                 Send
