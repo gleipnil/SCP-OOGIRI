@@ -134,12 +134,12 @@ function DClassGameContent() {
     }
 
     return (
-        <div className="min-h-screen bg-black text-scp-green font-mono flex flex-col p-4 md:p-8 relative overflow-hidden">
+        <div className="h-screen bg-black text-scp-green font-mono flex flex-col p-4 md:p-8 relative overflow-hidden">
             {/* CRT Overlay Effect */}
             <div className="pointer-events-none fixed inset-0 z-50 bg-[linear-gradient(rgba(18,16,16,0)_50%,rgba(0,0,0,0.25)_50%),linear-gradient(90deg,rgba(255,0,0,0.06),rgba(0,255,0,0.02),rgba(0,0,255,0.06))] bg-[length:100%_2px,3px_100%] opacity-20"></div>
 
             {/* Header */}
-            <div className="border-b border-scp-green/50 pb-4 mb-4 flex justify-between items-center z-10">
+            <div className="border-b border-scp-green/50 pb-4 mb-4 flex justify-between items-center z-10 flex-shrink-0">
                 <h1 className="text-xl font-bold uppercase tracking-widest text-scp-red animate-pulse">
                     Remote Exploration Protocol
                 </h1>
@@ -149,7 +149,7 @@ function DClassGameContent() {
             </div>
 
             {/* Chat Area */}
-            <div className="flex-grow overflow-y-auto custom-scrollbar mb-4 space-y-6 pr-2 z-10 pb-20">
+            <div className="flex-grow overflow-y-auto custom-scrollbar mb-4 space-y-6 pr-2 z-10 min-h-0">
                 {messages.length === 0 && (
                     <div className="text-center text-scp-green-dim py-12 italic">
                         &lt; Connection Established. Awaiting Input. &gt;
@@ -192,7 +192,7 @@ function DClassGameContent() {
             </div>
 
             {/* Input Area */}
-            <div className="fixed bottom-0 left-0 right-0 p-4 bg-black border-t border-scp-green/50 z-20">
+            <div className="w-full bg-black border-t border-scp-green/50 pt-4 z-20 flex-shrink-0">
                 <div className="max-w-6xl mx-auto">
                     {gameStatus === 'PLAYING' ? (
                         <form onSubmit={handleFormSubmit} className="flex gap-4">
