@@ -62,7 +62,7 @@ export async function middleware(request: NextRequest) {
     console.log('Middleware: User:', user?.email);
 
     // Protect routes
-    if (!user && request.nextUrl.pathname !== '/login' && !request.nextUrl.pathname.startsWith('/auth')) {
+    if (!user && request.nextUrl.pathname !== '/login' && !request.nextUrl.pathname.startsWith('/auth') && !request.nextUrl.pathname.startsWith('/d-class/mock')) {
         console.log('Middleware: Redirecting to /login');
         const url = request.nextUrl.clone()
         url.pathname = '/login'

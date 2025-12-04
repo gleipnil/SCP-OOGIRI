@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react';
 interface Report {
     id: string;
     title: string;
-    content: string;
+    content: any; // Can be string or object depending on DB/Supabase
     author_id: string;
     created_at: string;
 }
@@ -42,10 +42,12 @@ export default function DClassLobby() {
         router.push(`/d-class/game?reportId=${selectedReport.id}`);
     };
 
-    const getReportPreview = (content: string) => {
+    const getReportPreview = (content: any) => {
         if (!content) return '';
         try {
-            const parsed = JSON.parse(content);
+            // If content is already an object, use it directly. If string, parse it.
+            const parsed = typeof content === 'string' ? JSON.parse(content) : content;
+
             if (parsed && typeof parsed === 'object') {
                 if (parsed.descriptionEarly || parsed.descriptionLate) {
                     return parsed.descriptionEarly || parsed.descriptionLate;
@@ -53,7 +55,8 @@ export default function DClassLobby() {
             }
             return typeof parsed === 'string' ? parsed : JSON.stringify(parsed);
         } catch (e) {
-            return content;
+            // If parsing fails, return as string if possible, or stringify
+            return typeof content === 'string' ? content : JSON.stringify(content);
         }
     };
 
