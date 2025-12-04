@@ -15,11 +15,16 @@ function DClassGameContent() {
     const [reportContent, setReportContent] = useState<string | null>(null);
     const [inputValue, setInputValue] = useState('');
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
     const [gameStatus, setGameStatus] = useState<'PLAYING' | 'DEAD' | 'CLEAR'>('PLAYING');
 
     const { messages, append, setMessages, isLoading } = useChat({
         api: '/api/chat',
         body: { reportContent },
+        onError: (err: any) => {
+            console.error('Chat API Error:', err);
+            setError('CONNECTION ERROR: UNABLE TO REACH FOUNDATION DATABASE.');
+        },
         onFinish: (message: any) => {
             if (message.content.includes('[DEAD END]')) {
                 setGameStatus('DEAD');
@@ -138,6 +143,13 @@ function DClassGameContent() {
                     <div className="flex justify-start">
                         <div className="max-w-[80%] p-4 border border-scp-red/50 bg-black text-scp-red animate-pulse font-typewriter">
                             Generating Response...
+                        </div>
+                    </div>
+                )}
+                {error && (
+                    <div className="flex justify-center my-4">
+                        <div className="bg-scp-red/20 border border-scp-red text-scp-red p-4 font-bold uppercase tracking-widest animate-pulse">
+                            {error}
                         </div>
                     </div>
                 )}
