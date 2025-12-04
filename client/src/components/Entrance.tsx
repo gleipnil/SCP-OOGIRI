@@ -200,7 +200,25 @@ export default function Entrance({ socket, userName, userId, difficultyLevel = '
                         </div>
 
                         <div className="mt-auto pt-8 border-t border-scp-green/30">
-                            <div className="text-xs text-scp-green-dim text-center uppercase tracking-widest">
+                            <div className="text-center mb-6">
+                                <h2 className="text-xl font-bold mb-4 text-scp-red uppercase">
+                                    D-Class Assignment
+                                </h2>
+                                <p className="text-scp-red-dim text-xs mb-6 uppercase tracking-wider">
+                                    Single-player exploration simulation.
+                                    <br />
+                                    <span className="text-red-500/70 mt-2 block">
+                                        (High Mortality Rate)
+                                    </span>
+                                </p>
+                                <a
+                                    href="/d-class"
+                                    className="block w-full bg-scp-red/20 border border-scp-red text-scp-red font-bold py-3 px-6 uppercase tracking-widest hover:bg-scp-red hover:text-black transition-colors duration-200 shadow-[0_0_15px_rgba(255,0,0,0.2)]"
+                                >
+                                    Enter Testing Area
+                                </a>
+                            </div>
+                            <div className="text-xs text-scp-green-dim text-center uppercase tracking-widest pt-4 border-t border-scp-green/30">
                                 Secure. Contain. Protect.
                             </div>
                         </div>

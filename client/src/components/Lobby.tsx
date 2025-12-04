@@ -10,9 +10,20 @@ interface LobbyProps {
     gameState: GameState;
 }
 
+interface SelectedUser {
+    user: {
+        name: string;
+        id: string;
+        joinedAt: string;
+        comment: string;
+        avatarUrl: string;
+    };
+    achievements: any;
+}
+
 export default function Lobby({ socket, gameState }: LobbyProps) {
     const [error, setError] = useState('');
-    const [selectedUser, setSelectedUser] = useState<any>(null);
+    const [selectedUser, setSelectedUser] = useState<SelectedUser | null>(null);
     const [isLoadingProfile, setIsLoadingProfile] = useState(false);
 
     const supabase = createClient();
@@ -154,7 +165,7 @@ export default function Lobby({ socket, gameState }: LobbyProps) {
                             <div className="text-scp-green animate-pulse uppercase tracking-widest border border-scp-green p-8 bg-black">
                                 Accessing Personnel File...
                             </div>
-                        ) : (
+                        ) : selectedUser ? (
                             <div className="transform scale-90 md:scale-100 transition-transform">
                                 <SecurityCard user={selectedUser.user} achievements={selectedUser.achievements} />
                                 <div className="mt-4 text-center">
@@ -166,7 +177,7 @@ export default function Lobby({ socket, gameState }: LobbyProps) {
                                     </button>
                                 </div>
                             </div>
-                        )}
+                        ) : null}
                     </div>
                 </div>
             )}

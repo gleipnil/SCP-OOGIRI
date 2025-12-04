@@ -69,7 +69,7 @@ export default function SecurityCard({ user, achievements }: SecurityCardProps) 
                 }}
             >
                 <div className="font-typewriter text-sm mb-2 text-[#222] bg-white/50 p-1 border-l-2 border-gray-300">
-                    "{user.comment}"
+                    &quot;{user.comment}&quot;
                 </div>
             </div>
 

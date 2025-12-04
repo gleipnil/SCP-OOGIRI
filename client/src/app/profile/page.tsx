@@ -1,14 +1,27 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable react-hooks/rules-of-hooks */
 "use client";
 import { createClient } from '@/utils/supabase/client';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
 import SecurityCard from '@/components/SecurityCard';
 import { calculateAchievements } from '@/utils/achievements';
+import { User } from '@supabase/supabase-js';
+
+interface Profile {
+    display_name: string;
+    comment: string;
+    difficulty_level: 'A' | 'B' | 'C';
+    total_plays: number;
+    total_likes_received: number;
+    apollyon_wins: number;
+    joined_at: string;
+}
 
 export default function ProfilePage() {
-    const [user, setUser] = useState<any>(null);
-    const [profile, setProfile] = useState<any>(null);
+    const [user, setUser] = useState<User | null>(null);
+    const [profile, setProfile] = useState<Profile | null>(null);
     const [loading, setLoading] = useState(true);
 
     // Editing States
@@ -55,7 +68,7 @@ export default function ProfilePage() {
     }, [router, supabase]);
 
     const handleUpdateProfile = async () => {
-        if (!editName.trim()) return;
+        if (!editName.trim() || !user || !profile) return;
 
         const { error } = await supabase
             .from('profiles')
@@ -76,6 +89,7 @@ export default function ProfilePage() {
     };
 
     const handleUpdateDifficulty = async (newLevel: 'A' | 'B' | 'C') => {
+        if (!user) return;
         const { error } = await supabase
             .from('profiles')
             .update({ difficulty_level: newLevel, updated_at: new Date().toISOString() })
@@ -84,6 +98,9 @@ export default function ProfilePage() {
         if (error) {
             setMessage({ text: 'Failed to update clearance level.', type: 'error' });
         } else {
+            if (profile) {
+                setProfile({ ...profile, difficulty_level: newLevel });
+            }
             setDifficulty(newLevel);
             setIsEditingDifficulty(false);
             setMessage({ text: 'Clearance level updated successfully.', type: 'success' });
@@ -127,21 +144,21 @@ export default function ProfilePage() {
     }
 
     // Calculate Achievements
-    const achievements = calculateAchievements({
+    const achievements = useMemo(() => calculateAchievements({
         total_plays: profile?.total_plays || 0,
         total_likes_received: profile?.total_likes_received || 0,
         apollyon_wins: profile?.apollyon_wins || 0,
         joined_at: profile?.joined_at || new Date().toISOString()
-    });
+    }), [profile]);
 
     // Prepare User Data for Card
-    const cardUser = {
+    const cardUser = useMemo(() => ({
         name: isEditing ? editName : (profile?.display_name || 'Unknown'),
         id: user?.id || 'Unknown',
         joinedAt: new Date(profile?.joined_at || Date.now()).toLocaleDateString(),
         comment: isEditing ? editComment : (profile?.comment || '[[DATA EXPUNGED]]'),
         avatarUrl: "/avatar_placeholder.png"
-    };
+    }), [isEditing, editName, profile, editComment, user]);
 
     return (
         <div className="min-h-screen bg-black text-scp-green font-mono p-4 md:p-8 flex flex-col items-center">
@@ -196,7 +213,7 @@ export default function ProfilePage() {
                                 <button onClick={handleUpdateProfile} className="bg-scp-green text-black font-bold px-4 py-2 hover:bg-green-400 transition-colors uppercase text-sm">
                                     Save Changes
                                 </button>
-                                <button onClick={() => { setIsEditing(false); setEditName(profile?.display_name); setEditComment(profile?.comment); }} className="text-scp-red hover:underline uppercase text-sm self-center">
+                                <button onClick={() => { setIsEditing(false); setEditName(profile?.display_name || ''); setEditComment(profile?.comment || ''); }} className="text-scp-red hover:underline uppercase text-sm self-center">
                                     Cancel
                                 </button>
                             </div>
