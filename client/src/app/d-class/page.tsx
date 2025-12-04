@@ -72,8 +72,8 @@ export default function DClassLobby() {
                                     key={report.id}
                                     onClick={() => setSelectedReport(report)}
                                     className={`p-3 border cursor-pointer transition-colors uppercase tracking-wider text-sm ${selectedReport?.id === report.id
-                                            ? 'bg-scp-red text-black border-scp-red font-bold'
-                                            : 'border-scp-green/30 hover:bg-scp-green/10 text-scp-green'
+                                        ? 'bg-scp-red text-black border-scp-red font-bold'
+                                        : 'border-scp-green/30 hover:bg-scp-green/10 text-scp-green'
                                         }`}
                                 >
                                     <div className="flex justify-between">
@@ -97,10 +97,10 @@ export default function DClassLobby() {
                                 Classified
                             </div>
                             <h2 className="text-2xl font-bold mb-4 text-scp-green uppercase tracking-widest border-b border-scp-green/50 pb-2">
-                                {selectedReport.title}
+                                {selectedReport.title || 'Untitled Report'}
                             </h2>
                             <div className="flex-grow overflow-y-auto custom-scrollbar mb-6 font-typewriter text-sm text-scp-green-dim whitespace-pre-wrap">
-                                {selectedReport.content.substring(0, 500)}...
+                                {(selectedReport.content || '').substring(0, 500)}...
                                 <br />
                                 <br />
                                 <span className="text-scp-red">[REMAINDER OF FILE ENCRYPTED UNTIL DEPLOYMENT]</span>
