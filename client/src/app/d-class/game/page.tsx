@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useChat } from '@ai-sdk/react';
+// import { useChat } from '@ai-sdk/react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useEffect, useState, useRef, Suspense } from 'react';
 import { createClient } from '@/utils/supabase/client';
@@ -18,21 +18,8 @@ function DClassGameContent() {
     const [error, setError] = useState<string | null>(null);
     const [gameStatus, setGameStatus] = useState<'PLAYING' | 'DEAD' | 'CLEAR'>('PLAYING');
 
-    const { messages, append, setMessages, isLoading } = useChat({
-        api: '/api/chat',
-        body: { reportContent },
-        onError: (err: any) => {
-            console.error('Chat API Error:', err);
-            setError('CONNECTION ERROR: UNABLE TO REACH FOUNDATION DATABASE.');
-        },
-        onFinish: (message: any) => {
-            if (message.content.includes('[DEAD END]')) {
-                setGameStatus('DEAD');
-            } else if (message.content.includes('[CLEAR]')) {
-                setGameStatus('CLEAR');
-            }
-        }
-    } as any) as any;
+    const [messages, setMessages] = useState<any[]>([]);
+    const [isGenerating, setIsGenerating] = useState(false);
 
     const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -72,22 +59,70 @@ function DClassGameContent() {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [messages]);
 
+    const sendMessage = async (content: string) => {
+        const userMessage = { id: Date.now().toString(), role: 'user', content };
+        setMessages(prev => [...prev, userMessage]);
+        setIsGenerating(true);
+        setError(null);
+
+        try {
+            const response = await fetch('/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    messages: [...messages, userMessage],
+                    reportContent
+                }),
+            });
+
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+            const assistantMessageId = (Date.now() + 1).toString();
+            setMessages(prev => [...prev, { id: assistantMessageId, role: 'assistant', content: '' }]);
+
+            const reader = response.body?.getReader();
+            const decoder = new TextDecoder();
+
+            if (!reader) throw new Error('No reader available');
+
+            let accumulatedText = '';
+
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+
+                const chunk = decoder.decode(value, { stream: true });
+                accumulatedText += chunk;
+
+                setMessages(prev => prev.map(m =>
+                    m.id === assistantMessageId
+                        ? { ...m, content: accumulatedText }
+                        : m
+                ));
+            }
+
+            // Check for game status tags in the final text
+            if (accumulatedText.includes('[DEAD END]')) {
+                setGameStatus('DEAD');
+            } else if (accumulatedText.includes('[CLEAR]')) {
+                setGameStatus('CLEAR');
+            }
+
+        } catch (err) {
+            console.error('Chat error:', err);
+            setError('CONNECTION ERROR: UNABLE TO REACH FOUNDATION DATABASE.');
+        } finally {
+            setIsGenerating(false);
+        }
+    };
+
     const handleFormSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        console.log('Form submitted. Input:', inputValue, 'Loading:', isLoading);
-        if (!inputValue.trim() || isLoading) {
-            console.log('Submission blocked.');
-            return;
-        }
+        if (!inputValue.trim() || isGenerating) return;
 
-        console.log('Appending message:', inputValue);
-        try {
-            append({ role: 'user', content: inputValue });
-            console.log('Message appended.');
-        } catch (err) {
-            console.error('Error appending message:', err);
-        }
+        const content = inputValue;
         setInputValue('');
+        sendMessage(content);
     };
 
     if (loading) {
@@ -139,7 +174,7 @@ function DClassGameContent() {
                     </div>
                 ))}
 
-                {isLoading && (
+                {isGenerating && (
                     <div className="flex justify-start">
                         <div className="max-w-[80%] p-4 border border-scp-red/50 bg-black text-scp-red animate-pulse font-typewriter">
                             Generating Response...
@@ -167,11 +202,11 @@ function DClassGameContent() {
                                 onChange={(e) => setInputValue(e.target.value)}
                                 placeholder="Enter action..."
                                 autoFocus
-                                disabled={isLoading}
+                                disabled={isGenerating}
                             />
                             <button
                                 type="submit"
-                                disabled={isLoading || !inputValue.trim()}
+                                disabled={isGenerating || !inputValue.trim()}
                                 className="bg-scp-green text-black font-bold px-8 py-4 uppercase tracking-widest hover:bg-white transition-colors disabled:opacity-50"
                             >
                                 Send
