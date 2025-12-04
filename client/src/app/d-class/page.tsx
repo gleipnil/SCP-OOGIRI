@@ -39,13 +39,23 @@ export default function DClassLobby() {
 
     const handleStartSimulation = () => {
         if (!selectedReport) return;
-        // Navigate to game page with report ID
-        // We can pass the report content via state or fetch it again in the game page.
-        // For simplicity and to ensure fresh data, let's pass the ID and fetch there, 
-        // OR pass the content via query param if it's small enough (might be too large).
-        // Better: Use a context or just fetch by ID in the game page.
-        // Let's assume we'll fetch by ID in the game page.
         router.push(`/d-class/game?reportId=${selectedReport.id}`);
+    };
+
+    const getReportPreview = (content: string) => {
+        if (!content) return '';
+        try {
+            const parsed = JSON.parse(content);
+            // If it's a structured report, use descriptionEarly or descriptionLate
+            if (parsed.descriptionEarly || parsed.descriptionLate) {
+                return parsed.descriptionEarly || parsed.descriptionLate;
+            }
+            // If it's a JSON but not our structure, return stringified
+            return JSON.stringify(parsed);
+        } catch (e) {
+            // Not JSON, return as is
+            return content;
+        }
     };
 
     return (
@@ -100,7 +110,7 @@ export default function DClassLobby() {
                                 {selectedReport.title || 'Untitled Report'}
                             </h2>
                             <div className="flex-grow overflow-y-auto custom-scrollbar mb-6 font-typewriter text-sm text-scp-green-dim whitespace-pre-wrap">
-                                {(selectedReport.content || '').substring(0, 500)}...
+                                {getReportPreview(selectedReport.content).substring(0, 500)}...
                                 <br />
                                 <br />
                                 <span className="text-scp-red">[REMAINDER OF FILE ENCRYPTED UNTIL DEPLOYMENT]</span>
