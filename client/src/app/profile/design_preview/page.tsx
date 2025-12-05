@@ -27,7 +27,7 @@ export default function DesignPreviewPage() {
                 Security Clearance Card // Design Preview
             </h1>
 
-            <SecurityCard user={mockUser} achievements={achievements} />
+            <SecurityCard user={mockUser} achievements={achievements} difficulty="A" />
 
             <div className="text-gray-500 font-mono text-sm max-w-lg text-center">
                 * This is a mock representation of a fully maxed-out profile card.

@@ -18,6 +18,7 @@ interface SelectedUser {
         comment: string;
         avatarUrl: string;
     };
+    difficulty: 'A' | 'B' | 'C';
     achievements: any;
 }
 
@@ -72,6 +73,7 @@ export default function Lobby({ socket, gameState }: LobbyProps) {
                     comment: profile.comment || '[[DATA EXPUNGED]]',
                     avatarUrl: "/avatar_placeholder.png"
                 },
+                difficulty: profile.difficulty_level || 'C',
                 achievements
             });
 
@@ -167,7 +169,7 @@ export default function Lobby({ socket, gameState }: LobbyProps) {
                             </div>
                         ) : selectedUser ? (
                             <div className="transform scale-90 md:scale-100 transition-transform">
-                                <SecurityCard user={selectedUser.user} achievements={selectedUser.achievements} />
+                                <SecurityCard user={selectedUser.user} achievements={selectedUser.achievements} difficulty={selectedUser.difficulty} />
                                 <div className="mt-4 text-center">
                                     <button
                                         onClick={() => setSelectedUser(null)}
