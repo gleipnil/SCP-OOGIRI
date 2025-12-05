@@ -1,5 +1,4 @@
-/* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable react-hooks/rules-of-hooks */
+
 "use client";
 import { createClient } from '@/utils/supabase/client';
 import { useRouter } from 'next/navigation';
@@ -135,14 +134,6 @@ export default function ProfilePage() {
         }
     };
 
-    if (loading) {
-        return (
-            <div className="min-h-screen bg-black text-scp-green font-mono flex items-center justify-center">
-                <div className="animate-pulse uppercase tracking-widest">Loading Personnel File...</div>
-            </div>
-        );
-    }
-
     // Calculate Achievements
     const achievements = useMemo(() => calculateAchievements({
         total_plays: profile?.total_plays || 0,
@@ -159,6 +150,14 @@ export default function ProfilePage() {
         comment: isEditing ? editComment : (profile?.comment || '[[DATA EXPUNGED]]'),
         avatarUrl: "/avatar_placeholder.png"
     }), [isEditing, editName, profile, editComment, user]);
+
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-black text-scp-green font-mono flex items-center justify-center">
+                <div className="animate-pulse uppercase tracking-widest">Loading Personnel File...</div>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-black text-scp-green font-mono p-4 md:p-8 flex flex-col items-center">
