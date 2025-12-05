@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef } from 'react';
-import { Libre_Barcode_39_Text, Cinzel, Inter, Herr_Von_Muellerhoff } from 'next/font/google';
+import { Libre_Barcode_39_Text, Cinzel, Inter, Herr_Von_Muellerhoff, Shippori_Mincho } from 'next/font/google';
 import Ribbon from './Ribbon';
 import { Achievement } from '../utils/achievements';
 
@@ -21,8 +21,8 @@ const inter = Inter({
     weight: ["400", "500", "600", "700"],
 });
 
-const signatureFont = Herr_Von_Muellerhoff({
-    weight: "400",
+const shipporiMincho = Shippori_Mincho({
+    weight: ["400", "500", "600", "700", "800"],
     subsets: ["latin"],
 });
 
@@ -163,7 +163,7 @@ export default function SecurityCard({ user, difficulty, achievements }: Securit
                             <div>
                                 <div className="text-[8px] text-zinc-700 font-bold tracking-wider mb-0.5 uppercase">Personnel ID</div>
                                 <div className={`text-sm font-black tracking-tighter ${inter.className}`} style={{ color: TEXT_MAIN }}>
-                                    {user.id}
+                                    {user.id.substring(0, 18)}
                                 </div>
                             </div>
 
@@ -193,7 +193,8 @@ export default function SecurityCard({ user, difficulty, achievements }: Securit
                             <div className="flex justify-between items-start">
                                 <div className="flex flex-col">
                                     <span className="text-[8px] text-zinc-500 font-bold tracking-widest uppercase mb-1">Name</span>
-                                    <h1 className={`text-2xl font-black tracking-tight uppercase leading-none ${cinzel.className}`} style={{ color: TEXT_MAIN }}>
+                                    {/* Using Shippori Mincho for the Name to handle Japanese text beautifully */}
+                                    <h1 className={`text-xl font-black tracking-tight leading-none ${shipporiMincho.className}`} style={{ color: TEXT_MAIN, fontWeight: 700 }}>
                                         {user.name}
                                     </h1>
                                 </div>
@@ -239,14 +240,15 @@ export default function SecurityCard({ user, difficulty, achievements }: Securit
                             {/* Notes & Signature */}
                             <div className="px-5 flex justify-between items-center pt-2 pb-1 flex-1">
                                 {/* Notes */}
-                                <div className="w-1/2 pr-2">
+                                <div className="w-full pr-2">
                                     <div className="text-[8px] text-zinc-500 font-bold mb-0.5 uppercase">Notes</div>
-                                    <p className={`text-[10px] leading-3 italic border-l-2 border-red-900 pl-2 ${cinzel.className} font-semibold line-clamp-2`} style={{ color: TEXT_MAIN }}>
+                                    <p className={`text-[10px] leading-3 italic border-l-2 border-red-900 pl-2 ${shipporiMincho.className} font-semibold line-clamp-2`} style={{ color: TEXT_MAIN }}>
                                         "{user.comment}"
                                     </p>
                                 </div>
 
-                                {/* Signature */}
+                                {/* Signature REMOVED per user request */}
+                                {/* 
                                 <div className="w-1/3 flex flex-col items-center">
                                     <div className={`text-3xl transform -rotate-6 ${signatureFont.className} leading-none`} style={{ color: TEXT_MAIN }}>
                                         {user.name.charAt(0) + user.name.slice(1).toLowerCase()}
@@ -254,6 +256,7 @@ export default function SecurityCard({ user, difficulty, achievements }: Securit
                                     <div className="w-full h-px bg-zinc-400 mt-1"></div>
                                     <div className="text-[7px] text-zinc-400 font-bold tracking-widest uppercase mt-0.5">Authorized Sig.</div>
                                 </div>
+                                */}
                             </div>
 
                             {/* Info Row: Barcode & Date (Bottom of Right Column) */}
