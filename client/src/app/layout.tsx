@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Share_Tech_Mono } from "next/font/google";
 import "./globals.css";
+import GlobalEffects from "../components/GlobalEffects";
 
 const shareTechMono = Share_Tech_Mono({
   weight: "400",
@@ -21,7 +22,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${shareTechMono.variable} font-mono antialiased`}>
+      <body className={`${shareTechMono.variable} font-mono antialiased theme-terminal`}>
+        <GlobalEffects />
         {children}
       </body>
     </html>

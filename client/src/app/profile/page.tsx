@@ -174,7 +174,11 @@ export default function ProfilePage() {
 
             {/* Security Card Display */}
             <div className="mb-12 w-full flex justify-center">
-                <SecurityCard user={cardUser} achievements={achievements} />
+                <SecurityCard
+                    user={cardUser}
+                    achievements={achievements}
+                    difficulty={profile?.difficulty_level || 'C'}
+                />
             </div>
 
             {/* Edit Controls */}

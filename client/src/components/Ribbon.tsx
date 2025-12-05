@@ -13,7 +13,7 @@ export default function Ribbon({ className, label, stars, description, statLabel
     return (
         <div className="group relative flex flex-col items-center">
             {/* The Ribbon Itself */}
-            <div className={`${styles.ribbon} ${styles[className]} mb-1 transition-transform transform group-hover:scale-105 flex items-center justify-center`}>
+            <div className={`${styles.ribbon} ${styles[className]} transition-transform transform group-hover:scale-105 flex items-center justify-center`}>
                 {/* Stars Overlay */}
                 <div className="flex justify-center items-center gap-[2px]" style={{ width: '80%' }}>
                     {Array.from({ length: stars }).map((_, i) => (

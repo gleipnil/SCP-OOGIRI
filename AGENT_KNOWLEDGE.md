@@ -1,4 +1,4 @@
-# AGENT KNOWLEDGE BASE - SCP-OOGIRI (Cosmic Aphelion)
+・ AGENT KNOWLEDGE BASE - SCP-OOGIRI (Cosmic Aphelion)
 
 > **CRITICAL INSTRUCTION**: This file is the **Source of Truth** for the AI Agent working on this project.
 > **ALWAYS READ THIS FILE** at the start of a new session or when encountering unknown errors.

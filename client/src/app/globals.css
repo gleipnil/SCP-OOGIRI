@@ -7,97 +7,79 @@
   --terminal-text: #cccccc;
   --terminal-accent: #00ff41;
   --terminal-border: #333333;
-  --scanline-color: rgba(0, 0, 0, 0.5);
 }
 
+/* 
+  BASE RESET
+  We remove the forced colors from 'body' to allow for multi-theme coexistence.
+  Instead, we apply a default theme class to the body in layout.tsx.
+*/
 body {
-  color: var(--terminal-text);
-  background: var(--terminal-bg);
   font-family: var(--font-share-tech-mono), monospace;
   overflow-x: hidden;
   min-height: 100vh;
+  margin: 0;
+  /* Default to terminal look if no class is present, for safety */
+  background-color: var(--terminal-bg);
+  color: var(--terminal-text);
 }
 
-/* Global Link Styles */
-a {
+/* 
+  THEME: TERMINAL (The World)
+  Use this for the main UI, Lobby, etc.
+*/
+.theme-terminal {
+  background-color: var(--terminal-bg);
+  color: var(--terminal-text);
+}
+
+.theme-terminal a {
   color: var(--terminal-accent);
   text-decoration: none;
   transition: all 0.2s ease;
 }
 
-a:visited {
-  color: #00cc33; /* High visibility green for visited links */
+.theme-terminal a:visited {
+  color: #00cc33;
 }
 
-a:hover {
+.theme-terminal a:hover {
   color: #fff;
   text-shadow: 0 0 8px var(--terminal-accent);
   text-decoration: underline;
 }
 
-/* Scanline effect */
-body::before {
-  content: " ";
-  display: block;
-  position: fixed;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  background: linear-gradient(
-      to bottom,
-      rgba(18, 16, 16, 0) 50%,
-      rgba(0, 0, 0, 0.25) 50%
-    ),
-    linear-gradient(
-      90deg,
-      rgba(255, 0, 0, 0.06),
-      rgba(0, 255, 0, 0.02),
-      rgba(0, 0, 255, 0.06)
-    );
-  z-index: 9999;
-  background-size: 100% 2px, 3px 100%;
-  pointer-events: none;
+/* 
+  THEME: PHYSICAL (The Artifacts)
+  Use this for Security Cards, Documents, Papers.
+  This resets the "Terminal" quirks.
+*/
+.theme-physical {
+  background-color: transparent;
+  /* Let the component define its bg */
+  color: #000000;
+  /* Default ink color */
+  font-family: sans-serif;
+  /* Reset mono font */
+  text-shadow: none;
+  /* Remove any glowing effects */
 }
 
-/* CRT Flicker animation (optional, keep subtle) */
-@keyframes flicker {
-  0% { opacity: 0.97; }
-  5% { opacity: 0.95; }
-  10% { opacity: 0.9; }
-  15% { opacity: 0.95; }
-  20% { opacity: 0.99; }
-  100% { opacity: 0.94; }
-}
-
-body::after {
-  content: " ";
-  display: block;
-  position: fixed;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
-  background: rgba(18, 16, 16, 0.1);
-  opacity: 0;
-  z-index: 9999;
-  pointer-events: none;
-  animation: flicker 0.15s infinite;
-}
-
-/* Scrollbar styling */
+/* Scrollbar styling (Global, fitting the terminal aesthetic) */
 ::-webkit-scrollbar {
   width: 10px;
 }
+
 ::-webkit-scrollbar-track {
-  background: #000; 
-}
-::-webkit-scrollbar-thumb {
-  background: #333; 
-  border: 1px solid #00ff41;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #00ff41; 
-  border: 1px solid #000;
+  background: #000;
 }
 
+::-webkit-scrollbar-thumb {
+  background: #333;
+  border: 1px solid #00ff41;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #00ff41;
+  border: 1px solid #000;
+}
