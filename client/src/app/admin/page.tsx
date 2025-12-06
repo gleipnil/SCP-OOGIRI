@@ -325,12 +325,48 @@ function UserSelector({ supabase, value, onChange }: { supabase: any, value: str
     );
 }
 
+function MaintenancePanel({ user }: { user: User | null }) {
+    const [loading, setLoading] = useState(false);
+
+    const handleRecalculate = () => {
+        if (!user) return;
+        if (confirm('CAUTION: This will overwrite "Total Plays" for all users based on existing report data. Proceed?')) {
+            setLoading(true);
+            socket.emit('admin_recalculate_stats', { userId: user.id });
+            setTimeout(() => setLoading(false), 2000);
+        }
+    };
+
+    return (
+        <div className="space-y-6">
+            <h2 className="text-xl font-bold uppercase mb-4 text-red-500">System Maintenance Protocols</h2>
+
+            <div className="border border-red-600/30 p-6 bg-red-950/20">
+                <h3 className="text-lg font-bold uppercase mb-2 text-red-500">Play Count Repair</h3>
+                <p className="text-sm text-red-400 mb-6">
+                    Analyze all archived reports to reconstruct personnel service records (Total Plays only).
+                    <br />
+                    <span className="text-yellow-500">WARNING: This process overwrites "Total Plays" based on found report sessions. "Apollyon Wins" are NOT affected.</span>
+                </p>
+
+                <button
+                    onClick={handleRecalculate}
+                    disabled={loading}
+                    className={`bg-transparent border-2 border-red-600 text-red-600 font-bold py-3 px-8 uppercase tracking-widest hover:bg-red-600 hover:text-black transition-colors ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                >
+                    {loading ? 'PROCESSING...' : 'RECALCULATE TOTAL PLAYS'}
+                </button>
+            </div>
+        </div>
+    );
+}
+
 export default function AdminPage() {
     const router = useRouter();
     const supabase = createClient();
     const [loading, setLoading] = useState(true);
     const [user, setUser] = useState<User | null>(null);
-    const [activeTab, setActiveTab] = useState<'dashboard' | 'rooms' | 'reports' | 'users' | 'manual'>('dashboard');
+    const [activeTab, setActiveTab] = useState<'dashboard' | 'rooms' | 'reports' | 'users' | 'manual' | 'maintenance'>('dashboard');
     const [message, setMessage] = useState<{ text: string, type: 'success' | 'error' } | null>(null);
 
     // Data States
@@ -491,11 +527,11 @@ export default function AdminPage() {
             )}
 
             {/* Tabs */}
-            <div className="flex gap-2 mb-6 border-b border-red-900">
-                {['dashboard', 'rooms', 'reports', 'users', 'manual'].map((tab) => (
+            <div className="flex gap-2 mb-6 border-b border-red-900 overflow-x-auto">
+                {['dashboard', 'rooms', 'reports', 'users', 'manual', 'maintenance'].map((tab) => (
                     <button
                         key={tab}
-                        onClick={() => setActiveTab(tab as 'dashboard' | 'rooms' | 'reports' | 'users' | 'manual')}
+                        onClick={() => setActiveTab(tab as 'dashboard' | 'rooms' | 'reports' | 'users' | 'manual' | 'maintenance')}
                         className={`px-4 py-2 uppercase tracking-wider transition-colors ${activeTab === tab
                             ? 'bg-red-600 text-black font-bold'
                             : 'bg-black text-red-800 hover:text-red-500'
@@ -668,6 +704,11 @@ export default function AdminPage() {
                 {/* MANUAL ENTRY */}
                 {activeTab === 'manual' && (
                     <ManualEntryForm user={user} supabase={supabase} />
+                )}
+
+                {/* MAINTENANCE */}
+                {activeTab === 'maintenance' && (
+                    <MaintenancePanel user={user} />
                 )}
 
             </div>

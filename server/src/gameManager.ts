@@ -365,15 +365,13 @@ export class GameManager {
 
                 try {
                     // Increment total_plays
-                    await supabaseAdmin.rpc('increment_total_plays', { user_id: user.userId });
+                    const { error: playError } = await supabaseAdmin.rpc('increment_total_plays', { user_id: user.userId });
+                    if (playError) throw playError;
 
                     // Increment apollyon_wins if difficulty was A (Hard)
-                    // We need to check if the game was actually Hard mode.
-                    // The game difficulty is mixed per user, but maybe we check if *this user* was on Hard?
-                    // Or if the game had Hard constraints?
-                    // Let's use the user's difficulty_level setting.
                     if (user.difficulty_level === 'A') {
-                        await supabaseAdmin.rpc('increment_apollyon_wins', { user_id: user.userId });
+                        const { error: winError } = await supabaseAdmin.rpc('increment_apollyon_wins', { user_id: user.userId });
+                        if (winError) throw winError;
                     }
                 } catch (err) {
                     console.error(`Error updating stats for user ${user.userId}:`, err);

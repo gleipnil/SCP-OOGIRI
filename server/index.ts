@@ -236,6 +236,106 @@ io.on('connection', (socket) => {
             socket.emit('admin_error', 'Action failed: ' + e.message);
         }
     });
+
+    socket.on('admin_recalculate_stats', async (data: { userId: string }) => {
+        try {
+            // Verify admin
+            const { data: profile, error } = await supabaseAdmin
+                .from('profiles')
+                .select('is_admin')
+                .eq('id', data.userId)
+                .single();
+
+            if (error || !profile?.is_admin) {
+                return;
+            }
+
+            console.log('Starting stats recalculation...');
+
+            // 1. Fetch all reports with content to check Object Class
+            const { data: reports, error: fetchError } = await supabaseAdmin
+                .from('reports')
+                .select('created_at, author_ids, content');
+
+            if (fetchError || !reports) {
+                throw new Error('Failed to fetch reports: ' + fetchError?.message);
+            }
+
+            // 2. Calculate Plays and Apollyon Wins
+            interface SessionData {
+                isApollyon: boolean;
+                participants: Set<string>;
+            }
+            const sessions: { [timeKey: string]: SessionData } = {};
+
+            reports.forEach((report: any) => {
+                const date = new Date(report.created_at);
+                date.setSeconds(0, 0); // Group by minute
+                const timeKey = date.toISOString();
+
+                if (!sessions[timeKey]) {
+                    sessions[timeKey] = { isApollyon: false, participants: new Set() };
+                }
+
+                // Check Apollyon
+                if (report.content?.constraint?.publicDescriptions?.[0] === 'Apollyon') {
+                    sessions[timeKey].isApollyon = true;
+                }
+
+                // Add participants
+                if (Array.isArray(report.author_ids)) {
+                    report.author_ids.forEach((uid: string) => {
+                        sessions[timeKey].participants.add(uid);
+                    });
+                }
+            });
+
+            // Aggregate stats per user
+            const finalUserCounts: { [userId: string]: { plays: number, apollyon: number } } = {};
+
+            Object.values(sessions).forEach(session => {
+                session.participants.forEach(uid => {
+                    if (!finalUserCounts[uid]) finalUserCounts[uid] = { plays: 0, apollyon: 0 };
+
+                    finalUserCounts[uid].plays++;
+                    if (session.isApollyon) {
+                        finalUserCounts[uid].apollyon++;
+                    }
+                });
+            });
+
+            console.log('Calculated Stats:', finalUserCounts);
+
+            // 3. Update profiles
+            let successCount = 0;
+            let failCount = 0;
+
+            for (const [uid, stats] of Object.entries(finalUserCounts)) {
+                // We use update explicitly. 
+                // Note: This overwrites values. Ideally we should be careful, but this is a "Repair" tool.
+                const { error: updateError } = await supabaseAdmin
+                    .from('profiles')
+                    .update({
+                        total_plays: stats.plays,
+                        apollyon_wins: stats.apollyon
+                    })
+                    .eq('id', uid);
+
+                if (updateError) {
+                    console.error(`Failed to update ${uid}:`, updateError);
+                    failCount++;
+                } else {
+                    successCount++;
+                }
+            }
+
+            socket.emit('admin_action_success', `Recalculation Complete. Users Updated: ${successCount}, Failed: ${failCount}`);
+
+        } catch (e: any) {
+            console.error('Recalculate stats failed:', e);
+            socket.emit('admin_error', 'Action failed: ' + e.message);
+        }
+    });
 });
 
 const PORT = process.env.PORT || 3001;
