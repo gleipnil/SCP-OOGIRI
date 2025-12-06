@@ -300,21 +300,29 @@ io.on('connection', (socket) => {
                 const likesForThisReport = reportLikeCounts[report.id] || 0;
 
                 // Add participants and distribute likes
-                if (Array.isArray(report.author_ids)) {
+                if (Array.isArray(report.author_ids) && report.author_ids.length > 0) {
+                    // 1. Credit Total Plays to ALL authors (via session participation)
                     report.author_ids.forEach((uid: string) => {
                         sessions[timeKey].participants.add(uid);
-
+                        // Ensure user entry exists
                         if (!finalUserCounts[uid]) finalUserCounts[uid] = { plays: 0, likes: 0 };
-                        finalUserCounts[uid].likes += likesForThisReport;
                     });
+
+                    // 2. Credit Likes ONLY to the Owner (First in author_ids array)
+                    const ownerId = report.author_ids[0];
+                    if (ownerId) {
+                        if (!finalUserCounts[ownerId]) finalUserCounts[ownerId] = { plays: 0, likes: 0 };
+                        finalUserCounts[ownerId].likes += likesForThisReport;
+                    }
                 }
             });
 
             // Aggregate Play Counts from Sessions
             Object.values(sessions).forEach(session => {
                 session.participants.forEach(uid => {
-                    if (!finalUserCounts[uid]) finalUserCounts[uid] = { plays: 0, likes: 0 };
-                    finalUserCounts[uid].plays++;
+                    if (finalUserCounts[uid]) {
+                        finalUserCounts[uid].plays++;
+                    }
                 });
             });
 

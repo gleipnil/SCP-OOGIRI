@@ -346,7 +346,7 @@ function MaintenancePanel({ user }: { user: User | null }) {
                 <p className="text-sm text-red-400 mb-6">
                     Analyze all archived reports to reconstruct service records.
                     <br />
-                    Target: <span className="font-bold text-white">Total Plays</span> & <span className="font-bold text-white">Commendations Received</span>
+                    Target: <span className="font-bold text-white">Total Plays</span> & <span className="font-bold text-white">Commendations (Owner Only)</span>
                     <br />
                     <span className="text-yellow-500">WARNING: This overwrites current values with calculated data. "Apollyon Wins" are NOT affected.</span>
                 </p>
