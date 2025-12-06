@@ -247,26 +247,46 @@ io.on('connection', (socket) => {
                 .single();
 
             if (error || !profile?.is_admin) {
+                socket.emit('admin_error', 'Unauthorized access.');
                 return;
             }
 
             console.log('Starting stats recalculation...');
 
-            // 1. Fetch all reports with content to check Object Class
+            // 1. Fetch all reports
             const { data: reports, error: fetchError } = await supabaseAdmin
                 .from('reports')
-                .select('created_at, author_ids, content');
+                .select('id, created_at, author_ids');
 
             if (fetchError || !reports) {
                 throw new Error('Failed to fetch reports: ' + fetchError?.message);
             }
 
-            // 2. Calculate Plays and Apollyon Wins
+            // Fetch all likes
+            const { data: likes, error: likesError } = await supabaseAdmin
+                .from('likes')
+                .select('report_id');
+
+            if (likesError) {
+                console.error('Failed to fetch likes:', likesError);
+            }
+
+            // 2. Calculate Plays and Likes
             interface SessionData {
-                isApollyon: boolean;
                 participants: Set<string>;
             }
             const sessions: { [timeKey: string]: SessionData } = {};
+            const reportLikeCounts: { [reportId: string]: number } = {};
+
+            // Count likes per report
+            if (likes) {
+                likes.forEach((like: any) => {
+                    reportLikeCounts[like.report_id] = (reportLikeCounts[like.report_id] || 0) + 1;
+                });
+            }
+
+            // Process Reports
+            const finalUserCounts: { [userId: string]: { plays: number, likes: number } } = {};
 
             reports.forEach((report: any) => {
                 const date = new Date(report.created_at);
@@ -274,33 +294,27 @@ io.on('connection', (socket) => {
                 const timeKey = date.toISOString();
 
                 if (!sessions[timeKey]) {
-                    sessions[timeKey] = { isApollyon: false, participants: new Set() };
+                    sessions[timeKey] = { participants: new Set() };
                 }
 
-                // Check Apollyon
-                if (report.content?.constraint?.publicDescriptions?.[0] === 'Apollyon') {
-                    sessions[timeKey].isApollyon = true;
-                }
+                const likesForThisReport = reportLikeCounts[report.id] || 0;
 
-                // Add participants
+                // Add participants and distribute likes
                 if (Array.isArray(report.author_ids)) {
                     report.author_ids.forEach((uid: string) => {
                         sessions[timeKey].participants.add(uid);
+
+                        if (!finalUserCounts[uid]) finalUserCounts[uid] = { plays: 0, likes: 0 };
+                        finalUserCounts[uid].likes += likesForThisReport;
                     });
                 }
             });
 
-            // Aggregate stats per user
-            const finalUserCounts: { [userId: string]: { plays: number, apollyon: number } } = {};
-
+            // Aggregate Play Counts from Sessions
             Object.values(sessions).forEach(session => {
                 session.participants.forEach(uid => {
-                    if (!finalUserCounts[uid]) finalUserCounts[uid] = { plays: 0, apollyon: 0 };
-
+                    if (!finalUserCounts[uid]) finalUserCounts[uid] = { plays: 0, likes: 0 };
                     finalUserCounts[uid].plays++;
-                    if (session.isApollyon) {
-                        finalUserCounts[uid].apollyon++;
-                    }
                 });
             });
 
@@ -311,13 +325,11 @@ io.on('connection', (socket) => {
             let failCount = 0;
 
             for (const [uid, stats] of Object.entries(finalUserCounts)) {
-                // We use update explicitly. 
-                // Note: This overwrites values. Ideally we should be careful, but this is a "Repair" tool.
                 const { error: updateError } = await supabaseAdmin
                     .from('profiles')
                     .update({
                         total_plays: stats.plays,
-                        apollyon_wins: stats.apollyon
+                        total_likes_received: stats.likes
                     })
                     .eq('id', uid);
 

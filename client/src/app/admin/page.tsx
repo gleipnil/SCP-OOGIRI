@@ -342,11 +342,13 @@ function MaintenancePanel({ user }: { user: User | null }) {
             <h2 className="text-xl font-bold uppercase mb-4 text-red-500">System Maintenance Protocols</h2>
 
             <div className="border border-red-600/30 p-6 bg-red-950/20">
-                <h3 className="text-lg font-bold uppercase mb-2 text-red-500">Play Count Repair</h3>
+                <h3 className="text-lg font-bold uppercase mb-2 text-red-500">Service Record Repair</h3>
                 <p className="text-sm text-red-400 mb-6">
-                    Analyze all archived reports to reconstruct personnel service records (Total Plays only).
+                    Analyze all archived reports to reconstruct service records.
                     <br />
-                    <span className="text-yellow-500">WARNING: This process overwrites "Total Plays" based on found report sessions. "Apollyon Wins" are NOT affected.</span>
+                    Target: <span className="font-bold text-white">Total Plays</span> & <span className="font-bold text-white">Commendations Received</span>
+                    <br />
+                    <span className="text-yellow-500">WARNING: This overwrites current values with calculated data. "Apollyon Wins" are NOT affected.</span>
                 </p>
 
                 <button
@@ -354,7 +356,7 @@ function MaintenancePanel({ user }: { user: User | null }) {
                     disabled={loading}
                     className={`bg-transparent border-2 border-red-600 text-red-600 font-bold py-3 px-8 uppercase tracking-widest hover:bg-red-600 hover:text-black transition-colors ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
                 >
-                    {loading ? 'PROCESSING...' : 'RECALCULATE TOTAL PLAYS'}
+                    {loading ? 'PROCESSING...' : 'RECALCULATE STATS'}
                 </button>
             </div>
         </div>
