@@ -11,6 +11,7 @@ export class GameManager {
     private state: GameState;
     private timerInterval: NodeJS.Timeout | null = null;
     public sessionId: string;
+    private userSuggestions: Map<string, string[]> = new Map();
 
     constructor(io: Server, sessionId: string) {
         this.io = io;
@@ -183,6 +184,11 @@ export class GameManager {
     public startGame() {
         if (this.state.phase !== 'LOBBY') return;
         if (this.state.users.length < 3 || this.state.users.length > 4) return;
+
+        // Reset pool and suggestions for new game
+        this.state.keywordsPool = [];
+        this.userSuggestions.clear();
+
         this.changePhase('SUGGESTION');
         this.startTimer(180); // 3 minutes for suggestion
     }
@@ -190,11 +196,14 @@ export class GameManager {
     public submitSuggestion(socketId: string, keywords: string[]) {
         if (this.state.phase !== 'SUGGESTION') return;
 
-        // Store keywords temporarily or just add to pool? 
-        // We need to track who submitted to know when everyone is done.
-        // For simplicity, we assume client sends all 5 at once.
+        // Store user's suggestions (overwriting if exists)
+        this.userSuggestions.set(socketId, keywords);
         this.state.readyStates[socketId] = true;
-        this.state.keywordsPool.push(...keywords);
+
+        // Rebuild pool from all current user suggestions
+        this.rebuildKeywordsPool();
+
+        console.log(`User ${socketId} submitted keywords. Pool size: ${this.state.keywordsPool.length}`);
 
         this.broadcastState();
     }
@@ -252,8 +261,20 @@ export class GameManager {
     public cancelSubmission(socketId: string) {
         if (this.state.readyStates[socketId]) {
             this.state.readyStates[socketId] = false;
+
+            // If in SUGGESTION phase, remove their keywords
+            if (this.state.phase === 'SUGGESTION') {
+                this.userSuggestions.delete(socketId);
+                this.rebuildKeywordsPool();
+                console.log(`User ${socketId} cancelled keywords. Pool size: ${this.state.keywordsPool.length}`);
+            }
+
             this.broadcastState();
         }
+    }
+
+    private rebuildKeywordsPool() {
+        this.state.keywordsPool = Array.from(this.userSuggestions.values()).flat();
     }
 
     public nextPhase() {
