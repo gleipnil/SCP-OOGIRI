@@ -19,8 +19,8 @@ export default function PlayerStatusPanel({ gameState, myId }: PlayerStatusPanel
                         <div
                             key={user.id}
                             className={`px-3 py-1 border transition-all duration-300 ${isReady
-                                ? 'bg-white text-black border-white font-bold shadow-[0_0_10px_rgba(255,255,255,0.4)]'
-                                : 'bg-black text-white border-white/30'
+                                ? '!bg-white !text-black !border-white font-bold shadow-[0_0_10px_rgba(255,255,255,0.4)]'
+                                : '!bg-black !text-white !border-white'
                                 }`}
                         >
                             <span className="text-xs uppercase tracking-wider">

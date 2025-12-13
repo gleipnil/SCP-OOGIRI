@@ -138,7 +138,7 @@ export class GameManager {
             // Wait, looking at submitVote: this.state.votes.bestReportVotes[bestReportId]++; 
             // It seems we don't track WHO voted for best report, just the count. So that's fine.
 
-            // Constraint Checks: { [reportId: string]: { [voterId: string]: boolean } }
+            // 4. Migrate Votes (Constraint Checks)
             Object.keys(this.state.votes.constraintChecks).forEach(reportId => {
                 const checks = this.state.votes.constraintChecks[reportId];
                 if (checks && checks[oldSocketId] !== undefined) {
@@ -146,6 +146,12 @@ export class GameManager {
                     delete checks[oldSocketId];
                 }
             });
+
+            // 5. Migrate User Suggestions (Critical for Suggestion Rejoin)
+            if (this.userSuggestions.has(oldSocketId)) {
+                this.userSuggestions.set(socketId, this.userSuggestions.get(oldSocketId)!);
+                this.userSuggestions.delete(oldSocketId);
+            }
 
             this.broadcastState();
         }
