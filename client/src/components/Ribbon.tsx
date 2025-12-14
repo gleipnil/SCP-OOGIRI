@@ -20,6 +20,12 @@ export default function Ribbon({ className, label, stars, description, statLabel
                         <span key={i} className="text-[#E0E0E0] text-[12px] leading-none drop-shadow-[0_1px_1px_rgba(0,0,0,0.8)]" style={{ textShadow: '0 0 2px rgba(0,0,0,0.8)' }}>★</span>
                     ))}
                 </div>
+                {/* Stat Number Overlay */}
+                {statLabel && (
+                    <div className="absolute right-[2px] bottom-[1px] text-[8px] font-bold text-white leading-none font-mono drop-shadow-[0_1px_2px_rgba(0,0,0,1)] opacity-90">
+                        {statLabel.match(/\d+/)?.[0]}
+                    </div>
+                )}
             </div>
 
             {/* Tooltip */}

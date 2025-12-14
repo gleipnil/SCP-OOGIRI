@@ -38,31 +38,36 @@ const MOCK_DATA = {
             className: "r-svc-high",
             stars: 4,
             label: "20 Year Service",
-            description: "20 Years of dedicated service to the Foundation."
+            description: "20 Years of dedicated service to the Foundation.",
+            statLabel: "Years: 20"
         },
         {
             className: "r-star-high",
             stars: 3,
             label: "Foundation Star",
-            description: "Highest honors for bravery and success."
+            description: "Highest honors for bravery and success.",
+            statLabel: "Awards: 5"
         },
         {
             className: "r-sci-high",
             stars: 2,
             label: "Research Lead",
-            description: "Breakthrough in multiple K-Class containment procedures."
+            description: "Breakthrough in multiple K-Class containment procedures.",
+            statLabel: "Papers: 12"
         },
         {
             className: "r-surv-high",
             stars: 1,
             label: "Survivor",
-            description: "Survived K-Class scenario."
+            description: "Survived K-Class scenario.",
+            statLabel: "Survivals: 1"
         },
         {
             className: "r-mtf-high",
             stars: 0,
             label: "Combat Specialist",
-            description: "Elite combat proficiency."
+            description: "Elite combat proficiency.",
+            statLabel: "Missions: 50"
         },
     ]
 };
@@ -224,6 +229,7 @@ const SecurityCardMock = () => {
                                                     stars={ribbon.stars}
                                                     label={ribbon.label}
                                                     description={ribbon.description}
+                                                    statLabel={ribbon.statLabel}
                                                 />
                                             ) : (
                                                 <div className="w-full h-full bg-gray-100/50 shadow-inner"></div>

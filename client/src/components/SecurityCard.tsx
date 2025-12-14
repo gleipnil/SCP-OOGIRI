@@ -223,7 +223,7 @@ export default function SecurityCard({ user, difficulty, achievements }: Securit
                                                     stars={ribbon.stars}
                                                     label={ribbon.label}
                                                     description={ribbon.description}
-                                                // statLabel might be missing in mock but exists in type, it's optional
+                                                    statLabel={ribbon.statLabel}
                                                 />
                                             ) : (
                                                 <div className="w-full h-full bg-gray-100/50 shadow-inner"></div>
