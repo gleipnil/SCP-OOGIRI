@@ -92,14 +92,14 @@ export default function Lobby({ socket, gameState }: LobbyProps) {
     const TEXT = {
         ja: {
             title: "SCPデータベースアクセス",
-            active: "アクティブな職員",
-            admin: "管理者",
+            active: "参加職員",
+            admin: "ADMIN",
             start: "プロトコル実行 (開始)",
             wait: "他の職員の参加を待機中... (最低3名)",
             waitAdmin: "管理者の承認待ち...",
             abort: "プロトコル中止 (退出)",
             abortConfirm: "本当にプロトコルを中止しますか？",
-            scp: "確保、収容、保護",
+            scp: "Secure. Contain. Protect.",
             accessing: "職員ファイルにアクセス中...",
             close: "[ファイルを閉じる]"
         },

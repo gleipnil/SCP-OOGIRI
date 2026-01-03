@@ -19,12 +19,12 @@ export default function Choice({ socket, gameState }: ChoiceProps) {
 
     const TEXT = {
         ja: {
-            title: "プロトコル: 縛り選択",
-            assigned: "割り当てられた構成要素",
+            title: "プロトコル: 制約選択",
+            assigned: "割り当てられた制約条件",
             directives: "指令",
             publicClass: "公開情報",
-            hiddenClass: "クリアランスレベル 4 限定",
-            eyesOnly: "[取扱注意]",
+            hiddenClass: "クリアランスレベル4以上公開（非公開情報）",
+            eyesOnly: "[EYES ONLY]",
             selectKeywords: "キーワードを3つ選択",
             selectDesc: "報告書作成に必要な重要データポイントを特定せよ。",
             confirm: "選択を確定",

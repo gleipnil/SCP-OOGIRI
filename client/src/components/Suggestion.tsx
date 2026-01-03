@@ -46,6 +46,34 @@ export default function Suggestion({ socket, gameState }: SuggestionProps) {
     const myUser = gameState.users.find(u => u.id === socket.id);
     const isHost = myUser?.isHost;
     const allReady = gameState.users.every(u => gameState.readyStates[u.id]);
+    const lang = myUser?.language || 'ja';
+
+    const TEXT = {
+        ja: {
+            title: "プロトコル: キーワード入力",
+            desc: "文書作成に用いるキーワードを5つ入力せよ。",
+            placeholder: "データ入力...",
+            add: "追加",
+            buffer: "バッファ内容",
+            upload: "データアップロード (5つ必須)",
+            complete: ">> データアップロード完了 <<",
+            awaiting: "同期待ち...",
+            modify: "エントリを修正",
+            next: "次のフェーズを開始"
+        },
+        en: {
+            title: "Protocol: Keyword Entry",
+            desc: "Input exactly 5 keywords for database seeding.",
+            placeholder: "INPUT DATA...",
+            add: "ADD",
+            buffer: "Buffer Content",
+            upload: "Upload Data (5 Required)",
+            complete: ">> Data Upload Complete <<",
+            awaiting: "Awaiting synchronization...",
+            modify: "Modify Entry",
+            next: "Initiate Next Phase"
+        }
+    };
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen p-4 font-mono">
@@ -56,7 +84,7 @@ export default function Suggestion({ socket, gameState }: SuggestionProps) {
                 <div className="flex justify-between items-end mb-8 border-b border-scp-green pb-4">
                     <div>
                         <h2 className="text-2xl font-bold text-scp-green uppercase tracking-widest">
-                            Protocol: Keyword Entry
+                            {TEXT[lang].title}
                         </h2>
                     </div>
 
@@ -71,7 +99,7 @@ export default function Suggestion({ socket, gameState }: SuggestionProps) {
                 {!isSubmitted ? (
                     <div>
                         <p className="text-scp-green-dim mb-4 uppercase tracking-wider text-sm">
-                            Input exactly 5 keywords for database seeding.
+                            {TEXT[lang].desc}
                         </p>
 
                         <div className="flex gap-0 mb-6">
@@ -80,20 +108,20 @@ export default function Suggestion({ socket, gameState }: SuggestionProps) {
                                 value={input}
                                 onChange={(e) => setInput(e.target.value)}
                                 onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
-                                placeholder="INPUT DATA..."
+                                placeholder={TEXT[lang].placeholder}
                                 className="flex-1 p-3 bg-black border border-scp-green text-scp-green placeholder-scp-green-dim focus:outline-none focus:bg-scp-green/10 uppercase"
                             />
                             <button
                                 onClick={handleAdd}
                                 className="bg-scp-green text-black font-bold py-2 px-6 hover:bg-white transition-colors duration-200 uppercase tracking-wider"
                             >
-                                Add
+                                {TEXT[lang].add}
                             </button>
                         </div>
 
                         <div className="mb-8">
                             <h3 className="text-xs font-bold text-scp-green mb-2 uppercase tracking-widest border-b border-scp-green/30 pb-1">
-                                Buffer Content ({suggestions.length}/5)
+                                {TEXT[lang].buffer} ({suggestions.length}/5)
                             </h3>
                             <div className="flex flex-wrap gap-2">
                                 {suggestions.map((s, i) => (
@@ -110,15 +138,15 @@ export default function Suggestion({ socket, gameState }: SuggestionProps) {
                             disabled={suggestions.length !== 5}
                             className="w-full bg-scp-green text-black font-bold py-3 px-4 uppercase tracking-widest hover:bg-white transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                            Upload Data (5 Required)
+                            {TEXT[lang].upload}
                         </button>
                     </div>
                 ) : (
                     <div className="text-center py-8 border border-scp-green/30 bg-scp-green/5">
                         <div className="text-scp-green text-xl mb-4 uppercase tracking-widest animate-pulse">
-                            {">> Data Upload Complete <<"}
+                            {TEXT[lang].complete}
                         </div>
-                        <p className="text-scp-green-dim uppercase text-sm mb-6">Awaiting synchronization...</p>
+                        <p className="text-scp-green-dim uppercase text-sm mb-6">{TEXT[lang].awaiting}</p>
 
                         <button
                             onClick={() => {
@@ -127,7 +155,7 @@ export default function Suggestion({ socket, gameState }: SuggestionProps) {
                             }}
                             className="bg-scp-green text-black font-bold py-2 px-6 uppercase tracking-widest hover:bg-white transition-colors duration-200 mb-6"
                         >
-                            Modify Entry
+                            {TEXT[lang].modify}
                         </button>
                         <div className="mt-6 flex justify-center space-x-2">
                             {gameState.users.map(u => (
@@ -146,7 +174,7 @@ export default function Suggestion({ socket, gameState }: SuggestionProps) {
                         onClick={handleNextPhase}
                         className="w-full mt-6 bg-scp-red text-black font-bold py-3 px-4 uppercase tracking-widest hover:bg-red-600 transition-colors duration-200"
                     >
-                        Initiate Next Phase
+                        {TEXT[lang].next}
                     </button>
                 )}
             </div>

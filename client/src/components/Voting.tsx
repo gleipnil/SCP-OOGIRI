@@ -52,7 +52,7 @@ export default function Voting({ socket, gameState }: VotingProps) {
             voteFile: "このファイルに投票",
             publicClass: "公開情報",
             hiddenDirective: "隠された指令",
-            compliant: "指令を遵守しているか？ (はいの場合チェック)",
+            compliant: "非公開条件通りの内容か？ (はいの場合チェック)",
             selfVoting: "[自己投票禁止]",
             submit: "評価を送信",
             submitted: ">> 評価送信済み <<",
