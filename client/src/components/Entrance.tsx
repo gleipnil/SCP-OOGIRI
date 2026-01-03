@@ -14,13 +14,85 @@ interface EntranceProps {
     userName: string;
     userId: string;
     difficultyLevel?: 'A' | 'B' | 'C';
+    language?: 'ja' | 'en';
 }
 
-export default function Entrance({ socket, userName, userId, difficultyLevel = 'C' }: EntranceProps) {
+export default function Entrance({ socket, userName, userId, difficultyLevel = 'C', language = 'ja' }: EntranceProps) {
     const [sessions, setSessions] = useState<SessionInfo[]>([]);
     const [error, setError] = useState('');
     const [isCheckingSession, setIsCheckingSession] = useState(true);
     const [rejoiningSessionId, setRejoiningSessionId] = useState<string | null>(null);
+
+    const TEXT = {
+        ja: {
+            restoring: "安全な接続を復旧中...",
+            verifying: "職員ステータスを確認中...",
+            wait: "任務の割り当てを取得しています。お待ちください。",
+            title: "セキュアアクセス端末",
+            access: "アクセス権限",
+            dClass: "Dクラス職員",
+            agent: "フィールドエージェント",
+            o5: "O5評議会",
+            edit: "[編集]",
+            active: "アクティブなプロトコル",
+            noActive: "アクティブなプロトコルは検出されませんでした。",
+            host: "ホスト",
+            status: "ステータス",
+            personnel: "人数",
+            users: "参加者",
+            join: "プロトコルに参加",
+            inProgress: "進行中",
+            full: "満員",
+            initiate: "新規プロトコルを開始",
+            establish: "収容プロトコルのための新しいセキュアチャンネルを確立します。",
+            max: "(最大4つのプロトコルまで同時実行可能)",
+            create: "セッションを作成",
+            capacity: "システム容量の上限に達しました",
+            single: "Dクラス割り当て (シングルプレイ)",
+            simulation: "単独探索シミュレーション。",
+            mortality: "(高い死亡率)",
+            enter: "実験エリアへ入場",
+            scp: "確保、収容、保護",
+            manual: ":: フィールドマニュアル (JP) ::",
+            archives: ":: アーカイブへのアクセス ::",
+            credits: ":: システムクレジット & 法的情報 ::"
+        },
+        en: {
+            restoring: "Restoring Secure Connection...",
+            verifying: "Verifying Personnel Status...",
+            wait: "Please wait while we retrieve your assignment.",
+            title: "Secure Access Terminal",
+            access: "Access Clearance",
+            dClass: "Class D Personnel",
+            agent: "Field Agent",
+            o5: "O5 Council",
+            edit: "[EDIT]",
+            active: "Active Protocols",
+            noActive: "No active protocols detected.",
+            host: "Host",
+            status: "Status",
+            personnel: "Personnel",
+            users: "Users",
+            join: "Join Protocol",
+            inProgress: "In Progress",
+            full: "Full",
+            initiate: "Initiate New Protocol",
+            establish: "Establish a new secure channel for containment procedures.",
+            max: "(Max 4 concurrent protocols allowed)",
+            create: "Create Session",
+            capacity: "System Capacity Reached",
+            single: "D-Class Assignment",
+            simulation: "Single-player exploration simulation.",
+            mortality: "(High Mortality Rate)",
+            enter: "Enter Testing Area",
+            scp: "Secure. Contain. Protect.",
+            manual: ":: Field Manual (JP) ::",
+            archives: ":: Access Archives ::",
+            credits: ":: System Credits & Legal ::"
+        }
+    };
+
+    const t = TEXT[language] || TEXT['ja'];
 
     useEffect(() => {
         // Check for active session first
@@ -77,10 +149,10 @@ export default function Entrance({ socket, userName, userId, difficultyLevel = '
             <div className="flex flex-col items-center justify-center min-h-screen p-4 font-mono bg-black text-scp-green">
                 <div className="animate-pulse text-center">
                     <h2 className="text-2xl font-bold mb-4 uppercase tracking-widest">
-                        {rejoiningSessionId ? 'Restoring Secure Connection...' : 'Verifying Personnel Status...'}
+                        {rejoiningSessionId ? t.restoring : t.verifying}
                     </h2>
                     <p className="text-sm text-scp-green-dim uppercase">
-                        Please wait while we retrieve your assignment.
+                        {t.wait}
                     </p>
                 </div>
             </div>
@@ -91,19 +163,19 @@ export default function Entrance({ socket, userName, userId, difficultyLevel = '
         <div className="flex flex-col items-center justify-center min-h-screen p-4 font-mono">
             <div className="w-full max-w-4xl border-2 border-scp-green bg-black/80 p-8 relative shadow-[0_0_20px_rgba(0,255,65,0.2)]">
                 <h1 className="text-4xl font-bold mb-8 text-center text-scp-green tracking-widest uppercase border-b border-scp-green pb-4">
-                    Secure Access Terminal
+                    {t.title}
                 </h1>
 
                 <div className="mb-6 text-center">
                     <p className="text-scp-green-dim uppercase tracking-wider text-sm flex items-center justify-center gap-4">
                         <span>
-                            {difficultyLevel === 'C' && 'Class D Personnel'}
-                            {difficultyLevel === 'B' && 'Field Agent'}
-                            {difficultyLevel === 'A' && 'O5 Council'}
+                            {difficultyLevel === 'C' && t.dClass}
+                            {difficultyLevel === 'B' && t.agent}
+                            {difficultyLevel === 'A' && t.o5}
                             : <span className="text-scp-green font-bold">{userName}</span>
                         </span>
                         <a href="/profile" className="text-[10px] border border-scp-green/30 px-1 hover:bg-scp-green hover:text-black transition-colors" title="Manage Profile">
-                            [EDIT]
+                            {t.edit}
                         </a>
                     </p>
                 </div>
@@ -118,12 +190,12 @@ export default function Entrance({ socket, userName, userId, difficultyLevel = '
                     {/* Active Sessions List */}
                     <div className="border border-scp-green/30 p-4 bg-scp-green/5">
                         <h2 className="text-xl font-bold mb-4 text-scp-green border-b border-scp-green/30 pb-2 uppercase">
-                            Active Protocols
+                            {t.active}
                         </h2>
 
                         {sessions.length === 0 ? (
                             <div className="text-scp-green-dim text-sm text-center py-8 uppercase tracking-widest">
-                                No active protocols detected.
+                                {t.noActive}
                             </div>
                         ) : (
                             <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
@@ -132,10 +204,10 @@ export default function Entrance({ socket, userName, userId, difficultyLevel = '
                                         <div className="flex justify-between items-start mb-2">
                                             <div>
                                                 <div className="text-scp-green font-bold uppercase tracking-wider text-sm">
-                                                    Host: {session.hostName}
+                                                    {t.host}: {session.hostName}
                                                 </div>
                                                 <div className="text-xs text-scp-green-dim mt-1">
-                                                    Status: {session.phase}
+                                                    {t.status}: {session.phase}
                                                 </div>
                                             </div>
                                             <div className="text-right">
@@ -143,13 +215,13 @@ export default function Entrance({ socket, userName, userId, difficultyLevel = '
                                                     {session.playerCount}/4
                                                 </div>
                                                 <div className="text-xs text-scp-green-dim">
-                                                    Personnel
+                                                    {t.personnel}
                                                 </div>
                                             </div>
                                         </div>
 
                                         <div className="text-xs text-scp-green-dim mb-3 border-t border-scp-green/20 pt-2">
-                                            Users: {session.users.join(', ')}
+                                            {t.users}: {session.users.join(', ')}
                                         </div>
 
                                         {session.phase === 'LOBBY' && session.playerCount < 4 ? (
@@ -157,11 +229,11 @@ export default function Entrance({ socket, userName, userId, difficultyLevel = '
                                                 onClick={() => handleJoinSession(session.id)}
                                                 className="w-full bg-scp-green/20 border border-scp-green text-scp-green hover:bg-scp-green hover:text-black font-bold py-2 px-4 uppercase tracking-widest text-sm transition-all duration-200"
                                             >
-                                                Join Protocol
+                                                {t.join}
                                             </button>
                                         ) : (
                                             <div className="w-full text-center border border-gray-700 text-gray-500 py-2 px-4 uppercase tracking-widest text-sm cursor-not-allowed">
-                                                {session.phase !== 'LOBBY' ? 'In Progress' : 'Full'}
+                                                {session.phase !== 'LOBBY' ? t.inProgress : t.full}
                                             </div>
                                         )}
                                     </div>
@@ -174,13 +246,13 @@ export default function Entrance({ socket, userName, userId, difficultyLevel = '
                     <div className="flex flex-col justify-center gap-6 border-l border-scp-green/30 pl-8">
                         <div className="text-center">
                             <h2 className="text-xl font-bold mb-4 text-scp-green uppercase">
-                                Initiate New Protocol
+                                {t.initiate}
                             </h2>
                             <p className="text-scp-green-dim text-xs mb-6 uppercase tracking-wider">
-                                Establish a new secure channel for containment procedures.
+                                {t.establish}
                                 <br />
                                 <span className="text-yellow-500/70 mt-2 block">
-                                    (Max 4 concurrent protocols allowed)
+                                    {t.max}
                                 </span>
                             </p>
 
@@ -189,12 +261,12 @@ export default function Entrance({ socket, userName, userId, difficultyLevel = '
                                 disabled={sessions.length >= 4}
                                 className="w-full bg-scp-green text-black font-bold py-4 px-6 uppercase tracking-widest hover:bg-white hover:text-black transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed border border-transparent hover:border-scp-green shadow-[0_0_15px_rgba(0,255,65,0.3)]"
                             >
-                                Create Session
+                                {t.create}
                             </button>
 
                             {sessions.length >= 4 && (
                                 <p className="text-red-500 text-xs mt-2 uppercase tracking-widest animate-pulse">
-                                    System Capacity Reached
+                                    {t.capacity}
                                 </p>
                             )}
                         </div>
@@ -202,24 +274,24 @@ export default function Entrance({ socket, userName, userId, difficultyLevel = '
                         <div className="mt-auto pt-8 border-t border-scp-green/30">
                             <div className="text-center mb-6">
                                 <h2 className="text-xl font-bold mb-4 text-scp-red uppercase">
-                                    D-Class Assignment
+                                    {t.single}
                                 </h2>
                                 <p className="text-scp-red-dim text-xs mb-6 uppercase tracking-wider">
-                                    Single-player exploration simulation.
+                                    {t.simulation}
                                     <br />
                                     <span className="text-red-500/70 mt-2 block">
-                                        (High Mortality Rate)
+                                        {t.mortality}
                                     </span>
                                 </p>
                                 <a
                                     href="/d-class"
                                     className="block w-full bg-scp-red/20 border border-scp-red text-scp-red font-bold py-3 px-6 uppercase tracking-widest hover:bg-scp-red hover:text-black transition-colors duration-200 shadow-[0_0_15px_rgba(255,0,0,0.2)]"
                                 >
-                                    Enter Testing Area
+                                    {t.enter}
                                 </a>
                             </div>
                             <div className="text-xs text-scp-green-dim text-center uppercase tracking-widest pt-4 border-t border-scp-green/30">
-                                Secure. Contain. Protect.
+                                {t.scp}
                             </div>
                         </div>
                     </div>
@@ -228,13 +300,13 @@ export default function Entrance({ socket, userName, userId, difficultyLevel = '
 
             <div className="mt-8 text-center flex flex-col gap-2 opacity-50 hover:opacity-100 transition-opacity duration-300">
                 <a href="/instructions/jp" className="text-xs text-scp-green-dim uppercase tracking-widest hover:text-scp-green border-b border-transparent hover:border-scp-green pb-0.5 inline-block">
-                    :: Field Manual (JP) ::
+                    {t.manual}
                 </a>
                 <a href="/records" className="text-xs text-scp-green-dim uppercase tracking-widest hover:text-scp-green border-b border-transparent hover:border-scp-green pb-0.5 inline-block">
-                    :: Access Archives ::
+                    {t.archives}
                 </a>
                 <a href="/credits" className="text-xs text-scp-green-dim uppercase tracking-widest hover:text-scp-green border-b border-transparent hover:border-scp-green pb-0.5 inline-block">
-                    :: System Credits & Legal ::
+                    {t.credits}
                 </a>
             </div>
         </div>

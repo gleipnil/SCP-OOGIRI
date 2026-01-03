@@ -87,6 +87,38 @@ export default function Lobby({ socket, gameState }: LobbyProps) {
 
     const myUser = gameState.users.find(u => u.id === socket.id);
     const isHost = myUser?.isHost;
+    const lang = myUser?.language || 'ja';
+
+    const TEXT = {
+        ja: {
+            title: "SCPデータベースアクセス",
+            active: "アクティブな職員",
+            admin: "管理者",
+            start: "プロトコル実行 (開始)",
+            wait: "他の職員の参加を待機中... (最低3名)",
+            waitAdmin: "管理者の承認待ち...",
+            abort: "プロトコル中止 (退出)",
+            abortConfirm: "本当にプロトコルを中止しますか？",
+            scp: "確保、収容、保護",
+            accessing: "職員ファイルにアクセス中...",
+            close: "[ファイルを閉じる]"
+        },
+        en: {
+            title: "SCP Database Access",
+            active: "Active Personnel",
+            admin: "ADMIN",
+            start: "Execute Protocol (Start)",
+            wait: "Waiting for more personnel... (3 required)",
+            waitAdmin: "Waiting for Admin Authorization...",
+            abort: "Abort Protocol (Leave)",
+            abortConfirm: "Are you sure you want to abort the protocol?",
+            scp: "Secure. Contain. Protect.",
+            accessing: "Accessing Personnel File...",
+            close: "[Close File]"
+        }
+    };
+
+    const t = TEXT[lang];
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen p-4 font-mono">
@@ -98,13 +130,13 @@ export default function Lobby({ socket, gameState }: LobbyProps) {
                 <div className="absolute bottom-0 right-0 w-4 h-4 border-b-4 border-r-4 border-scp-green -mb-1 -mr-1"></div>
 
                 <h1 className="text-4xl font-bold mb-8 text-center text-scp-green tracking-widest uppercase border-b border-scp-green pb-4">
-                    SCP Database Access
+                    {t.title}
                 </h1>
 
                 <div className="text-center">
                     <div className="mb-8 text-left">
                         <h2 className="text-xl font-bold mb-4 text-scp-green border-b border-scp-green/50 pb-2 uppercase">
-                            Active Personnel
+                            {t.active}
                         </h2>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             {gameState.users.map((user) => (
@@ -117,7 +149,7 @@ export default function Lobby({ socket, gameState }: LobbyProps) {
                                         <div className={`w-2 h-2 ${user.isHost ? 'bg-yellow-500' : 'bg-scp-green'} animate-pulse`}></div>
                                         <span className="text-scp-green uppercase group-hover:underline">{user.name}</span>
                                     </div>
-                                    {user.isHost && <span className="text-xs text-yellow-500 border border-yellow-500 px-2 py-0.5">ADMIN</span>}
+                                    {user.isHost && <span className="text-xs text-yellow-500 border border-yellow-500 px-2 py-0.5">{t.admin}</span>}
                                 </div>
                             ))}
                         </div>
@@ -130,33 +162,33 @@ export default function Lobby({ socket, gameState }: LobbyProps) {
                                 disabled={gameState.users.length < 3 || gameState.users.length > 4}
                                 className="w-full bg-scp-red text-black font-bold py-4 px-6 uppercase tracking-widest hover:bg-red-600 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_10px_rgba(255,0,0,0.3)]"
                             >
-                                Execute Protocol (Start)
+                                {t.start}
                             </button>
                         ) : (
                             <div className="border border-scp-green/30 p-4 bg-scp-green/5">
                                 <p className="text-scp-green animate-pulse uppercase tracking-widest">
                                     {gameState.users.length < 3
-                                        ? `Waiting for ${3 - gameState.users.length} more personnel (Min 3 required)...`
-                                        : "Waiting for Admin Authorization..."}
+                                        ? (lang === 'ja' ? `他の職員の参加を待機中... (あと ${3 - gameState.users.length} 名)` : `Waiting for ${3 - gameState.users.length} more personnel...`)
+                                        : t.waitAdmin}
                                 </p>
                             </div>
                         )}
                         <button
                             onClick={() => {
-                                if (confirm('Are you sure you want to abort the protocol?')) {
+                                if (confirm(t.abortConfirm)) {
                                     socket.emit('leave_game');
                                     window.location.reload();
                                 }
                             }}
                             className="w-full border border-scp-green text-scp-green font-bold py-3 px-6 uppercase tracking-widest hover:bg-scp-green hover:text-black transition-colors duration-200"
                         >
-                            Abort Protocol (Leave)
+                            {t.abort}
                         </button>
                     </div>
                 </div>
             </div>
             <div className="mt-4 text-xs text-scp-green-dim uppercase tracking-widest">
-                Secure. Contain. Protect.
+                {t.scp}
             </div>
 
             {/* Profile Modal */}
@@ -165,7 +197,7 @@ export default function Lobby({ socket, gameState }: LobbyProps) {
                     <div className="relative w-full max-w-[600px]" onClick={e => e.stopPropagation()}>
                         {isLoadingProfile ? (
                             <div className="text-scp-green animate-pulse uppercase tracking-widest border border-scp-green p-8 bg-black">
-                                Accessing Personnel File...
+                                {t.accessing}
                             </div>
                         ) : selectedUser ? (
                             <div className="transform scale-90 md:scale-100 transition-transform">
@@ -175,7 +207,7 @@ export default function Lobby({ socket, gameState }: LobbyProps) {
                                         onClick={() => setSelectedUser(null)}
                                         className="text-scp-green hover:underline uppercase tracking-widest text-sm"
                                     >
-                                        [Close File]
+                                        {t.close}
                                     </button>
                                 </div>
                             </div>

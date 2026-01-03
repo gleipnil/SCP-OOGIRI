@@ -22,6 +22,7 @@ export default function GamePhaseController() {
     const [userId, setUserId] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [difficultyLevel, setDifficultyLevel] = useState<'A' | 'B' | 'C'>('C');
+    const [language, setLanguage] = useState<'ja' | 'en'>('ja');
 
     // Name input state (if not loaded from profile)
     const [inputName, setInputName] = useState('');
@@ -48,13 +49,14 @@ export default function GamePhaseController() {
                 setUserId(user.id);
                 const { data: profile } = await supabase
                     .from('profiles')
-                    .select('display_name, difficulty_level')
+                    .select('display_name, difficulty_level, language')
                     .eq('id', user.id)
                     .single();
 
                 if (profile) {
                     if (profile.display_name) setUserName(profile.display_name);
                     if (profile.difficulty_level) setDifficultyLevel(profile.difficulty_level as 'A' | 'B' | 'C');
+                    if (profile.language) setLanguage(profile.language as 'ja' | 'en');
                 }
             }
             setIsLoading(false);
@@ -196,5 +198,5 @@ export default function GamePhaseController() {
     }
 
     // 3. Entrance (Session List)
-    return <Entrance socket={socket} userName={userName} userId={userId!} difficultyLevel={difficultyLevel} />;
+    return <Entrance socket={socket} userName={userName} userId={userId!} difficultyLevel={difficultyLevel} language={language} />;
 }
