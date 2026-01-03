@@ -60,20 +60,22 @@ export class GameManager {
             return;
         }
 
-        // Fetch user difficulty from Supabase
+        // Fetch user difficulty and language from Supabase
         let difficulty_level: 'A' | 'B' | 'C' = 'C';
+        let language: 'ja' | 'en' = 'ja';
         try {
             const { data, error } = await supabaseAdmin
                 .from('profiles')
-                .select('difficulty_level')
+                .select('difficulty_level, language')
                 .eq('id', userId)
                 .single();
 
-            if (data && data.difficulty_level) {
-                difficulty_level = data.difficulty_level as 'A' | 'B' | 'C';
+            if (data) {
+                if (data.difficulty_level) difficulty_level = data.difficulty_level as 'A' | 'B' | 'C';
+                if (data.language) language = data.language as 'ja' | 'en';
             }
         } catch (err) {
-            console.error('Error fetching user difficulty:', err);
+            console.error('Error fetching user profile:', err);
         }
 
         const newUser: User = {
@@ -83,7 +85,8 @@ export class GameManager {
             isHost: this.state.users.length === 0,
             score: 0,
             isConnected: true,
-            difficulty_level
+            difficulty_level,
+            language
         };
         this.state.users.push(newUser);
 

@@ -5,12 +5,13 @@ export interface User {
     isHost: boolean;
     score: number;
     avatar?: string;
+    language?: 'ja' | 'en';
 }
 
 export interface Constraint {
     id: string;
-    publicDescriptions: string[];
-    hiddenDescription: string;
+    publicDescriptions: { ja: string; en: string }[];
+    hiddenDescription: { ja: string; en: string };
 }
 
 export interface Report {

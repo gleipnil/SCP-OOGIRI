@@ -7,6 +7,7 @@ export interface User {
     avatar?: string;
     isConnected: boolean;
     difficulty_level?: 'A' | 'B' | 'C';
+    language?: 'ja' | 'en';
     // Profile Stats
     total_plays?: number;
     total_likes_received?: number;
@@ -17,8 +18,8 @@ export interface User {
 
 export interface Constraint {
     id: string;
-    publicDescriptions: string[];
-    hiddenDescription: string;
+    publicDescriptions: { ja: string; en: string }[];
+    hiddenDescription: { ja: string; en: string };
 }
 
 export interface Report {

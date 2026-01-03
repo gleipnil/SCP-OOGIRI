@@ -12,6 +12,7 @@ interface Profile {
     display_name: string;
     comment: string;
     difficulty_level: 'A' | 'B' | 'C';
+    language: 'ja' | 'en';
     total_plays: number;
     total_likes_received: number;
     apollyon_wins: number;
@@ -38,6 +39,10 @@ export default function ProfilePage() {
     const [difficulty, setDifficulty] = useState<'A' | 'B' | 'C'>('C');
     const [isEditingDifficulty, setIsEditingDifficulty] = useState(false);
 
+    // Language
+    const [language, setLanguage] = useState<'ja' | 'en'>('ja');
+    const [isEditingLanguage, setIsEditingLanguage] = useState(false);
+
     const router = useRouter();
     const supabase = createClient();
 
@@ -61,6 +66,7 @@ export default function ProfilePage() {
             setEditName(profile?.display_name || '');
             setEditComment(profile?.comment || '[[DATA EXPUNGED]]');
             setDifficulty(profile?.difficulty_level || 'C');
+            setLanguage(profile?.language || 'ja');
             setLoading(false);
         };
         fetchData();
@@ -103,6 +109,25 @@ export default function ProfilePage() {
             setDifficulty(newLevel);
             setIsEditingDifficulty(false);
             setMessage({ text: 'Clearance level updated successfully.', type: 'success' });
+        }
+    };
+
+    const handleUpdateLanguage = async (newLang: 'ja' | 'en') => {
+        if (!user) return;
+        const { error } = await supabase
+            .from('profiles')
+            .update({ language: newLang, updated_at: new Date().toISOString() })
+            .eq('id', user.id);
+
+        if (error) {
+            setMessage({ text: 'Failed to update language settings.', type: 'error' });
+        } else {
+            if (profile) {
+                setProfile({ ...profile, language: newLang });
+            }
+            setLanguage(newLang);
+            setIsEditingLanguage(false);
+            setMessage({ text: 'Language settings updated successfully.', type: 'success' });
         }
     };
 
@@ -275,6 +300,54 @@ export default function ProfilePage() {
                                     className="text-sm text-scp-green-dim hover:text-scp-green underline uppercase"
                                 >
                                     [Change Clearance]
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                </section>
+
+                {/* Language Settings */}
+                <section className="border-t border-scp-green/30 pt-8">
+                    <h2 className="text-lg font-bold mb-4 uppercase text-scp-green-dim border-l-4 border-scp-green pl-3">Communication Protocol</h2>
+                    <div className="flex flex-col gap-4">
+                        <label className="block text-xs text-scp-green-dim uppercase tracking-wider">Language Settings</label>
+
+                        {isEditingLanguage ? (
+                            <div className="space-y-2 bg-scp-green/5 p-4 border border-scp-green/30">
+                                {[
+                                    { lang: 'ja', label: 'Japanese (日本語)' },
+                                    { lang: 'en', label: 'English (英語)' }
+                                ].map((option) => (
+                                    <label key={option.lang} className="flex items-center space-x-3 cursor-pointer p-2 border border-scp-green/30 hover:bg-scp-green/10 transition-colors">
+                                        <input
+                                            type="radio"
+                                            name="language"
+                                            value={option.lang}
+                                            checked={language === option.lang}
+                                            onChange={() => handleUpdateLanguage(option.lang as 'ja' | 'en')}
+                                            className="form-radio text-scp-green bg-black border-scp-green focus:ring-scp-green accent-scp-green"
+                                        />
+                                        <span className="text-sm text-scp-green">{option.label}</span>
+                                    </label>
+                                ))}
+                                <button
+                                    onClick={() => setIsEditingLanguage(false)}
+                                    className="text-xs text-scp-red hover:underline uppercase mt-2 pl-2"
+                                >
+                                    Cancel
+                                </button>
+                            </div>
+                        ) : (
+                            <div className="flex items-center gap-4">
+                                <span className="text-lg font-bold text-scp-green border border-scp-green/50 px-4 py-2">
+                                    {language === 'ja' && 'Japanese (日本語)'}
+                                    {language === 'en' && 'English (英語)'}
+                                </span>
+                                <button
+                                    onClick={() => setIsEditingLanguage(true)}
+                                    className="text-sm text-scp-green-dim hover:text-scp-green underline uppercase"
+                                >
+                                    [Change Language]
                                 </button>
                             </div>
                         )}

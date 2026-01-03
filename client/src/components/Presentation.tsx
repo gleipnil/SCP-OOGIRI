@@ -12,12 +12,48 @@ export default function Presentation({ socket, gameState }: PresentationProps) {
     const currentReport = reports[currentPresentationIndex];
     const owner = users.find(u => u.id === currentReport.ownerId);
 
-    const handleNext = () => {
+    const handleNextPhase = () => {
         socket.emit('next_phase');
     };
 
     const myUser = gameState.users.find(u => u.id === socket.id);
     const isHost = myUser?.isHost;
+    const lang = myUser?.language || 'ja';
+
+    const TEXT = {
+        ja: {
+            access: "ファイルアクセス: 読取専用",
+            file: "ファイル",
+            of: "/",
+            author: "作成者",
+            declassified: "機密解除された指令",
+            publicClass: "公開情報",
+            hiddenClass: "クリアランスレベル 4 (公開)",
+            keywords: "キーワード",
+            procedures: "特別収容プロトコル",
+            desc: "説明",
+            addendum: "補遺 / 結論",
+            next: "次のファイルへアクセス",
+            proceed: "投票プロトコルへ進行",
+            headers: ["オブジェクトクラス", "性質", "観測特徴", "財団の対応"]
+        },
+        en: {
+            access: "File Access: Read Only",
+            file: "File",
+            of: "of",
+            author: "Author",
+            declassified: "Declassified Directives",
+            publicClass: "Public Classification",
+            hiddenClass: "Clearance Level 4 (Revealed)",
+            keywords: "Keywords",
+            procedures: "Special Containment Procedures",
+            desc: "Description",
+            addendum: "Addendum / Conclusion",
+            next: "Access Next File",
+            proceed: "Proceed to Voting Protocol",
+            headers: ["Object Class", "Properties", "Observation", "Containment"]
+        }
+    };
 
     if (!currentReport) {
         return <div className="text-scp-green font-mono p-8 animate-pulse">Loading File...</div>;
@@ -28,10 +64,10 @@ export default function Presentation({ socket, gameState }: PresentationProps) {
             <div className="w-full max-w-5xl border-2 border-scp-green bg-black/95 p-8 relative shadow-[0_0_20px_rgba(0,255,65,0.1)]">
                 <div className="flex justify-between items-end mb-8 border-b border-scp-green pb-4">
                     <h2 className="text-2xl font-bold text-scp-green uppercase tracking-widest">
-                        File Access: Read Only
+                        {TEXT[lang].access}
                     </h2>
                     <div className="text-scp-green-dim uppercase tracking-widest text-sm">
-                        File {currentPresentationIndex + 1} of {reports.length}
+                        {TEXT[lang].file} {currentPresentationIndex + 1} {TEXT[lang].of} {reports.length}
                     </div>
                 </div>
 
@@ -48,7 +84,7 @@ export default function Presentation({ socket, gameState }: PresentationProps) {
                                     SCP-XXXX: {currentReport.title || "Untitled"}
                                 </h1>
                                 <p className="text-sm text-scp-green-dim uppercase tracking-widest">
-                                    Author: {owner?.name || "Unknown"}
+                                    {TEXT[lang].author}: {owner?.name || "Unknown"}
                                 </p>
                             </div>
                             <div className="border border-scp-red text-scp-red px-3 py-1 text-xs font-bold uppercase tracking-widest animate-pulse">
@@ -60,32 +96,32 @@ export default function Presentation({ socket, gameState }: PresentationProps) {
                     {/* Constraints Info (Revealed now) */}
                     <div className="bg-scp-green/5 p-6 border border-scp-green/30 relative z-10">
                         <h3 className="text-xs font-bold text-scp-green mb-4 uppercase tracking-widest border-b border-scp-green/30 pb-2">
-                            Declassified Directives
+                            {TEXT[lang].declassified}
                         </h3>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <span className="text-xs text-scp-green-dim uppercase tracking-widest block mb-2">Public Classification</span>
+                                <span className="text-xs text-scp-green-dim uppercase tracking-widest block mb-2">{TEXT[lang].publicClass}</span>
                                 <ul className="space-y-2 text-sm">
                                     {currentReport.constraint.publicDescriptions.map((desc, i) => (
                                         <li key={i} className="flex flex-col">
                                             <span className="font-bold text-scp-green uppercase text-xs">
-                                                {["Object Class", "Properties", "Observation", "Containment"][i]}
+                                                {TEXT[lang].headers[i]}
                                             </span>
                                             <span className="text-scp-text pl-2 border-l border-scp-green/30">
-                                                {desc}
+                                                {desc[lang]}
                                             </span>
                                         </li>
                                     ))}
                                 </ul>
                             </div>
                             <div>
-                                <span className="text-xs text-scp-green-dim uppercase tracking-widest block mb-2">Clearance Level 4 (Revealed)</span>
+                                <span className="text-xs text-scp-green-dim uppercase tracking-widest block mb-2">{TEXT[lang].hiddenClass}</span>
                                 <div className="border border-scp-red/30 bg-scp-red/5 p-3">
-                                    <p className="text-scp-red font-bold">{currentReport.constraint.hiddenDescription}</p>
+                                    <p className="text-scp-red font-bold">{currentReport.constraint.hiddenDescription[lang]}</p>
                                 </div>
                             </div>
                             <div className="col-span-full">
-                                <span className="text-xs text-scp-green-dim uppercase tracking-widest block mb-2">Keywords</span>
+                                <span className="text-xs text-scp-green-dim uppercase tracking-widest block mb-2">{TEXT[lang].keywords}</span>
                                 <div className="text-sm text-scp-green font-bold border border-scp-green/30 p-2 bg-black inline-block">
                                     {currentReport.selectedKeywords.join(' // ')}
                                 </div>
@@ -96,14 +132,14 @@ export default function Presentation({ socket, gameState }: PresentationProps) {
                     <div className="space-y-8 relative z-10">
                         <div>
                             <h3 className="text-lg font-bold text-scp-green uppercase mb-2 border-b border-scp-green/30 inline-block pr-4">
-                                Special Containment Procedures
+                                {TEXT[lang].procedures}
                             </h3>
                             <p className="whitespace-pre-wrap leading-relaxed">{currentReport.containmentProcedures}</p>
                         </div>
 
                         <div>
                             <h3 className="text-lg font-bold text-scp-green uppercase mb-2 border-b border-scp-green/30 inline-block pr-4">
-                                Description
+                                {TEXT[lang].desc}
                             </h3>
                             <p className="whitespace-pre-wrap mb-4 leading-relaxed">{currentReport.descriptionEarly}</p>
                             {currentReport.descriptionLate && (
@@ -113,7 +149,7 @@ export default function Presentation({ socket, gameState }: PresentationProps) {
 
                         <div>
                             <h3 className="text-lg font-bold text-scp-green uppercase mb-2 border-b border-scp-green/30 inline-block pr-4">
-                                Addendum / Conclusion
+                                {TEXT[lang].addendum}
                             </h3>
                             <p className="whitespace-pre-wrap leading-relaxed">{currentReport.conclusion}</p>
                         </div>
@@ -122,10 +158,10 @@ export default function Presentation({ socket, gameState }: PresentationProps) {
 
                 {isHost && (
                     <button
-                        onClick={handleNext}
+                        onClick={handleNextPhase}
                         className="w-full mt-6 bg-scp-green text-black font-bold py-4 px-6 uppercase tracking-widest hover:bg-white transition-colors duration-200"
                     >
-                        {currentPresentationIndex < reports.length - 1 ? "Access Next File" : "Proceed to Voting Protocol"}
+                        {currentPresentationIndex < reports.length - 1 ? TEXT[lang].next : TEXT[lang].proceed}
                     </button>
                 )}
             </div>

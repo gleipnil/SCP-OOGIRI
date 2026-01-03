@@ -12,8 +12,45 @@ export default function Choice({ socket, gameState }: ChoiceProps) {
     const [selectedIndices, setSelectedIndices] = useState<number[]>([]);
     const [isSubmitted, setIsSubmitted] = useState(false);
     const { timer } = gameState;
+    const myUser = gameState.users.find(u => u.id === socket.id);
+    const lang = myUser?.language || 'ja';
 
     const myReport = gameState.reports.find(r => r.ownerId === socket.id);
+
+    const TEXT = {
+        ja: {
+            title: "プロトコル: 縛り選択",
+            assigned: "割り当てられた構成要素",
+            directives: "指令",
+            publicClass: "公開情報",
+            hiddenClass: "クリアランスレベル 4 限定",
+            eyesOnly: "[取扱注意]",
+            selectKeywords: "キーワードを3つ選択",
+            selectDesc: "報告書作成に必要な重要データポイントを特定せよ。",
+            confirm: "選択を確定",
+            confirmed: "選択確定",
+            awaiting: "チームの同期を待機中...",
+            modify: "選択を修正",
+            initiate: "執筆フェーズを開始",
+            headers: ["オブジェクトクラス", "性質", "観測特徴", "財団の対応"]
+        },
+        en: {
+            title: "Protocol: Constraint Selection",
+            assigned: "Assigned Constraints",
+            directives: "Directives",
+            publicClass: "Public Classification",
+            hiddenClass: "Clearance Level 4 Only",
+            eyesOnly: "[EYES ONLY]",
+            selectKeywords: "Select 3 Keywords",
+            selectDesc: "Identify critical data points for report generation.",
+            confirm: "Confirm Selection",
+            confirmed: "Selection Confirmed",
+            awaiting: "Awaiting team synchronization...",
+            modify: "Modify Selection",
+            initiate: "Initiate Writing Phase",
+            headers: ["Object Class", "Properties", "Observation", "Containment"]
+        }
+    };
 
     // Recover state
     useEffect(() => {
@@ -50,7 +87,6 @@ export default function Choice({ socket, gameState }: ChoiceProps) {
         socket.emit('next_phase');
     };
 
-    const myUser = gameState.users.find(u => u.id === socket.id);
     const isHost = myUser?.isHost;
     const allReady = gameState.users.every(u => gameState.readyStates[u.id]);
 
@@ -62,132 +98,133 @@ export default function Choice({ socket, gameState }: ChoiceProps) {
 
                 <div className="flex justify-between items-end mb-8 border-b border-scp-green pb-4">
                     <div>
-                        <h2 className="text-2xl font-bold text-scp-green uppercase tracking-widest">
-                            Protocol: Constraint Selection
-                        </h2>
-                    </div>
-                    <div className="flex items-end">
-                        <PlayerStatusPanel gameState={gameState} myId={socket.id} />
-                        <div className={`text-xl font-bold ml-6 ${timer.isBlinking ? 'text-scp-red animate-pulse' : 'text-scp-green'}`}>
-                            T-{Math.floor(timer.remaining / 60)}:{(timer.remaining % 60).toString().padStart(2, '0')}
+                        <div>
+                            <h2 className="text-2xl font-bold text-scp-green uppercase tracking-widest">
+                                {TEXT[lang].title}
+                            </h2>
                         </div>
-                    </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-                    {/* Constraints Section */}
-                    <div className="border border-scp-green/50 p-6 bg-scp-green/5 relative">
-                        <div className="absolute top-0 left-0 bg-scp-green text-black text-xs px-2 py-1 font-bold uppercase">
-                            Assigned Constraints
-                        </div>
-                        <h3 className="text-xl font-bold mb-6 text-scp-green mt-4 uppercase tracking-wider">
-                            Directives
-                        </h3>
-                        <div className="mb-6">
-                            <span className="block text-xs text-scp-green-dim uppercase tracking-widest mb-2 border-b border-scp-green/30 pb-1">
-                                Public Classification
-                            </span>
-                            <ul className="space-y-3 text-sm">
-                                {myReport.constraint.publicDescriptions.map((desc, i) => (
-                                    <li key={i} className="flex flex-col">
-                                        <span className="font-bold text-scp-green uppercase text-xs">
-                                            {["Object Class", "Properties", "Observation", "Containment"][i]}
-                                        </span>
-                                        <span className="text-scp-text pl-2 border-l-2 border-scp-green/30">
-                                            {desc}
-                                        </span>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                        <div className="mb-4">
-                            <span className="block text-xs text-scp-green-dim uppercase tracking-widest mb-2 border-b border-scp-green/30 pb-1">
-                                Clearance Level 4 Only
-                            </span>
-                            <div className="border border-scp-red/50 bg-scp-red/10 p-3">
-                                <p className="text-lg font-bold text-scp-red animate-pulse">{myReport.constraint.hiddenDescription}</p>
-                                <p className="text-xs text-scp-red mt-2 uppercase tracking-widest">
-                                    [EYES ONLY]
-                                </p>
+                        <div className="flex items-end">
+                            <PlayerStatusPanel gameState={gameState} myId={socket.id} />
+                            <div className={`text-xl font-bold ml-6 ${timer.isBlinking ? 'text-scp-red animate-pulse' : 'text-scp-green'}`}>
+                                T-{Math.floor(timer.remaining / 60)}:{(timer.remaining % 60).toString().padStart(2, '0')}
                             </div>
                         </div>
                     </div>
 
-                    {/* Keywords Selection Section */}
-                    <div>
-                        <h3 className="text-xl font-bold mb-4 text-scp-green uppercase tracking-wider">
-                            Select 3 Keywords
-                        </h3>
-                        <p className="text-scp-green-dim mb-6 text-sm uppercase">
-                            Identify critical data points for report generation.
-                        </p>
-                        <div className="space-y-3">
-                            {myReport.selectedKeywords.map((keyword, index) => (
-                                <button
-                                    key={index}
-                                    onClick={() => toggleSelection(index)}
-                                    disabled={isSubmitted}
-                                    className={`w-full text-left p-4 border transition-all duration-200 flex justify-between items-center group ${selectedIndices.includes(index)
-                                        ? 'bg-scp-green text-black border-scp-green font-bold shadow-[0_0_10px_rgba(0,255,65,0.3)]'
-                                        : 'bg-black text-scp-green border-scp-green/30 hover:border-scp-green hover:bg-scp-green/10'
-                                        } ${isSubmitted ? 'opacity-50 cursor-not-allowed' : ''}`}
-                                >
-                                    <span className="uppercase tracking-wider">{keyword}</span>
-                                    {selectedIndices.includes(index) && <span className="font-bold">[SELECTED]</span>}
-                                </button>
-                            ))}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                        {/* Constraints Section */}
+                        <div className="border border-scp-green/50 p-6 bg-scp-green/5 relative">
+                            <div className="absolute top-0 left-0 bg-scp-green text-black text-xs px-2 py-1 font-bold uppercase">
+                                {TEXT[lang].assigned}
+                            </div>
+                            <h3 className="text-xl font-bold mb-6 text-scp-green mt-4 uppercase tracking-wider">
+                                {TEXT[lang].directives}
+                            </h3>
+                            <div className="mb-6">
+                                <span className="block text-xs text-scp-green-dim uppercase tracking-widest mb-2 border-b border-scp-green/30 pb-1">
+                                    {TEXT[lang].publicClass}
+                                </span>
+                                <ul className="space-y-3 text-sm">
+                                    {myReport.constraint.publicDescriptions.map((desc, i) => (
+                                        <li key={i} className="flex flex-col">
+                                            <span className="font-bold text-scp-green uppercase text-xs">
+                                                {TEXT[lang].headers[i]}
+                                            </span>
+                                            <span className="text-scp-text pl-2 border-l-2 border-scp-green/30">
+                                                {desc[lang]}
+                                            </span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                            <div className="mb-4">
+                                <span className="block text-xs text-scp-green-dim uppercase tracking-widest mb-2 border-b border-scp-green/30 pb-1">
+                                    {TEXT[lang].hiddenClass}
+                                </span>
+                                <div className="border border-scp-red/50 bg-scp-red/10 p-3">
+                                    <p className="text-lg font-bold text-scp-red animate-pulse">{myReport.constraint.hiddenDescription[lang]}</p>
+                                    <p className="text-xs text-scp-red mt-2 uppercase tracking-widest">
+                                        {TEXT[lang].eyesOnly}
+                                    </p>
+                                </div>
+                            </div>
                         </div>
-                        <div className="mt-4 text-right text-sm text-scp-green font-bold">
-                            SELECTED: {selectedIndices.length}/3
+
+                        {/* Keywords Selection Section */}
+                        <div>
+                            <h3 className="text-xl font-bold mb-4 text-scp-green uppercase tracking-wider">
+                                {TEXT[lang].selectKeywords}
+                            </h3>
+                            <p className="text-scp-green-dim mb-6 text-sm uppercase">
+                                {TEXT[lang].selectDesc}
+                            </p>
+                            <div className="space-y-3">
+                                {myReport.selectedKeywords.map((keyword, index) => (
+                                    <button
+                                        key={index}
+                                        onClick={() => toggleSelection(index)}
+                                        disabled={isSubmitted}
+                                        className={`w-full text-left p-4 border transition-all duration-200 flex justify-between items-center group ${selectedIndices.includes(index)
+                                            ? 'bg-scp-green text-black border-scp-green font-bold shadow-[0_0_10px_rgba(0,255,65,0.3)]'
+                                            : 'bg-black text-scp-green border-scp-green/30 hover:border-scp-green hover:bg-scp-green/10'
+                                            } ${isSubmitted ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                    >
+                                        <span className="uppercase tracking-wider">{keyword}</span>
+                                        {selectedIndices.includes(index) && <span className="font-bold">[SELECTED]</span>}
+                                    </button>
+                                ))}
+                            </div>
+                            <div className="mt-4 text-right text-sm text-scp-green font-bold">
+                                SELECTED: {selectedIndices.length}/3
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                {!isSubmitted ? (
-                    <button
-                        onClick={handleSubmit}
-                        disabled={selectedIndices.length !== 3}
-                        className="w-full bg-scp-green text-black font-bold py-4 px-6 uppercase tracking-widest hover:bg-white transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed border border-transparent hover:border-scp-green"
-                    >
-                        Confirm Selection
-                    </button>
-                ) : (
-                    <div className="text-center py-8 border border-scp-green/30 bg-scp-green/5">
-                        <div className="text-scp-green text-xl mb-4 uppercase tracking-widest animate-pulse">
-                            {">> Selection Confirmed <<"}
-                        </div>
-                        <p className="text-scp-green-dim uppercase text-sm mb-6">Awaiting team synchronization...</p>
-
+                    {!isSubmitted ? (
                         <button
-                            onClick={() => {
-                                socket.emit('cancel_submission');
-                                setIsSubmitted(false);
-                            }}
-                            className="bg-scp-green text-black font-bold py-2 px-6 uppercase tracking-widest hover:bg-white transition-colors duration-200 mb-6"
+                            onClick={handleSubmit}
+                            disabled={selectedIndices.length !== 3}
+                            className="w-full bg-scp-green text-black font-bold py-4 px-6 uppercase tracking-widest hover:bg-white transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed border border-transparent hover:border-scp-green"
                         >
-                            Modify Selection
+                            {TEXT[lang].confirm}
                         </button>
+                    ) : (
+                        <div className="text-center py-8 border border-scp-green/30 bg-scp-green/5">
+                            <div className="text-scp-green text-xl mb-4 uppercase tracking-widest animate-pulse">
+                                {">> " + TEXT[lang].confirmed + " <<"}
+                            </div>
+                            <p className="text-scp-green-dim uppercase text-sm mb-6">{TEXT[lang].awaiting}</p>
 
-                        <div className="flex justify-center space-x-2">
-                            {gameState.users.map(u => (
-                                <div
-                                    key={u.id}
-                                    className={`w-3 h-3 ${gameState.readyStates[u.id] ? 'bg-scp-green shadow-[0_0_5px_#00ff41]' : 'bg-scp-border'}`}
-                                    title={u.name}
-                                ></div>
-                            ))}
-                        </div>
-                        {isHost && allReady && (
                             <button
-                                onClick={handleNextPhase}
-                                className="w-full mt-8 bg-scp-red text-black font-bold py-3 px-4 uppercase tracking-widest hover:bg-red-600 transition-colors duration-200"
+                                onClick={() => {
+                                    socket.emit('cancel_submission');
+                                    setIsSubmitted(false);
+                                }}
+                                className="bg-scp-green text-black font-bold py-2 px-6 uppercase tracking-widest hover:bg-white transition-colors duration-200 mb-6"
                             >
-                                Initiate Writing Phase
+                                {TEXT[lang].modify}
                             </button>
-                        )}
-                    </div>
-                )}
+
+                            <div className="flex justify-center space-x-2">
+                                {gameState.users.map(u => (
+                                    <div
+                                        key={u.id}
+                                        className={`w-3 h-3 ${gameState.readyStates[u.id] ? 'bg-scp-green shadow-[0_0_5px_#00ff41]' : 'bg-scp-border'}`}
+                                        title={u.name}
+                                    ></div>
+                                ))}
+                            </div>
+                            {isHost && allReady && (
+                                <button
+                                    onClick={handleNextPhase}
+                                    className="w-full mt-8 bg-scp-red text-black font-bold py-3 px-4 uppercase tracking-widest hover:bg-red-600 transition-colors duration-200"
+                                >
+                                    {TEXT[lang].initiate}
+                                </button>
+                            )}
+                        </div>
+                    )}
+                </div>
             </div>
-        </div>
-    );
+            );
 }
